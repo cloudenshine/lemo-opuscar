@@ -1,5 +1,9 @@
 # Lemo-Opuscar: instructions for agents
 
+## Personal fork: Cloud & Ink Studio
+
+For local deployment or development of this fork, start with `studio/README.zh-CN.md` and `studio/PLAN.zh-CN.md`. Personal styles are indexed in `personal-styles/README.md`; check them before upstream styles, alongside the user's home registry. Keep extension code in `studio/` and `personal-styles/`, and user films in ignored `films/`. Use Node 24+ and the project-local Python environment. Run studio typecheck, tests, guard, and browser acceptance for UI changes. Never run the managed-library auto-reset setup script on this fork. Follow the upstream filmmaking guidance below for new films; a template title change alone is not a new story.
+
 This repository is a library of film styles. Each style has a `styles/<slug>/STYLE.md` (what the style is) and one demo film made entirely in code (`DEMO.md` and `demo/`). People pick a style and ask for a film about **their own** topic. Your job is to direct and produce that film.
 
 | The request | Go to |

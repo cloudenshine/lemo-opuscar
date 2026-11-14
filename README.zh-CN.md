@@ -4,6 +4,8 @@
 
 # Lemo-Opuscar
 
+> **个人二次开发版：云山墨序** — Windows 本地私人制片室，新增水墨个人风格、项目编辑、画面预览与 MP4 导出。入口：[安装与使用](studio/README.zh-CN.md) · [深度规划](studio/PLAN.zh-CN.md) · [个人风格](personal-styles/cloud-ink/STYLE.md)。以下保留上游说明、署名和许可。
+
 **<!--n-->99<!--/n--> 种影片风格，交给你的编程 agent。挑一个风格，带上你的故事，agent 用代码把整支片做出来。**
 
 [**▶ 打开画廊**](https://lemomo-ai.github.io/lemo-opuscar/zh/) · [English README](README.md) · [English gallery](https://lemomo-ai.github.io/lemo-opuscar/)

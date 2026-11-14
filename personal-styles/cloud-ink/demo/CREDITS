@@ -1,0 +1,7 @@
+Cloud & Ink / 云山墨序 — original scene, composition, timing and score.
+Ink brush, rice-paper compositor and mountain engine: Lemo-Opuscar by Lemomo (LemoLab).
+https://github.com/lemomo-ai/lemo-opuscar
+Code is used under the MIT License; the original notice is in LICENSES/MIT.txt in the library.
+Style grammar is adapted from Chinese Ink Wash; docs retain the library's CC BY-NC 4.0 terms and additional film-making permission (see LICENSE).
+Fonts: local Windows KaiTi / SimSun or platform serif fallback; no font file is redistributed.
+Sound: original composition using the library's physically modelled guqin, plus original synthesized water and wind. No samples, narration or third-party music.

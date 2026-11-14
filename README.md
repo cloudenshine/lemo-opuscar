@@ -4,6 +4,8 @@
 
 # Lemo-Opuscar
 
+> **Personal fork: Cloud & Ink Studio / 云山墨序** — a Windows local workspace for Chinese ink-wash films, with a reusable personal style, project editor, preview and MP4 export. See [local installation and use](studio/README.zh-CN.md), [development plan](studio/PLAN.zh-CN.md), and [personal style](personal-styles/cloud-ink/STYLE.md). Upstream attribution and licensing are preserved below.
+
 **<!--n-->99<!--/n--> film styles for your coding agent. Pick one, bring your story, and the agent makes the film, entirely in code.**
 
 <p><!--n-->99<!--/n--> 种影片风格，每种都配一支完全用代码做出来的短片 · 🇨🇳 中文用户请看 <a href="README.zh-CN.md">简体中文说明</a></p>

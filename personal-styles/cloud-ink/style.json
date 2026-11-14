@@ -1,0 +1,16 @@
+{
+  "slug": "cloud-ink",
+  "en": "Cloud & Ink",
+  "cn": "云山墨序",
+  "based_on": "ink-wash",
+  "borrows": [],
+  "library_version": "3a7132b",
+  "version": "1.0.0",
+  "created": "2026-11-15",
+  "line": "Quiet nature, five ink tones and warm paper, composed for Chinese stories.",
+  "line_cn": "以五色墨、暖宣纸与克制题跋，记录自然与日常。",
+  "category_cn": "我的风格",
+  "category_en": "Personal styles",
+  "uses": ["东方美学", "文化品牌", "自然", "诗意叙事"],
+  "size": "1920x1080"
+}

@@ -1,4 +1,8 @@
 node_modules/
+.studio/
+personal-styles/*/test.mp4
+personal-styles/*/test.jpg
+personal-styles/*/styleframe.jpg
 .venv/
 .lemo-deps.lock/
 __pycache__/

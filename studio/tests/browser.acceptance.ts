@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import { promises as fs } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { once } from 'node:events';
+import type { AddressInfo } from 'node:net';
+import { chromium } from 'playwright-core';
+import { createStudio } from '../src/server.ts';
+import { ROOT } from '../src/projects.ts';
+
+const films = await fs.mkdtemp(path.join(os.tmpdir(), 'cloud-ink-browser-'));
+const server = createStudio({ films, render: async () => { throw new Error('Acceptance: encoder unavailable'); } });
+server.listen(0, '127.0.0.1'); await once(server, 'listening');
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1512, height: 1150 } });
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`http://127.0.0.1:${(server.address() as AddressInfo).port}`);
+  await page.getByText('本地服务已连接').waitFor();
+  await page.locator('#project-id').fill('acceptance-film');
+  await page.getByRole('button', { name: '创建作品', exact: true }).click();
+  await page.getByText('作品已创建。', { exact: true }).waitFor();
+  const filmFrame = page.frames().find(f => f.url().includes('/films/'))!;
+  await filmFrame.waitForFunction(() => (window as Window & { READY?: boolean }).READY);
+  await page.locator('#title').fill('一叶听风');
+  await page.getByRole('button', { name: '保存题记', exact: true }).click();
+  await page.getByText('题记已保存，预览已更新。', { exact: true }).waitFor();
+  const film = page.frames().find(f => f.url().includes('/films/'))!;
+  await film.waitForFunction(() => (window as Window & { READY?: boolean }).READY);
+  await page.locator('#scrub').fill('20'); await page.locator('#scrub').dispatchEvent('input');
+  assert.equal(await page.locator('#time').textContent(), '00:20');
+  const canvas = film.locator('canvas');
+  const first = await canvas.screenshot();
+  await film.evaluate(() => { const w = window as Window & { render: (t: number) => void }; w.render(5); w.render(20); });
+  const second = await canvas.screenshot(); assert.deepEqual(first, second, 'Rendering must be independent of frame order');
+  await page.locator('#search').fill('云山墨序'); assert.equal(await page.locator('.style-card').count(), 1);
+  await page.locator('#search').fill('no-matching-style'); await page.getByText('没有找到相符的风格', { exact: false }).waitFor();
+  await page.locator('#search').fill('');
+  await fs.mkdir(path.join(ROOT, '.studio'), { recursive: true });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: path.join(ROOT, '.studio/workbench.png'), fullPage: false });
+  await page.getByRole('button', { name: '导出影片 ↗', exact: true }).click();
+  await page.getByText('Acceptance: encoder unavailable', { exact: false }).waitFor();
+  assert.equal(await page.locator('#export').isEnabled(), true, 'Failed jobs must allow retry');
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'Mobile page must not overflow');
+  await page.screenshot({ path: path.join(ROOT, '.studio/mobile.png'), fullPage: false });
+  assert.deepEqual(errors, []);
+  console.log('PASS browser create/save/seek/determinism/search/empty/error recovery/mobile; no page errors');
+} finally {
+  await browser.close(); server.closeAllConnections(); await new Promise<void>(r => server.close(() => r()));
+  await fs.rm(films, { recursive: true, force: true });
+}

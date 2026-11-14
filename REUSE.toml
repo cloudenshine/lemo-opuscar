@@ -374,3 +374,16 @@ path = "styles/map-explainer/demo/index.html"
 precedence = "override"
 SPDX-FileCopyrightText = ["2026 Lemomo (LemoLab)", "OpenStreetMap contributors (the IN array)"]
 SPDX-License-Identifier = "MIT AND ODbL-1.0"
+
+# Personal fork extension; upstream files and their annotations remain unchanged.
+[[annotations]]
+path = ["studio/**", "personal-styles/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 cloudenshine contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["studio/**.md", "personal-styles/**.md"]
+precedence = "override"
+SPDX-FileCopyrightText = ["2026 cloudenshine contributors", "2026 Lemomo (LemoLab), underlying style documentation"]
+SPDX-License-Identifier = "CC-BY-NC-4.0"

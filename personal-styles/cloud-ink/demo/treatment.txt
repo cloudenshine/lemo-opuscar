@@ -1,0 +1,16 @@
+# 一叶渡晨 / A Leaf Carries the Morning
+
+This is a reusable technical starting point, not a substitute for directing a new film.
+
+A leaf leaves a bamboo branch and carries the stillness of a mountain morning onto water. No people, no sword, no battle, no borrowed footage or melody.
+
+0–4s: already-visible pale mountains, a measured push into morning mist. A low guqin tone opens the air.
+4–8s: loaded bamboo stems paint themselves from the bank upward; dry-brush nodes break the smooth ink.
+8–12s: leaves answer the stems; a gentle lateral move gives the branch room.
+12–14s: literal whole-bus silence. The picture holds before a leaf separates.
+14–17s: one leaf turns, falls and levels as it touches the blank-paper water; a quiet brushed breath precedes the impact.
+17–24s: open rings follow the landing; the camera eases back, and the leaf drifts out of the rings. A high harmonic leaves a long quiet tail.
+
+The fixed title and inscription sit in empty paper and remain readable for the whole film. Chinese system fonts are used locally and are not bundled. The vermilion seal is the only accent.
+
+Differences from the base demo: nature instead of a swordsman; an already-painted opening instead of a drop; falling leaf instead of splitting a wave; low-density free-time score instead of combat acceleration; no mounted-scroll ending. Source engines remain upstream MIT code.
