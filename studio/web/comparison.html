@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>原作与个人风格 · 对照室</title><link rel="stylesheet" href="/comparison.css"></head>
+<body><header><a href="/">← 返回创作台</a><span>云山墨序 / 对照室</span></header><main>
+<p class="eyebrow">REFERENCE & EVOLUTION</p><h1>看见差异，<br>再谈优化。</h1>
+<p class="intro">同一个风格源头，三条自己的表达路径。这里保留原作优势、改编理由，以及真实成片的测量结果。</p>
+<nav id="pairs" aria-label="对照风格"></nav><p id="status" role="status">正在读取对照记录…</p>
+<section id="viewer" hidden><div class="videos">
+<article><div class="label"><h2>Lemo 原作</h2><a id="original-link" target="_blank" rel="noreferrer">官方来源 ↗</a></div><video id="original" controls muted playsinline preload="metadata"></video><p id="original-meta"></p></article>
+<article><div class="label"><h2>个人改编</h2><a id="personal-link">打开成片 ↗</a></div><video id="personal" controls muted playsinline preload="metadata"></video><p id="personal-meta"></p></article>
+</div><div class="controls"><label for="position">对照位置 <output id="percent">0%</output></label><input id="position" type="range" min="0" max="100" step="1" value="0"><p>拖动会暂停两片，并按各自总时长定位。相同百分比不代表相同剧情；使用各自播放器可独立播放。</p><label for="audio">听音轨</label><select id="audio"><option value="silent">静音对照</option><option value="original">只听原作</option><option value="personal">只听个人版</option></select></div>
+<h2>这次具体改了什么</h2><p id="finding" class="finding"></p><div class="metrics"><table><caption>交付文件实测 · 数值不等于审美评分</caption><thead><tr><th>指标</th><th>原作</th><th>个人版</th></tr></thead><tbody id="metrics"></tbody></table></div>
+<details><summary>展开十二帧分镜</summary><div class="videos"><figure><img id="original-sheet" alt="原作十二帧分镜" loading="lazy"><figcaption>原作 · 全片等间隔抽帧</figcaption></figure><figure><img id="personal-sheet" alt="个人版十二帧分镜" loading="lazy"><figcaption>个人版 · 全片等间隔抽帧</figcaption></figure></div></details>
+</section><aside><h2>比较的边界</h2><p>原作来自官方 web 预览，个人版为本地 1080p 导出；题材、长度及编码条件不同，因此不作清晰度排名，也不把动作密度或响度当作质量分数。声音核验包含事件、静默和响度分析；尚未做人工盲听及受众测试。</p><p>角色表演、复杂 2.5D 运镜与商业产品完整功能演示仍有差距。三套个人模板提供可复用起点，换标题不等于完成新故事。</p><a href="/comparison-report">阅读完整对照报告 ↗</a><span> · </span><a id="previous-ink" hidden href="/films/morning-leaf/out/film.mp4">查看水墨初版</a></aside>
+<footer>Lemo-Opuscar · LemoLab × Claude Opus 5.5。原作：《The Swordsman and the River》《Five Rules for a Poster》《Room to Think》。原作 CC BY 4.0，原样播放；瑞士排版原作鼓组：MuldjordKit / Lars Muldjord · CC BY 4.0。改编与本地工作台：cloudenshine。<a href="https://github.com/lemomo-ai/lemo-opuscar/blob/main/LICENSE" target="_blank" rel="noreferrer">上游许可与署名</a>。</footer>
+</main><script type="module" src="/comparison.js"></script></body></html>

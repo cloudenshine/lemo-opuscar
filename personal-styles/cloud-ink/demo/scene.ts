@@ -67,7 +67,9 @@ window.render = (seconds: number) => {
   layer.clear();
   const push = smooth(t / 8) * .06 - smooth((t - 17) / 7) * .04;
   const pan = smooth((t - 8) / 8) * -70;
-  layer.xf(1 + push, -960 * push + pan, -540 * push);
+  const close = smooth((t - 11) / 2) * (1 - smooth((t - 17.5) / 3.5));
+  const zoom = 1 + push + close * .72;
+  layer.xf(zoom, 960 - (960 + close * 230) * zoom + pan, 540 - (540 + close * 160) * zoom);
   layer.cw.globalAlpha = .72 + .28 * smooth(t / 4); layer.cw.drawImage(far, -pan * .5, 0);
   layer.cw.globalAlpha = smooth((t - 1) / 5); layer.cw.drawImage(near, 0, 0); layer.cw.globalAlpha = 1;
   drawSeq(layer.ink, stems, smooth((t - 3) / 5), .88);
@@ -87,6 +89,12 @@ window.render = (seconds: number) => {
       points.push([1020 + Math.cos(a) * radius, 820 + Math.sin(a) * radius * .16]);
     }
     draw(layer.ink, mk(points, { w: 1.5, tone: .24, dry: .6, wet: .3, seed: 600 + onset * 10 }), 1, (1 - age / 5) * smooth(age * 3));
+  }
+  for (const c of [layer.cw, layer.cd]) {
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'destination-out';
+    const breathingRoom = c.createRadialGradient(325, 480, 45, 325, 480, 300);
+    breathingRoom.addColorStop(0, '#000000ed'); breathingRoom.addColorStop(1, '#00000000');
+    c.fillStyle = breathingRoom; c.fillRect(0, 130, 660, 780); c.restore();
   }
   typography(t);
   composite(layer, null, { paperCol: [.954, .938, .895], bleed: 4.4, rim: .9, vig: .12, warm: .1, paper: [0, 0, 1] });

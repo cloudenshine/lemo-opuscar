@@ -42,11 +42,30 @@ try {
   await page.getByRole('button', { name: '导出影片 ↗', exact: true }).click();
   await page.getByText('Acceptance: encoder unavailable', { exact: false }).waitFor();
   assert.equal(await page.locator('#export').isEnabled(), true, 'Failed jobs must allow retry');
+  for (const [style, title] of [['chinese-editorial', '把信息读懂'], ['dark-product', '归序工作空间']]) {
+    await page.locator('#new-project').click();
+    await page.locator('#style-picker').selectOption(style);
+    assert.equal(await page.locator('#title').inputValue(), title);
+    await page.locator('#project-id').fill(style);
+    await page.getByRole('button', { name: '创建作品', exact: true }).click();
+    await page.getByText('作品已创建。', { exact: true }).waitFor();
+    assert.equal(await page.locator('#style-picker').isDisabled(), true);
+    const preview = await page.locator('#preview').elementHandle().then(handle => handle!.contentFrame());
+    assert.ok(preview);
+    await preview.waitForURL(`**/films/${style}/index.html*`);
+    await preview.waitForFunction(() => (window as Window & { READY?: boolean }).READY);
+    await preview.evaluate(() => (window as Window & { render: (t: number) => void }).render(9));
+    const a = await preview.locator('canvas').screenshot();
+    await preview.evaluate(() => { const w = window as Window & { render: (t: number) => void }; w.render(3); w.render(21); w.render(9); });
+    assert.deepEqual(a, await preview.locator('canvas').screenshot(), `${style} must render deterministically`);
+    const saved = JSON.parse(await fs.readFile(path.join(films, style, 'project.json'), 'utf8'));
+    assert.equal(saved.style, style);
+  }
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'Mobile page must not overflow');
   await page.screenshot({ path: path.join(ROOT, '.studio/mobile.png'), fullPage: false });
   assert.deepEqual(errors, []);
-  console.log('PASS browser create/save/seek/determinism/search/empty/error recovery/mobile; no page errors');
+  console.log('PASS browser three styles/create/save/seek/determinism/search/empty/error recovery/mobile; no page errors');
 } finally {
   await browser.close(); server.closeAllConnections(); await new Promise<void>(r => server.close(() => r()));
   await fs.rm(films, { recursive: true, force: true });

@@ -29,10 +29,11 @@ export function createStudio(options: { films?: string; render?: typeof renderPr
         body = JSON.parse(Buffer.concat(parts).toString() || '{}');
         if (!body || typeof body !== 'object' || Array.isArray(body)) throw new InputError('请求必须为 JSON 对象。');
       }
-      if (route === '/api/health' && method === 'GET') return send(200, { ok: true, app: 'cloud-ink-studio', version: '1.0.0', active: active?.id || null });
+      if (route === '/api/health' && method === 'GET') return send(200, { ok: true, app: 'cloud-ink-studio', version: '1.1.0', active: active?.id || null });
+      if (route === '/api/comparison' && method === 'GET') return send(200, JSON.parse(await fs.readFile(await within(path.join(ROOT, '.studio/comparison'), 'analysis.json'), 'utf8')));
       if (route === '/api/styles' && method === 'GET') return send(200, await listStyles());
       if (route === '/api/projects' && method === 'GET') return send(200, await listProjects(films));
-      if (route === '/api/projects' && method === 'POST') return send(201, await createProject(slug(body.id), content(body.content), films));
+      if (route === '/api/projects' && method === 'POST') return send(201, await createProject(slug(body.id), content(body.content), films, body.style));
       const match = route.match(/^\/api\/projects\/([a-z0-9-]+)\/(content|render)$/);
       if (match && method === 'POST') {
         const id = slug(match[1]);
@@ -53,13 +54,17 @@ export function createStudio(options: { films?: string; render?: typeof renderPr
         return job ? send(200, job) : send(404, { error: '任务不存在（重启后临时任务记录会清空）。' });
       }
       if (!['GET', 'HEAD'].includes(method)) return send(405, { error: '不支持的方法。' });
-      if (route === '/app.js') {
-        const source = stripTypeScriptTypes(await fs.readFile(path.join(ROOT, 'studio/web/app.ts'), 'utf8'));
+      if (route === '/app.js' || route === '/comparison.js') {
+        const source = stripTypeScriptTypes(await fs.readFile(path.join(ROOT, 'studio/web', route === '/app.js' ? 'app.ts' : 'comparison.ts'), 'utf8'));
         res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
         return res.end(method === 'HEAD' ? '' : source);
       }
       let file: string;
       if (route === '/' || ['/app.js', '/style.css'].includes(route)) file = await within(path.join(ROOT, 'studio/web'), route === '/' ? 'index.html' : route.slice(1));
+      else if (route === '/compare' || route === '/comparison.css') file = await within(path.join(ROOT, 'studio/web'), route === '/compare' ? 'comparison.html' : 'comparison.css');
+      else if (route === '/comparison-report') file = await within(ROOT, 'studio/comparison/REVIEW.zh-CN.md');
+      else if (/^\/comparison-media\/(ink-wash|swiss-motion|dark-keynote)\.mp4$/.test(route)) file = await within(path.join(ROOT, '.studio/comparison/source'), path.basename(route));
+      else if (/^\/comparison-sheets\/(ink-wash|swiss-motion|dark-keynote)-(original|personal|previous)\.jpg$/.test(route)) file = await within(path.join(ROOT, '.studio/comparison'), path.basename(route));
       else if (/^\/films\/[a-z0-9-]+\/(index\.html|scene\.js|content\.json|out\/(film\.mp4|mix\.wav|stills\/t_[\d.]+\.jpg))$/.test(route)) file = await within(films, route.slice(7));
       else if (/^\/(styles|personal-styles)\/[a-z0-9-]+\/STYLE\.md$/.test(route) || route === '/core/lib.js' || /^\/styles\/ink-wash\/demo\/(ink|comp|land)\.js$/.test(route)) file = await within(ROOT, route.slice(1));
       else throw new InputError('资源不存在。', 404);

@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ROOT, createProject, listStyles, DEFAULT_CONTENT } from './projects.ts';
+import { ROOT, createProject, listStyles, DEFAULT_CONTENT, personalStyle, PERSONAL_STYLES } from './projects.ts';
 import { createStudio } from './server.ts';
 import { renderProject } from './render.ts';
 
@@ -14,8 +14,14 @@ try {
     server.on('error', error => { console.error(error.message); process.exitCode = 1; });
     server.listen(port, '127.0.0.1', () => console.log(`Cloud & Ink Studio: http://127.0.0.1:${port}`));
   } else if (command === 'create') {
-    const data = process.argv[4] ? JSON.parse(await fs.readFile(path.resolve(process.argv[4]), 'utf8')) : DEFAULT_CONTENT;
-    console.log(JSON.stringify(await createProject(arg, data), null, 2));
+    const options = process.argv.slice(4), styleIndex = options.indexOf('--style');
+    if (styleIndex >= 0 && !options[styleIndex + 1]) throw new Error('--style requires a value');
+    const style = personalStyle(styleIndex < 0 ? undefined : options[styleIndex + 1]);
+    if (styleIndex >= 0) options.splice(styleIndex, 2);
+    if (options.length > 1 || options[0]?.startsWith('--')) throw new Error('usage: create <slug> [content.json] [--style <style>]');
+    const meta = JSON.parse(await fs.readFile(path.join(ROOT, 'personal-styles', style, 'style.json'), 'utf8'));
+    const data = options[0] ? JSON.parse(await fs.readFile(path.resolve(options[0]), 'utf8')) : meta.defaults || DEFAULT_CONTENT;
+    console.log(JSON.stringify(await createProject(arg, data, undefined, style), null, 2));
   } else if (command === 'styles') {
     console.log(JSON.stringify(await listStyles(), null, 2));
   } else if (command === 'render') {
@@ -37,16 +43,18 @@ try {
     }
     process.exitCode = failed ? 1 : 0;
   } else if (command === 'guard') {
+    for (const style of PERSONAL_STYLES) {
     for (const file of ['STYLE.md', 'CHANGES.md', 'DEMO.md', 'style.json', 'demo/scene.ts', 'demo/index.html', 'demo/CREDITS']) {
-      await fs.access(path.join(ROOT, 'personal-styles/cloud-ink', file));
+      await fs.access(path.join(ROOT, 'personal-styles', style, file));
+    }
+    const source = await fs.readFile(path.join(ROOT, 'personal-styles', style, 'demo/scene.ts'), 'utf8');
+    if (/Math\.random\(|Date\.now\(/.test(source)) throw new Error('Film rendering must be deterministic.');
     }
     const styles = await listStyles();
     if (styles.length < 100 || new Set(styles.map(s => s.slug)).size !== styles.length) throw new Error('Style catalog is incomplete or contains duplicate slugs.');
-    const source = await fs.readFile(path.join(ROOT, 'personal-styles/cloud-ink/demo/scene.ts'), 'utf8');
-    if (/Math\.random\(|Date\.now\(/.test(source)) throw new Error('Film rendering must be deterministic.');
     console.log(`PASS ${styles.length} styles, required source files, deterministic scene`);
   } else {
-    console.log('Cloud & Ink Studio\n  node studio/src/cli.ts serve [43821]\n  node studio/src/cli.ts doctor\n  node studio/src/cli.ts styles\n  node studio/src/cli.ts create <slug> [content.json]\n  node studio/src/cli.ts render <slug>\n  node studio/src/cli.ts guard');
+    console.log('Cloud & Ink Studio\n  node studio/src/cli.ts serve [43821]\n  node studio/src/cli.ts doctor\n  node studio/src/cli.ts styles\n  node studio/src/cli.ts create <slug> [content.json] [--style cloud-ink|chinese-editorial|dark-product]\n  node studio/src/cli.ts render <slug>\n  node studio/src/cli.ts guard');
     if (command && command !== 'help' && command !== '--help') process.exitCode = 2;
   }
 } catch (error) { console.error((error as Error).message); process.exitCode = 1; }

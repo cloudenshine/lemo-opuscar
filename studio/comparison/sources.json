@@ -1,0 +1,33 @@
+{
+  "upstreamCommit": "3a7132b996be0241c1ea0ab180d519f06e6f10b6",
+  "sourceEdition": "Official web previews; release assets may change independently of the pinned source commit.",
+  "pairs": [
+    {
+      "id": "ink-wash",
+      "name": "水墨与东方美学",
+      "personal": "cloud-ink",
+      "project": "cloud-ink-v2",
+      "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
+      "finding": "加强落叶近景与题跋留白；原作的角色动作、浪潮及景别反差仍更丰富。",
+      "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c"
+    },
+    {
+      "id": "swiss-motion",
+      "name": "中文编辑部",
+      "personal": "chinese-editorial",
+      "project": "editorial-demo",
+      "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
+      "finding": "加入中文证据分栏、清晰层级与删减节奏；原作的旋转海报和变体墙更具动态张力。",
+      "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159"
+    },
+    {
+      "id": "dark-keynote",
+      "name": "深色科技与产品演示",
+      "personal": "dark-product",
+      "project": "product-demo",
+      "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
+      "finding": "加入中文概念界面、归位与发现流程；原作的光标表演、密集编排和 2.5D 空间更成熟。",
+      "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4"
+    }
+  ]
+}

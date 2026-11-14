@@ -19,6 +19,11 @@ test('HTTP project flow, static allowlist, origin checks, range requests and ren
   try {
     assert.equal((await fetch(base + '/api/health')).status, 200);
     assert.equal((await fetch(base + '/.git/config')).status, 404);
+    assert.equal((await fetch(base + '/.studio/service.json')).status, 404);
+    assert.equal((await fetch(base + '/comparison-media/service.json')).status, 404);
+    assert.equal((await fetch(base + '/comparison-sheets/analysis.json')).status, 404);
+    assert.equal((await fetch(base + '/compare')).status, 200);
+    assert.equal((await fetch(base + '/comparison.js')).status, 200);
     assert.equal((await fetch(base + '/core/../.git/config')).status, 404);
     assert.equal((await fetch(base + '/%2e%2e%5csecret')).status, 403);
     assert.equal((await fetch(base + '/%', { method: 'GET' })).status, 400);
@@ -28,6 +33,9 @@ test('HTTP project flow, static allowlist, origin checks, range requests and ren
     assert.equal(badHost, 403);
     assert.equal((await post('/api/projects', { id: 'one-film', content: DEFAULT_CONTENT }, 'https://evil.test')).status, 403);
     assert.equal((await post('/api/projects', { id: 'one-film', content: DEFAULT_CONTENT })).status, 201);
+    assert.equal((await post('/api/projects', { id: 'bad-style', style: '../oops', content: DEFAULT_CONTENT })).status, 400);
+    const editorial = await (await post('/api/projects', { id: 'editorial-film', style: 'chinese-editorial', content: DEFAULT_CONTENT })).json();
+    assert.equal(editorial.style, 'chinese-editorial');
     assert.equal((await post('/api/projects', { id: 'one-film', content: DEFAULT_CONTENT })).status, 409);
     assert.equal((await post('/api/projects/one-film/content', { ...DEFAULT_CONTENT, title: '听风' })).status, 200);
     const index = await fetch(base + '/films/one-film/index.html'); assert.equal(index.status, 200);

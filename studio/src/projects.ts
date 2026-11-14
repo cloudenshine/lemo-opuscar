@@ -6,6 +6,12 @@ import { stripTypeScriptTypes } from 'node:module';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const FILMS = path.join(ROOT, 'films');
 export const TEMPLATE = path.join(ROOT, 'personal-styles/cloud-ink/demo');
+export const PERSONAL_STYLES = ['cloud-ink', 'chinese-editorial', 'dark-product'] as const;
+export type PersonalStyle = typeof PERSONAL_STYLES[number];
+export function personalStyle(value: unknown = 'cloud-ink'): PersonalStyle {
+  if (!PERSONAL_STYLES.includes(value as PersonalStyle)) throw new InputError('该风格没有可创建的本地模板。');
+  return value as PersonalStyle;
+}
 export type Content = { title: string; inscription: string; seal: string };
 export const DEFAULT_CONTENT: Content = { title: '一叶渡晨', inscription: '山静听风，叶落知秋', seal: '云山' };
 export class InputError extends Error {
@@ -47,8 +53,10 @@ export async function compileProject(id: string, base = FILMS) {
   const destination = await within(dir, 'scene.js');
   await fs.writeFile(destination, stripTypeScriptTypes(await fs.readFile(source, 'utf8')));
 }
-export async function createProject(id: string, data: Content, base = FILMS) {
+export async function createProject(id: string, data: Content, base = FILMS, styleId: unknown = 'cloud-ink') {
   slug(id); data = content(data);
+  const style = personalStyle(styleId), template = path.join(ROOT, 'personal-styles', style, 'demo');
+  const metadata = JSON.parse(await fs.readFile(path.join(template, '../style.json'), 'utf8'));
   await fs.mkdir(base, { recursive: true });
   const dir = path.join(await fs.realpath(base), id);
   try { await fs.mkdir(dir); } catch (e) {
@@ -56,19 +64,21 @@ export async function createProject(id: string, data: Content, base = FILMS) {
     throw e;
   }
   try {
-    for (const file of ['index.html', 'CREDITS', 'build.ps1', 'build.sh']) await fs.copyFile(path.join(TEMPLATE, file), path.join(dir, file));
-    const scene = await fs.readFile(path.join(TEMPLATE, 'scene.ts'), 'utf8');
+    for (const file of ['index.html', 'CREDITS']) await fs.copyFile(path.join(template, file), path.join(dir, file));
+    for (const file of ['build.ps1', 'build.sh']) await fs.copyFile(path.join(TEMPLATE, file), path.join(dir, file));
+    await fs.copyFile(path.join(ROOT, 'studio/audio/score.py'), path.join(dir, 'score.py'));
+    const scene = await fs.readFile(path.join(template, 'scene.ts'), 'utf8');
     await fs.writeFile(path.join(dir, 'scene.ts'), scene);
     await fs.writeFile(path.join(dir, 'scene.js'), stripTypeScriptTypes(scene));
     await fs.writeFile(path.join(dir, 'content.json'), JSON.stringify(data, null, 2) + '\n');
-    await fs.writeFile(path.join(dir, 'project.json'), JSON.stringify({ style: 'cloud-ink', version: '1.0.0', created: new Date().toISOString() }, null, 2) + '\n');
-    await fs.copyFile(path.join(TEMPLATE, 'treatment.txt'), path.join(dir, 'TREATMENT.md'));
+    await fs.writeFile(path.join(dir, 'project.json'), JSON.stringify({ style, version: metadata.version, created: new Date().toISOString() }, null, 2) + '\n');
+    await fs.copyFile(path.join(template, 'treatment.txt'), path.join(dir, 'TREATMENT.md'));
   } catch (error) {
     // The directory was created exclusively by this invocation; never remove an existing project.
     await fs.rm(dir, { recursive: true, force: true });
     throw error;
   }
-  return { id, ...data, url: `/films/${id}/index.html`, video: null as string | null };
+  return { id, style, version: metadata.version, ...data, url: `/films/${id}/index.html`, video: null as string | null };
 }
 export async function listProjects(base = FILMS) {
   await fs.mkdir(base, { recursive: true });
@@ -79,9 +89,9 @@ export async function listProjects(base = FILMS) {
       const dir = await projectPath(e.name, base);
       const data = content(JSON.parse(await fs.readFile(path.join(dir, 'content.json'), 'utf8')));
       const meta = JSON.parse(await fs.readFile(path.join(dir, 'project.json'), 'utf8'));
-      if (meta.style !== 'cloud-ink') continue;
+      personalStyle(meta.style);
       const video = await fs.stat(path.join(dir, 'out/film.mp4')).then(() => `/films/${e.name}/out/film.mp4`).catch(() => null);
-      projects.push({ id: e.name, ...data, url: `/films/${e.name}/index.html`, video });
+      projects.push({ id: e.name, style: meta.style as PersonalStyle, version: meta.version, ...data, url: `/films/${e.name}/index.html`, video });
     } catch { /* Unrelated user films are not studio projects. */ }
   }
   return projects.sort((a, b) => a.id.localeCompare(b.id));
@@ -101,7 +111,7 @@ export async function listStyles() {
       if (!e.isDirectory()) continue;
       try {
         const meta = JSON.parse(await fs.readFile(path.join(ROOT, base, e.name, 'style.json'), 'utf8'));
-        rows.push({ ...meta, personal: base === 'personal-styles', guide: `/${base}/${e.name}/STYLE.md` });
+        rows.push({ ...meta, personal: base === 'personal-styles', creatable: base === 'personal-styles' && PERSONAL_STYLES.includes(e.name as PersonalStyle), guide: `/${base}/${e.name}/STYLE.md` });
       } catch { /* Index files and incomplete upstream entries have no style metadata. */ }
     }
   }

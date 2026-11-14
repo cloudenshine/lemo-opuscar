@@ -2,7 +2,7 @@
 
 Based on Chinese Ink Wash (`ink-wash`) from [Lemo-Opuscar by Lemomo (LemoLab)](https://github.com/lemomo-ai/lemo-opuscar). Adapted for a personal Chinese-language studio. Documentation: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), with the additional filmmaking permission in the library's LICENSE.
 
-Default size: 1920×1080. Version 1.0.0. Selected direction: ink wash and Eastern aesthetics. This is an editable first implementation, not a claim of a separate visual approval.
+Default size: 1920×1080. Version 1.1.0. Selected direction: ink wash and Eastern aesthetics. The starter now moves into the leaf before returning to the wider landscape, and reserves clean paper behind the title. This is an editable implementation, not a claim of a separate visual approval.
 
 ## 1. Essence
 

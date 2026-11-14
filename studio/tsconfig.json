@@ -11,5 +11,5 @@
     "types": ["node"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "web/**/*.ts", "tests/**/*.ts", "../personal-styles/cloud-ink/demo/scene.ts"]
+  "include": ["src/**/*.ts", "web/**/*.ts", "comparison/**/*.ts", "tests/**/*.ts", "../personal-styles/*/demo/scene.ts"]
 }

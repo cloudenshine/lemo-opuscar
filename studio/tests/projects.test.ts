@@ -30,3 +30,23 @@ test('create, list and save a project; duplicate creation never overwrites sourc
     await assert.rejects(within(base, 'inside/link'), /越界/);
   } finally { await fs.rm(base, { recursive: true, force: true }); }
 });
+
+test('personal styles create distinct snapshots and reject unsupported templates', async () => {
+  const base = await fs.mkdtemp(path.join(os.tmpdir(), 'cloud-ink-styles-'));
+  try {
+    for (const style of ['cloud-ink', 'chinese-editorial', 'dark-product']) {
+      const result = await createProject(style, DEFAULT_CONTENT, base, style);
+      assert.equal(result.style, style);
+      const meta = JSON.parse(await fs.readFile(path.join(base, style, 'project.json'), 'utf8'));
+      assert.equal(meta.style, style);
+      assert.match(await fs.readFile(path.join(base, style, 'score.py'), 'utf8'), /silence_start/);
+    }
+    assert.equal((await listProjects(base)).length, 3);
+    const ink = await fs.readFile(path.join(base, 'cloud-ink/scene.ts'), 'utf8');
+    const editorial = await fs.readFile(path.join(base, 'chinese-editorial/scene.ts'), 'utf8');
+    assert.notEqual(ink, editorial);
+    await assert.rejects(createProject('unsafe-style', DEFAULT_CONTENT, base, '../dark-keynote'));
+    await assert.rejects(createProject('unsupported', DEFAULT_CONTENT, base, 'dark-keynote'));
+    assert.equal((await listProjects(base)).length, 3);
+  } finally { await fs.rm(base, { recursive: true, force: true }); }
+});

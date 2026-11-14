@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { ROOT, projectPath, within, compileProject } from './projects.ts';
+import { ROOT, projectPath, within, compileProject, personalStyle } from './projects.ts';
 
 export type Job = { id: string; project: string; state: 'running' | 'done' | 'failed'; stage: string; error?: string; video?: string };
 export function run(command: string, args: string[], log: (text: string) => void = () => {}) {
@@ -17,6 +17,8 @@ export function run(command: string, args: string[], log: (text: string) => void
 }
 export async function renderProject(id: string, stage: (s: string) => void = () => {}) {
   const dir = await projectPath(id);
+  const metadata = JSON.parse(await fs.readFile(await within(dir, 'project.json'), 'utf8'));
+  const style = personalStyle(metadata.style);
   await compileProject(id);
   await fs.mkdir(path.join(dir, 'out'), { recursive: true });
   const out = await within(dir, 'out');
@@ -35,9 +37,10 @@ export async function renderProject(id: string, stage: (s: string) => void = () 
   await execute(process.execPath, ['core/render/readcheck.mjs', dir, '--step', '0.2']);
   stage('绘制 576 帧画面');
   await execute(process.execPath, ['core/render/video.mjs', dir, '--fps', '24', '--workers', '3', '--out', path.join(out, 'video.mp4')]);
-  stage('合成古琴与水声');
+  stage('合成风格配乐与音效');
   const python = path.join(ROOT, '.venv', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python');
-  await execute(python, ['studio/audio/score.py', path.join(out, 'mix.wav')]);
+  const score = await within(dir, 'score.py').catch(() => path.join(ROOT, 'studio/audio/score.py'));
+  await execute(python, [score, path.join(out, 'mix.wav'), style, path.join(out, 'events.json')]);
   stage('混音与封装');
   const relative = (name: string) => path.relative(ROOT, path.join(out, name)).split(path.sep).join('/');
   await execute('sh', ['core/render/mux.sh', relative('video.mp4'), relative('mix.wav'), relative('film.pending.mp4'), '24', '0']);

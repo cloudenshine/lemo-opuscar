@@ -1,6 +1,6 @@
 # 云山墨序 · 本地私人制片室
 
-[二次开发方案](PLAN.zh-CN.md) · [个人风格规范](../personal-styles/cloud-ink/STYLE.md) · [风格改编记录](../personal-styles/cloud-ink/CHANGES.md)
+[二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.1 验收](VERIFICATION-v1.1.zh-CN.md)
 
 这是个人 Fork 的独立扩展。保留 Lemo-Opuscar 上游工具，在 Windows 上增加中文工作台、项目管理、确定性预览和视频导出。仅监听本机，不需要 API Key。源码和工作台 UI 使用 TypeScript；服务使用 Node 标准库，无新增运行时依赖。
 
@@ -37,6 +37,8 @@ Invoke-RestMethod http://127.0.0.1:43821/api/health
 node studio/src/cli.ts styles
 node studio/src/cli.ts create morning-leaf
 node studio/src/cli.ts render morning-leaf
+node studio/src/cli.ts create editorial-film --style chinese-editorial
+node studio/src/cli.ts create product-film --style dark-product
 ```
 
 同名项目会报错，不覆盖。首个样片已存在时直接运行 render。内容文件可以通过第三个参数提供：
@@ -45,17 +47,27 @@ node studio/src/cli.ts render morning-leaf
 {"title":"一叶渡晨","inscription":"山静听风，叶落知秋","seal":"云山"}
 ```
 
-`films/<slug>/` 保存独立的 `scene.ts`、`content.json`、`TREATMENT.md`、`CREDITS` 与重建脚本。修改画面请编辑 `scene.ts`；每次导出会重新生成 `scene.js`。不要手改生成文件。输出为 `out/film.mp4`、`out/stills/t_20.jpg`，全部保持本地，不推送 GitHub。
+`films/<slug>/` 保存独立的 `scene.ts`、`score.py`、`content.json`、`project.json`、`TREATMENT.md`、`CREDITS` 与重建脚本。元数据记录风格和版本，模板升级不改已有作品。修改画面请编辑 `scene.ts`；每次导出会重新生成 `scene.js`。不要手改生成文件。输出为 `out/film.mp4`、`out/stills/t_20.jpg`，全部保持本地，不推送 GitHub。
 
-当前模板和声音为 24 秒。更换故事时，先重写 treatment，再改变场景和声音；修改片名仅用于模板技术验证。变更时长必须同步改 `scene.ts`、`studio/audio/score.py`、`studio/src/render.ts` 和预览时间轴，当前没有任意时长编辑器。
+当前模板和声音为 24 秒。更换故事时，先重写 treatment，再改变场景和声音；修改片名仅用于模板技术验证。变更时长必须同步改项目的 `scene.ts`、`score.py`、`studio/src/render.ts` 和预览时间轴，当前没有任意时长编辑器。旧版作品缺少 `score.py` 时才使用共享声音脚本。
 
-风格藏书读取上游实际 `style.json`，包括元数据中的未正式索引条目，所以数量可能略高于上游 README 的 99 种。只有云山墨序内置项目模板；其他风格打开规范，由 Agent 按该风格制作。不会假装下载了所有风格的成片、字体或额外数据。
+风格藏书读取上游实际 `style.json`，包括元数据中的未正式索引条目，所以数量可能略高于上游 README 的 99 种。云山墨序、中文编辑部、深色科技三种个人风格可直接创建项目，也可从风格卡片进入。其他上游风格打开规范，由 Agent 按该风格制作。没有下载所有风格的成片、字体或额外数据。
 
 ```powershell
 ./studio/Register-Style.ps1
 ```
 
-注册命令在用户的 `lemo-my-styles/README.md` 中追加目录引用，并安装个人 `cloud-ink-studio` 技能。已有其他风格保持不变。后续可以说：“用我的云山墨序风格，制作一支关于雨后茶园的短片。”库路径保存在本机技能配置中，不提交到仓库。新技能通常在下一次会话中发现。
+注册命令在用户的 `lemo-my-styles/README.md` 中追加三种风格的目录引用，并安装个人 `cloud-ink-studio` 技能。重复运行不会重复注册；同库已安装且未被用户修改的技能可升级，其他库或本地修改过的技能会被保护。已有其他风格保持不变。后续可以说：“用我的中文编辑部风格制作研究解读短片”，或“用我的深色科技风格演示产品流程”。库路径保存在本机技能配置中，不提交到仓库。新技能通常在下一次会话中发现。
+
+## 与原作对照
+
+打开 [本地对照室](http://127.0.0.1:43821/compare)，切换三个风格，独立播放、选听音轨或按全片百分比定位。页面列出实测指标、分镜和原作仍占优势的部分。首次在另一台机器部署时：
+
+```powershell
+node studio/comparison/prepare.ts
+```
+
+命令从官方 release 下载三个固定校验和的 web 预览，在预留名称不存在时创建并导出三部个人样片，然后测量。已有样片不覆盖；已有项目缺少成片时会停止，先明确渲染该项目再重试。若上游替换了原作文件，会报校验和不符，需先核查来源。原作、个人成片、测量 JSON 与截图均保留在本地，不纳入源码提交。重新测量使用 `node studio/comparison/analyze.ts`。原版水墨 `morning-leaf` 为可选历史资料，不在新机器上伪造。
 
 ## 检查
 
@@ -64,6 +76,7 @@ npm --prefix studio run typecheck
 npm --prefix studio test
 npm --prefix studio run guard
 node studio/tests/browser.acceptance.ts
+node studio/tests/comparison.acceptance.ts
 node studio/src/cli.ts doctor
 ```
 

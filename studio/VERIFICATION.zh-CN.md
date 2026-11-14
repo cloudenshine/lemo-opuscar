@@ -1,5 +1,7 @@
 # 本地部署验收记录
 
+本页为 v1 历史验收；当前三风格版本见 [v1.1 验收](VERIFICATION-v1.1.zh-CN.md)。
+
 验收日期：2026-11-15（Asia/Shanghai）。上游基线：`3a7132b996be0241c1ea0ab180d519f06e6f10b6`。个人分支：`codex/ink-oriental-studio`。
 
 ## 已完成

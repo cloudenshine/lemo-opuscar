@@ -1,0 +1,9 @@
+# Read the Information · 把信息读懂
+
+One example among many. Don't reuse its story, arc, shots, props or timings.
+
+0–6s: a page of unstructured notes creates the question. 6–12s: notes acquire separate columns for fact, source and conclusion. 12–18s: unneeded marks collapse under an editing line. 18–24s: a brief conclusion sits in generous whitespace. The source contains no real news or measured statistics.
+
+The visual scene is [demo/scene.ts](demo/scene.ts); EV exports major print/edit cues to the original procedural score. No base-demo poster, concert name, composition or melody is copied.
+
+From the repository root: `node studio/src/cli.ts create editorial-demo --style chinese-editorial`, then `node studio/src/cli.ts render editorial-demo`. Output is `films/editorial-demo/out/film.mp4`. CREDITS stays with each project; generated media remains local.

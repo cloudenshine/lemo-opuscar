@@ -1,0 +1,8 @@
+{
+  "slug": "dark-product", "en": "Dark Product Studio", "cn": "深色科技与产品演示",
+  "based_on": "dark-keynote", "borrows": [], "library_version": "3a7132b", "version": "1.0.0", "created": "2026-11-15",
+  "line": "An original Chinese software concept on a dark, precisely lit stage.", "line_cn": "深色舞台、克制蓝紫光、原创界面与清晰的产品动词。",
+  "category_cn": "我的风格", "category_en": "Personal styles", "uses": ["产品演示", "SaaS", "功能发布"], "size": "1920x1080",
+  "defaults": {"title":"归序工作空间","inscription":"让想法归位，让行动发生","seal":"归序"},
+  "chapters": ["记录", "归位", "发现", "聚焦"], "sound": "合成器、玻璃音与低频脉冲"
+}
