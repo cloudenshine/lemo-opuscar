@@ -13,7 +13,7 @@ Local Chinese sans-serif, full glyph coverage, no redistributed proprietary font
 ## 5. Motion
 24fps, no random per-frame noise. Short typed entrances land on whole-frame subdivisions. Cards settle into assigned slots, not nearest-neighbour flicker. Freeze at the decision; a soft light band reveals the resolved workspace.
 ## 6. Camera
-Version 1.5.0 uses 108 thin solid boxes with eight world vertices, six faces, local yaw/pitch and physical thickness in scene units. Camera projection acts on actual corners; the cursor stays at a projected point on the selected front surface. Cull back-facing polygons and depth-sort faces. Keep the hero fully framed and return its surface to face the camera for reading. Use projective texture subdivision for angled text and an exact affine mapping for a front-facing insert, avoiding raster seams. Face normals give simple tonal shading. This is a small Canvas software 3D renderer without a per-pixel depth buffer, physical lighting or collision solving. Intersecting geometry needs further occlusion handling. Background records remain abstract, not 108 readable documents.
+Version 1.6.0 uses 108 thin solid boxes with eight world vertices, six faces, local yaw/pitch and physical thickness in scene units. Camera projection acts on actual corners; the cursor stays at a projected point on the selected front surface. Use WebGL2 per-pixel depth testing, perspective-correct texture interpolation, directional diffuse lighting, approximate highlights and a depth shadow map. Keep the hero fully framed and its reading surface facing the camera. Test crossing geometry with reversed submission order and controlled light/shadow changes. This is approximate lighting, without PBR, reflections, global illumination or collision solving. A lost graphics context must stop frame export, show a recovery notice and rebuild resources after restoration. Background records remain abstract, not 108 readable documents.
 ## 7. Sound
 Glass arrivals, slot snaps, a dry click, a two-note confirmation and a low collapse impulse carry distinct functions. Four harmonic regions follow accumulation, ordering, inspection and resolution; the inspection drops the pulse. Four editable buses include ambience and transition sweeps, stereo reflections and music ducking. Literal silence at 5–6s and 17.25–18s clears attention. No voice is added without a narration brief.
 ## 8. Native moves
@@ -21,6 +21,12 @@ Notes accumulate, assigned destinations establish order, a soft band reveals the
 ## 9. Pitfalls
 Avoid unreadable low-contrast grey, false stats, hard white glints, copycat interface controls and leaving a generic placeholder rectangle as the hero. Do not confuse an animation of a concept with a functioning SaaS product.
 ## 10. Engine
-[demo/scene.ts](demo/scene.ts), original Canvas2D software projection of solid geometry. The generated interface is deterministic and exposes the upstream render contract. Per-project score source is snapshotted. The playback and export toolchain is shared with the other personal styles.
+[demo/scene.ts](demo/scene.ts), original WebGL2 depth and light renderer composited into the Canvas2D stage. The generated interface is deterministic and exposes the upstream render contract. Per-project score source is snapshotted. The playback and export toolchain is shared with the other personal styles.
 ## 11. Variation
 Different briefs can reveal a release checklist, a research library, an approval workflow or an empty editor. Rebuild the product verb and narrative. Keep the style, not this demo's cards and 24-second route.
+
+## Round 7 reuse constraints
+
+108个薄盒进入WebGL2渲染，深度缓冲逐像素处理遮挡。方向光、弱补光、高光和1024像素阴影图使卡片前后关系可见；3×3采样柔化阴影边界。文字使用GPU透视插值，阅读镜头保持正面、主卡保留发光比例以保护文字对比。选中、拖放、查源、归位的叙事不变。
+
+需要WebGL2。使用近似方向光与固定视向高光，不是物理材质、全局光照、反射或透明折射；阴影存在分辨率和偏差取舍。对象没有物理碰撞求解。

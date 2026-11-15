@@ -29,7 +29,7 @@ export function createStudio(options: { films?: string; render?: typeof renderPr
         body = JSON.parse(Buffer.concat(parts).toString() || '{}');
         if (!body || typeof body !== 'object' || Array.isArray(body)) throw new InputError('请求必须为 JSON 对象。');
       }
-      if (route === '/api/health' && method === 'GET') return send(200, { ok: true, app: 'cloud-ink-studio', version: '1.6.0', active: active?.id || null });
+      if (route === '/api/health' && method === 'GET') return send(200, { ok: true, app: 'cloud-ink-studio', version: '1.7.0', active: active?.id || null });
       if (route === '/api/comparison' && method === 'GET') return send(200, JSON.parse(await fs.readFile(await within(path.join(ROOT, '.studio/comparison'), 'analysis.json'), 'utf8')));
       if (route === '/api/styles' && method === 'GET') return send(200, await listStyles());
       if (route === '/api/projects' && method === 'GET') return send(200, await listProjects(films));

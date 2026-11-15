@@ -143,60 +143,123 @@ function texture(t: number,p: Pose,id: number) {
   }
   return target;
 }
-function triangle(image: HTMLCanvasElement,uv: number[][],q: Point3[]) {
-  const [a,b,c]=uv.map(([u,v])=>[u*image.width,v*image.height]),[p,r,s]=q;
-  const determinant=(b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]);
-  const A=((r[0]-p[0])*(c[1]-a[1])-(s[0]-p[0])*(b[1]-a[1]))/determinant;
-  const Cc=((s[0]-p[0])*(b[0]-a[0])-(r[0]-p[0])*(c[0]-a[0]))/determinant;
-  const B=((r[1]-p[1])*(c[1]-a[1])-(s[1]-p[1])*(b[1]-a[1]))/determinant;
-  const D=((s[1]-p[1])*(b[0]-a[0])-(r[1]-p[1])*(c[0]-a[0]))/determinant;
-  const center=[(p[0]+r[0]+s[0])/3,(p[1]+r[1]+s[1])/3];
-  const clip=[p,r,s].map(v=>{const dx=v[0]-center[0],dy=v[1]-center[1],k=.8/Math.hypot(dx,dy);return [v[0]+dx*k,v[1]+dy*k];});
-  ctx.save();ctx.beginPath();ctx.moveTo(clip[0][0],clip[0][1]);ctx.lineTo(clip[1][0],clip[1][1]);ctx.lineTo(clip[2][0],clip[2][1]);ctx.closePath();ctx.clip();
-  ctx.transform(A,B,Cc,D,p[0]-A*a[0]-Cc*a[1],p[1]-B*a[0]-D*a[1]);ctx.drawImage(image,0,0);ctx.restore();
+const gpu=document.createElement('canvas');gpu.width=1920;gpu.height=1080;
+const gl=gpu.getContext('webgl2',{alpha:true,antialias:false,preserveDrawingBuffer:true});
+if(!gl)throw new Error('WebGL2 is required for depth-tested lighting');
+const G=gl;
+gpu.addEventListener('webglcontextlost',event=>{
+ event.preventDefault();window.READY=false;
+ let notice=document.querySelector<HTMLElement>('#graphics-error');
+ if(!notice){notice=document.createElement('div');notice.id='graphics-error';notice.setAttribute('role','alert');notice.style.cssText='position:fixed;inset:0;display:grid;place-items:center;background:#111827;color:white;font:20px sans-serif';document.body.append(notice);}
+ notice.textContent='图形渲染暂时中断，正在恢复；若未恢复，请刷新预览。';
+});
+gpu.addEventListener('webglcontextrestored',()=>location.reload());
+const vertexSource=`#version 300 es
+precision highp float;
+in vec3 aWorld;in vec4 aClip;in vec3 aNormal;in vec2 aUV;
+uniform mat4 uLightMatrix;uniform bool uShadowPass;
+out vec3 vWorld;out vec3 vNormal;out vec2 vUV;out vec4 vLight;
+void main(){vWorld=aWorld;vNormal=aNormal;vUV=aUV;vLight=uLightMatrix*vec4(aWorld,1.);gl_Position=uShadowPass?vLight:aClip;}`;
+const fragmentSource=`#version 300 es
+precision highp float;
+in vec3 vWorld;in vec3 vNormal;in vec2 vUV;in vec4 vLight;
+uniform sampler2D uImage;uniform sampler2D uDepth;
+uniform bool uShadowPass;uniform bool uTextured;uniform bool uLines;uniform bool uShadows;
+uniform vec3 uBase;uniform vec3 uLight;uniform float uEmission;
+out vec4 color;
+void main(){
+ vec4 tex=uTextured?texture(uImage,vUV):vec4(uBase,1.);if(tex.a<.02)discard;
+ if(uShadowPass){color=vec4(0.);return;}
+ vec3 n=normalize(vNormal),l=normalize(uLight);float diffuse=max(dot(n,l),0.);
+ vec3 q=vLight.xyz/vLight.w*.5+.5;float visibility=1.;
+ if(uShadows&&all(greaterThan(q,vec3(0.)))&&all(lessThan(q,vec3(1.)))){
+  float sum=0.;float bias=.002+.003*(1.-diffuse);
+  for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){float d=texture(uDepth,q.xy+vec2(x,y)/1024.).r;sum+=q.z-bias<=d?1.:0.;}visibility=sum/9.;
+ }
+ vec3 base=tex.rgb;
+ if(uLines){
+  bool label=vUV.x>.1&&vUV.x<.3&&abs(vUV.y-.24)<.018;
+  bool row=vUV.x>.1&&((vUV.x<.78&&abs(vUV.y-.48)<.014)||(vUV.x<.53&&abs(vUV.y-.72)<.014));
+  if(label)base=vec3(.4,.46,.58);else if(row)base=vec3(.2,.25,.34);
+ }
+ float edge=min(min(vUV.x,1.-vUV.x),min(vUV.y,1.-vUV.y));if(!uTextured&&edge<.012)base+=vec3(.055,.065,.085);
+ vec3 view=normalize(vec3(0.,0.,-600.)-vWorld),halfway=normalize(l+view);
+ float spec=pow(max(dot(n,halfway),0.),28.)*.11*visibility;
+ float fill=.12*max(dot(n,normalize(vec3(.7,.2,-.4))),0.);
+ vec3 lit=base*(.32+fill+.73*diffuse*visibility)+vec3(.55,.64,1.)*spec;
+ color=vec4(mix(lit,base,uEmission),tex.a);
+}`;
+function shader(type:number,source:string){const sh=G.createShader(type)!;G.shaderSource(sh,source);G.compileShader(sh);if(!G.getShaderParameter(sh,G.COMPILE_STATUS))throw new Error(G.getShaderInfoLog(sh)||'Shader compilation failed');return sh;}
+const program=G.createProgram()!;G.attachShader(program,shader(G.VERTEX_SHADER,vertexSource));G.attachShader(program,shader(G.FRAGMENT_SHADER,fragmentSource));G.linkProgram(program);
+if(!G.getProgramParameter(program,G.LINK_STATUS))throw new Error(G.getProgramInfoLog(program)||'Shader linking failed');
+const uniform=(name:string)=>G.getUniformLocation(program,name);
+const locations=['aWorld','aClip','aNormal','aUV'].map(n=>G.getAttribLocation(program,n));
+const depthTexture=G.createTexture()!;G.bindTexture(G.TEXTURE_2D,depthTexture);G.texImage2D(G.TEXTURE_2D,0,G.DEPTH_COMPONENT24,1024,1024,0,G.DEPTH_COMPONENT,G.UNSIGNED_INT,null);
+G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MIN_FILTER,G.NEAREST);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MAG_FILTER,G.NEAREST);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_WRAP_S,G.CLAMP_TO_EDGE);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_WRAP_T,G.CLAMP_TO_EDGE);
+const shadowBuffer=G.createFramebuffer()!;G.bindFramebuffer(G.FRAMEBUFFER,shadowBuffer);G.framebufferTexture2D(G.FRAMEBUFFER,G.DEPTH_ATTACHMENT,G.TEXTURE_2D,depthTexture,0);G.drawBuffers([G.NONE]);G.readBuffer(G.NONE);
+if(G.checkFramebufferStatus(G.FRAMEBUFFER)!==G.FRAMEBUFFER_COMPLETE)throw new Error('Shadow framebuffer incomplete');G.bindFramebuffer(G.FRAMEBUFFER,null);
+const whiteTexture=G.createTexture()!;G.bindTexture(G.TEXTURE_2D,whiteTexture);G.texImage2D(G.TEXTURE_2D,0,G.RGBA,1,1,0,G.RGBA,G.UNSIGNED_BYTE,new Uint8Array([255,255,255,255]));
+G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MIN_FILTER,G.LINEAR);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MAG_FILTER,G.LINEAR);
+const imageTextures=new Map<HTMLCanvasElement,WebGLTexture>(),buffers:WebGLBuffer[]=[];
+type Batch={values:number[];base:number[];emission:number;lines:boolean;image:HTMLCanvasElement|null};
+const unit=(a:number[])=>{const n=Math.hypot(...a);return a.map(v=>v/n);};
+const cross=(a:number[],b:number[])=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot=(a:number[],b:number[])=>a.reduce((sum,v,i)=>sum+v*b[i],0);
+function lightMatrix(light:number[]) {
+ const z=unit(light),x=unit(cross([0,-1,0],z)),y=cross(z,x),target=[0,0,1000];
+ return new Float32Array([x[0]/2200,y[0]/1800,-z[0]/3000,0,x[1]/2200,y[1]/1800,-z[1]/3000,0,x[2]/2200,y[2]/1800,-z[2]/3000,0,-dot(x,target)/2200,-dot(y,target)/1800,dot(z,target)/3000,1]);
 }
-function paintTexture(t: number,p: Pose,id: number,image: HTMLCanvasElement) {
-  // Subdivide the actual 3D plane; each patch approximates its projective texture mapping.
-  const corners=[[0,0],[1,0],[0,1]].map(([u,v])=>surfacePoint(t,p,id,u,v).screen);
-  if(Math.max(...corners.map(p=>p[2]))-Math.min(...corners.map(p=>p[2]))<1e-6) {
-    const [a,b,c]=corners;ctx.save();ctx.transform((b[0]-a[0])/image.width,(b[1]-a[1])/image.width,(c[0]-a[0])/image.height,(c[1]-a[1])/image.height,a[0],a[1]);ctx.drawImage(image,0,0);ctx.restore();return;
-  }
-  const count=6;
-  for(let y=0;y<count;y++)for(let x=0;x<count;x++) {
-    const uv=[[x/count,y/count],[(x+1)/count,y/count],[(x+1)/count,(y+1)/count],[x/count,(y+1)/count]];
-    const q=uv.map(([u,v])=>surfacePoint(t,p,id,u,v).screen);
-    triangle(image,[uv[0],uv[1],uv[2]],[q[0],q[1],q[2]]);triangle(image,[uv[0],uv[2],uv[3]],[q[0],q[2],q[3]]);
-  }
+function appendFace(batch:Batch,world:number[][],screen:number[][]) {
+ const a=world[1].map((v,i)=>v-world[0][i]),b=world[2].map((v,i)=>v-world[0][i]),normal=unit(cross(a,b)).map(v=>-v),uv=[[0,0],[1,0],[1,1],[0,1]];
+ for(const i of [0,1,2,0,2,3]){const [x,y,z]=screen[i];batch.values.push(...world[i],(x/960-1)*z,(1-y/540)*z,4100/3900*z-800000/3900,z,...normal,...uv[i]);}
 }
-function paintWorld(t: number) {
-  const objects=Array.from({length:CARD_COUNT},(_,id)=>({id,pose:id===4?hero(t):recordPose(t,id)}));
-  if(t>=6&&t<12)objects.push({id:999,pose:{x:1510,y:575,w:470,h:530,z:780}});
-  const commands: Array<{depth:number;run:()=>void}>=[];
-  for(const {id,pose} of objects) {
-    const mesh=solid(t,pose,id), map=id===4||id===999?texture(t,pose,id):null;
-    mesh.faces.forEach((indices,face)=>{
-      const q=indices.map(i=>mesh.screens[i]);
-      const area=(q[1][0]-q[0][0])*(q[2][1]-q[0][1])-(q[1][1]-q[0][1])*(q[2][0]-q[0][0]);
-      if(area<=0)return;
-      const vertices=indices.map(i=>mesh.vertices[i]),a=vertices[1].map((v,k)=>v-vertices[0][k]),b=vertices[2].map((v,k)=>v-vertices[0][k]);
-      const normal=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
-      const light=Math.abs((normal[0]*.3-normal[1]*.5+normal[2]*.8)/Math.hypot(...normal));
-      commands.push({depth:q.reduce((sum,p)=>sum+p[2],0)/4,run:()=>{
-        ctx.save();if(id!==4&&id!==999)ctx.globalAlpha=1-.75*smooth((t-12)/1.25)+.3*smooth((t-18)/2.5);
-        ctx.beginPath();ctx.moveTo(q[0][0],q[0][1]);for(const p of q.slice(1))ctx.lineTo(p[0],p[1]);ctx.closePath();
-        if(id!==999||face!==0){const v=Math.round(15+light*21);ctx.fillStyle=id===4?'#27354d':`rgb(${v},${v+7},${v+19})`;ctx.fill();}
-        ctx.strokeStyle=id===4?C.accent:'#49556a';ctx.lineWidth=id===4?1.5:.65;ctx.stroke();
-        if(face===0&&map){ctx.save();ctx.clip();paintTexture(t,pose,id,map);ctx.restore();}
-        else if(face===0&&id!==999)for(const [u,v,w] of [[.1,.24,.2],[.1,.48,.68],[.1,.72,.43]]) {
-          const a=surfacePoint(t,pose,id,u,v).screen,b=surfacePoint(t,pose,id,u+w,v).screen;
-          ctx.strokeStyle=v===.24?'#79869e':'#4a556b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
-        }
-        ctx.restore();
-      }});
-    });
+function renderGPU(batches:Batch[],light:number[],reverse=false,shadows=true) {
+ if(G.isContextLost())throw new Error('Graphics context lost; reload preview before rendering');
+ G.useProgram(program);G.enable(G.DEPTH_TEST);G.depthFunc(G.LESS);G.disable(G.BLEND);G.disable(G.CULL_FACE);G.depthMask(true);
+ G.uniformMatrix4fv(uniform('uLightMatrix'),false,lightMatrix(light));G.uniform3fv(uniform('uLight'),light);G.uniform1i(uniform('uImage'),0);G.uniform1i(uniform('uDepth'),1);G.uniform1i(uniform('uShadows'),shadows?1:0);
+ const textures=batches.map((batch,i)=>{
+  buffers[i]??=G.createBuffer()!;G.bindBuffer(G.ARRAY_BUFFER,buffers[i]);G.bufferData(G.ARRAY_BUFFER,new Float32Array(batch.values),G.DYNAMIC_DRAW);
+  if(!batch.image)return whiteTexture;
+  let texture=imageTextures.get(batch.image);if(!texture){texture=G.createTexture()!;imageTextures.set(batch.image,texture);}
+  G.activeTexture(G.TEXTURE0);G.bindTexture(G.TEXTURE_2D,texture);G.texImage2D(G.TEXTURE_2D,0,G.RGBA,G.RGBA,G.UNSIGNED_BYTE,batch.image);
+  G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MIN_FILTER,G.LINEAR);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_MAG_FILTER,G.LINEAR);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_WRAP_S,G.CLAMP_TO_EDGE);G.texParameteri(G.TEXTURE_2D,G.TEXTURE_WRAP_T,G.CLAMP_TO_EDGE);return texture;
+ });
+ const indices=batches.map((_,i)=>i);if(reverse)indices.reverse();
+ for(const shadow of [true,false]) {
+  G.activeTexture(G.TEXTURE1);G.bindTexture(G.TEXTURE_2D,shadow?null:depthTexture);
+  G.bindFramebuffer(G.FRAMEBUFFER,shadow?shadowBuffer:null);G.viewport(0,0,shadow?1024:1920,shadow?1024:1080);G.clearColor(0,0,0,0);G.clear(G.DEPTH_BUFFER_BIT|(shadow?0:G.COLOR_BUFFER_BIT));G.uniform1i(uniform('uShadowPass'),shadow?1:0);
+  for(const i of indices){const batch=batches[i];G.bindBuffer(G.ARRAY_BUFFER,buffers[i]);
+   let offset=0;[3,4,3,2].forEach((size,k)=>{G.enableVertexAttribArray(locations[k]);G.vertexAttribPointer(locations[k],size,G.FLOAT,false,48,offset*4);offset+=size;});
+   G.uniform3fv(uniform('uBase'),batch.base);G.uniform1f(uniform('uEmission'),batch.emission);G.uniform1i(uniform('uLines'),batch.lines?1:0);G.uniform1i(uniform('uTextured'),batch.image?1:0);
+   G.activeTexture(G.TEXTURE0);G.bindTexture(G.TEXTURE_2D,textures[i]);G.drawArrays(G.TRIANGLES,0,batch.values.length/12);
   }
-  commands.sort((a,b)=>b.depth-a.depth);for(const command of commands)command.run();
+ }
 }
+function paintWorld(t:number) {
+ const groups=new Map<string,Batch>();
+ const objects=Array.from({length:CARD_COUNT},(_,id)=>({id,pose:id===4?hero(t):recordPose(t,id)}));
+ if(t>=6&&t<12)objects.push({id:999,pose:{x:1510,y:575,w:470,h:530,z:780}});
+ for(const {id,pose} of objects){const mesh=solid(t,pose,id),image=id===4||id===999?texture(t,pose,id):null;
+  mesh.faces.forEach((indices,face)=>{
+   const key=`${id===4?'hero':id===999?'library':'background'}-${face===0?'front':'side'}`;
+   let batch=groups.get(key);if(!batch){batch={values:[],base:face===0?[.10,.14,.22]:[.07,.10,.16],emission:id===4&&face===0?.72:.04,lines:id!==4&&id!==999&&face===0,image:face===0?image:null};groups.set(key,batch);}
+   appendFace(batch,indices.map(i=>mesh.vertices[i]),indices.map(i=>mesh.screens[i]));
+  });
+ }
+ const light=[-.45+.15*smooth(t/6),-.65,-.8];renderGPU([...groups.values()],light);ctx.drawImage(gpu,0,0);
+}
+window.GPU_PROBE=mode=>{
+ const shadowTest=mode.startsWith('shadow'),batches:Batch[]=[];
+ const add=(q:number[][],base:number[])=>{const batch:Batch={values:[],base,emission:mode.startsWith('order')?.85:0,lines:false,image:null};
+  appendFace(batch,q.map(([x,y,z])=>[(x-960)*z/700,(y-590)*z/700,z]),q);batches.push(batch);};
+ if(shadowTest){add([[400,340,1000],[1500,340,1000],[1500,900,1000],[400,900,1000]],[.5,.5,.5]);add([[700,420,600],[950,420,600],[950,600,600],[700,600,600]],[.1,.3,.9]);}
+ else {add([[400,340,600],[1520,340,900],[1520,860,900],[400,860,600]],[.9,.1,.1]);add([[400,340,900],[1520,340,600],[1520,860,600],[400,860,900]],[.1,.1,.9]);}
+ renderGPU(batches,mode==='light-right'?[.7,.3,-.5]:[-.45,-.65,-.8],mode==='order-reverse',mode!=='shadow-off');
+ const pixels=new Uint8Array(1920*1080*4);G.readPixels(0,0,1920,1080,G.RGBA,G.UNSIGNED_BYTE,pixels);let hash=2166136261;
+ for(const v of pixels)hash=Math.imul(hash^v,16777619)>>>0;
+ const samples=(shadowTest?[[800,500],[1050,800],[1400,800]]:[[700,600],[1250,600]]).map(([x,y])=>Array.from(pixels.slice(((1079-y)*1920+x)*4,((1079-y)*1920+x)*4+4)));
+ return {hash,samples,error:G.getError()};
+};
 window.CAMERA=cameraRig;
 window.PERFORMANCE=t=>{
   const actors=[{id:'task-4',...hero(t)},{id:'pointer',...pointer(t),w:0,h:0,z:hero(t).z},...Array.from({length:CARD_COUNT},(_,i)=>i).filter(i=>i!==4).map(i=>({id:`cloud-${i}`,...recordPose(t,i)}))];

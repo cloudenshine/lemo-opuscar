@@ -15,3 +15,6 @@ Fourth revision: original articulated bird rig, large-scale editorial typography
 Fifth revision: original two-bird response choreography, per-character typography and camera projection route. All new sound cues are procedural in score-v5.py; no upstream film samples or new external assets.
 
 Round 6: original ensemble staging, hand-authored display stroke paths, or solid geometry and software texture projection, according to this style. No upstream footage or audio sampled.
+
+Round 7: 108个薄盒进入WebGL2渲染，深度缓冲逐像素处理遮挡。方向光、弱补光、高光和1024像素阴影图使卡片前后关系可见；3×3采样柔化阴影边界。文字使用GPU透视插值，阅读镜头保持正面、主卡保留发光比例以保护文字对比。选中、拖放、查源、归位的叙事不变。
+需要WebGL2。使用近似方向光与固定视向高光，不是物理材质、全局光照、反射或透明折射；阴影存在分辨率和偏差取舍。对象没有物理碰撞求解。

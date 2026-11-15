@@ -46,28 +46,82 @@ function posterGlyph(t: number, i: number): GlyphPose {
   const p = ease((t-19.5-i*.25)/.5);
   return {x:i*260+(i?40:-40)*(1-p),y:0,size:260*(.85+.15*p),angle:0};
 }
-// Original centerline lettering, deliberately limited to the four display characters.
-const strokeLetters: Record<string, number[][][]> = {
-  '判': [[[20,12],[25,26]],[[44,10],[37,26]],[[13,34],[49,34]],[[10,54],[51,54]],[[31,29],[31,88]],[[64,20],[64,64]],[[84,10],[84,84],[75,90]]],
-  '断': [[[20,18],[25,27]],[[40,16],[35,27]],[[14,37],[48,37]],[[31,12],[31,75]],[[31,38],[13,65]],[[31,38],[48,61]],[[9,11],[9,85],[50,85]],[[87,12],[59,23]],[[59,23],[59,65],[50,87]],[[59,39],[91,39]],[[79,39],[79,90]]],
-  '有': [[[10,27],[88,27]],[[46,10],[19,53]],[[35,47],[35,88]],[[35,47],[78,47],[78,88],[67,88]],[[35,61],[77,61]],[[35,75],[77,75]]],
-  '据': [[[10,32],[32,32]],[[22,12],[22,87],[14,87]],[[9,65],[34,49]],[[44,15],[86,15],[86,33]],[[45,33],[86,33]],[[44,15],[44,60],[34,88]],[[47,51],[91,51]],[[69,38],[69,67]],[[50,66],[50,89]],[[50,66],[85,66],[85,89]],[[50,89],[85,89]]]
-};
+type StrokePath = number[][];
+const glyphCache=new Map<string,{paths:StrokePath[];maskHash:number;missing:boolean}>();
+function rasterGlyph(ch: string) {
+  const scratch=document.createElement('canvas');scratch.width=scratch.height=128;
+  const g=scratch.getContext('2d',{willReadFrequently:true})!;g.font='700 100px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif';g.fillText(ch,8,112);
+  const rgba=g.getImageData(0,0,128,128).data,mask=new Uint8Array(128*128);let hash=2166136261;
+  for(let i=0;i<mask.length;i++){mask[i]=rgba[i*4+3]>96?1:0;hash=Math.imul(hash^mask[i],16777619)>>>0;}
+  return {mask,hash};
+}
+const missingGlyphHash=rasterGlyph('\uFFFF').hash;
+function glyph(ch: string) {
+  if([...ch].length!==1||/\s/u.test(ch))throw new Error('Glyph extraction requires one visible character');
+  const cached=glyphCache.get(ch);if(cached)return cached;
+  const {mask,hash}=rasterGlyph(ch),source=mask.slice(),N=128;
+  // Zhang-Suen thinning preserves connectivity; graph branches are not semantic pen strokes.
+  for(let iteration=0;iteration<64;iteration++) {
+    let changed=0;
+    for(let pass=0;pass<2;pass++) {
+      const remove:number[]=[];
+      for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++) {
+        const i=y*N+x;if(!mask[i])continue;
+        const p=[mask[i-N],mask[i-N+1],mask[i+1],mask[i+N+1],mask[i+N],mask[i+N-1],mask[i-1],mask[i-N-1]];
+        const count=p.reduce((a,b)=>a+b,0),turns=p.reduce((a,b,k)=>a+Number(!b&&p[(k+1)%8]===1),0);
+        if(count<2||count>6||turns!==1)continue;
+        if(pass===0?p[0]*p[2]*p[4]||p[2]*p[4]*p[6]:p[0]*p[2]*p[6]||p[0]*p[4]*p[6])continue;
+        remove.push(i);
+      }
+      for(const i of remove)mask[i]=0;changed+=remove.length;
+    }
+    if(!changed)break;
+  }
+  const offsets=[-N,-N+1,1,N+1,N,N-1,-1,-N-1];
+  const neighbors=(i:number)=>offsets.map(d=>i+d).filter(j=>j>=0&&j<mask.length&&mask[j]&&Math.abs(j%N-i%N)<=1);
+  const pixels=Array.from(mask.keys()).filter(i=>mask[i]),visited=new Set<string>(),paths:StrokePath[]=[];
+  const key=(a:number,b:number)=>a<b?`${a}:${b}`:`${b}:${a}`;
+  const walk=(start:number,next:number)=>{const path=[start];let prev=start,current=next;
+    for(let guard=0;guard<mask.length;guard++) {
+      visited.add(key(prev,current));path.push(current);const choices=neighbors(current);
+      if(current===start||choices.length!==2)break;
+      const candidate=choices.find(p=>p!==prev)!;if(visited.has(key(current,candidate)))break;prev=current;current=candidate;
+    }
+    if(path.length>=3)paths.push(path.map(i=>[i%N-8,Math.floor(i/N)-12]));
+  };
+  for(const start of [...pixels.filter(i=>neighbors(i).length!==2),...pixels])for(const next of neighbors(start))if(!visited.has(key(start,next)))walk(start,next);
+  if(!paths.length&&source.some(v=>v))paths.push(pixels.map(i=>[i%N-8,Math.floor(i/N)-12]));
+  const result={paths:paths.filter(p=>p.length>=2),maskHash:hash,missing:hash===missingGlyphHash||!source.some(v=>v)};glyphCache.set(ch,result);return result;
+}
+function resample(path: StrokePath,count=25):StrokePath {
+  if(path.length<2||path.some(p=>p.length!==2||p.some(v=>!Number.isFinite(v))))throw new Error('A finite path needs at least two points');
+  const lengths=[0];for(let i=1;i<path.length;i++)lengths.push(lengths[i-1]+Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]));
+  return Array.from({length:count},(_,i)=>{const at=lengths.at(-1)!*i/(count-1);let k=1;while(k<lengths.length-1&&lengths[k]<at)k++;
+    const q=(at-lengths[k-1])/Math.max(1e-9,lengths[k]-lengths[k-1]);return [mix(path[k-1][0],path[k][0],q),mix(path[k-1][1],path[k][1],q)];});
+}
+function morphPath(source:StrokePath,target:StrokePath,progress:number):StrokePath {
+  if(!Number.isFinite(progress))throw new Error('Morph progress must be finite');
+  const a=resample(source),b=resample(target),p=Math.max(0,Math.min(1,progress));
+  return a.map((v,i)=>[mix(v[0],b[i][0],p),mix(v[1],b[i][1],p)]);
+}
+window.GLYPH=ch=>glyph(ch);
+window.MORPH_PATH=morphPath;
 function strokePose(t: number, character: string, index: number, poster: boolean, glyphIndex: number) {
   const onset=(poster?19.5:0)+glyphIndex*.125, settle=ease((t-onset)/1.125);
-  const progress=ease((t-onset-index*.0416666667)/.5), source=strokeLetters[character][index];
+  const paths=glyph(character).paths,progress=ease((t-onset-index/Math.max(1,paths.length-1)*.4)/.5), source=resample(paths[index],17);
   const points=Array.from({length:17},(_,k)=>{
     const u=k/16, along=u*(source.length-1), at=Math.min(source.length-2,Math.floor(along)), q=along-at;
     const x=mix(source[at][0],source[at+1][0],q),y=mix(source[at][1],source[at+1][1],q);
-    return [x+(1-settle)*((index%3-1)*18+12*Math.sin(Math.PI*u)),y+(1-settle)*((index%2?1:-1)*14*Math.sin(Math.PI*u)+8*(u-.5))];
+    return [x+((index%3-1)*18+12*Math.sin(Math.PI*u)),y+((index%2?1:-1)*14*Math.sin(Math.PI*u)+8*(u-.5))];
   });
-  return {id:`${poster?'poster':'opening'}-${glyphIndex}-stroke-${index}`,progress,deformation:1-settle,points};
+  return {id:`${poster?'poster':'opening'}-${glyphIndex}-stroke-${index}`,progress,deformation:1-settle,points:morphPath(points,source,settle)};
 }
-window.STROKES=t=>['判断','有据'].flatMap((word,section)=>[...word].flatMap((ch,g)=>strokeLetters[ch].map((_,i)=>strokePose(t,ch,i,Boolean(section),g))));
+window.STROKES=t=>['判断','有据'].flatMap((word,section)=>[...word].flatMap((ch,g)=>glyph(ch).paths.map((_,i)=>strokePose(t,ch,i,Boolean(section),g))));
 function strokeGlyph(id: string, ch: string, p: GlyphPose, color: string, t: number, poster: boolean, glyphIndex: number) {
   const matrix=ctx.getTransform(), all: DOMPoint[]=[];
-  ctx.strokeStyle=color;ctx.lineWidth=p.size*.065;ctx.lineCap='square';ctx.lineJoin='miter';
-  strokeLetters[ch].forEach((_,i)=>{
+  const onset=(poster?19.5:0)+glyphIndex*.125, finish=ease((t-onset-.75)/.375);
+  ctx.save();ctx.globalAlpha=1-finish;ctx.strokeStyle=color;ctx.lineWidth=p.size*.045;ctx.lineCap='round';ctx.lineJoin='round';
+  glyph(ch).paths.forEach((_,i)=>{
     const stroke=strokePose(t,ch,i,poster,glyphIndex), points=stroke.points.map(([x,y])=>[x*p.size/100,(y/100-1)*p.size]);
     for(const [x,y] of points) for(const [dx,dy] of [[-1,-1],[1,1]]) all.push(matrix.transformPoint({x:x+dx*ctx.lineWidth/2,y:y+dy*ctx.lineWidth/2}));
     const end=stroke.progress*16;ctx.beginPath();ctx.moveTo(...points[0] as [number,number]);
@@ -75,13 +129,17 @@ function strokeGlyph(id: string, ch: string, p: GlyphPose, color: string, t: num
     if(end<16){const k=Math.floor(end),q=end-k;ctx.lineTo(mix(points[k][0],points[k+1][0],q),mix(points[k][1],points[k+1][1],q));}
     if(stroke.progress>0)ctx.stroke();
   });
+  ctx.restore();
+  ctx.save();ctx.globalAlpha=finish;text(id,ch,0,0,p.size,color,700);ctx.restore();
+  const native=boxes.pop()!;
+  all.push(new DOMPoint(native.x0,native.y0),new DOMPoint(native.x1,native.y1));
   boxes.push({id,text:ch,x0:Math.min(...all.map(p=>p.x)),y0:Math.min(...all.map(p=>p.y)),x1:Math.max(...all.map(p=>p.x)),y1:Math.max(...all.map(p=>p.y))});
 }
 function glyphRun(id: string, value: string, poses: GlyphPose[], color: string, weight = 600, time = 0) {
   const start = boxes.length;
   [...value].forEach((ch,i)=>{
     const p=poses[i];ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
-    if(strokeLetters[ch] && (id==='opening-word'||id==='poster-word')) strokeGlyph(`${id}-${i}`,ch,p,color,time,id==='poster-word',i);
+    if(id==='opening-word'||id==='poster-word') strokeGlyph(`${id}-${i}`,ch,p,color,time,id==='poster-word',i);
     else text(`${id}-${i}`,ch,0,0,p.size,color,weight);ctx.restore();
   });
   const glyphBoxes=boxes.splice(start);

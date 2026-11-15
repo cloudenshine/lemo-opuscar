@@ -8,6 +8,10 @@ import { mountainLayer, ridgeFn } from '/styles/ink-wash/demo/land.js';
 declare global {
   interface Window {
     PERFORMANCE: (t: number) => {phase: string; actors: Array<{id: string; x: number; y: number; [key: string]: string | number | boolean}>};
+    GLYPH?: (ch:string)=>{paths:number[][][];maskHash:number;missing:boolean};
+    MORPH_PATH?: (a:number[][],b:number[][],p:number)=>number[][];
+    GPU_PROBE?: (mode:string)=>{hash:number;samples:number[][];error:number};
+    BEHAVIOR?: (t:number,options?:{call?:boolean;late?:boolean;lateAt?:number})=>{actors:Array<{id:string;x:number;y:number;state:string;seat:number}>;events:Array<{t:number;type:string;actor:string}>};
     STROKES?: (t: number) => Array<{id:string;progress:number;deformation:number;points:number[][]}>;
     SOLIDS?: (t: number) => Array<{id:string;vertices:number[][];front:number[][];faces:number[][];depth:number;thickness:number}>;
     CAMERA?: (t: number) => Record<string, number>;
@@ -59,6 +63,64 @@ const birdParts = {
   branch: mk([[1238,558],[1280,572],[1320,580],[1360,584]], {w:5,tone:TONE.nong,wet:.5,dry:.4,prof:'tip',seed:1207}),
 };
 
+type BehaviorOptions={call?:boolean;late?:boolean;lateAt?:number};
+type Agent={id:string;x:number;y:number;state:string;seat:number;start:number;duration:number;fromX:number;fromY:number;toX:number;toY:number;landed:number;called:number;departed:number};
+const perches=[[1320,550],[1130,520],[1430,410],[1050,650]];
+const behaviorCache=new Map<string,{frames:Agent[][];events:Array<{t:number;type:string;actor:string}>}>();
+function simulate(options:BehaviorOptions={}) {
+  if(options.lateAt!==undefined&&(!Number.isFinite(options.lateAt)||options.lateAt<0||options.lateAt>=24))throw new Error('lateAt must be finite and within the film');
+  const key=JSON.stringify(options),cached=behaviorCache.get(key);if(cached)return cached;
+  const initial=[['bird',1760,300],['companion',970,350],['lookout',1850,100],['latecomer',1050,0]] as const;
+  const agents:Agent[]=initial.map(([id,x,y])=>({id,x,y,state:'hidden',seat:-1,start:0,duration:1,fromX:x,fromY:y,toX:x,toY:y,landed:Infinity,called:Infinity,departed:Infinity}));
+  const owners=new Map<number,string>(),frames:Agent[][]=[],events:Array<{t:number;type:string;actor:string}>=[];
+  const emit=(t:number,type:string,actor:string)=>events.push({t,type,actor});
+  const begin=(a:Agent,state:string,seat:number,toX:number,toY:number,duration:number,start:number)=>{Object.assign(a,{state,seat,toX,toY,duration,start,fromX:a.x,fromY:a.y});};
+  for(let frame=0;frame<=576;frame++) {
+    const t=frame/24;
+    for(const a of agents) {
+      if(['approach','yield','depart'].includes(a.state)) {
+        const q=smooth((t-a.start)/a.duration);a.x=a.fromX+(a.toX-a.fromX)*q;a.y=a.fromY+(a.toY-a.fromY)*q-(a.state==='yield'?40*Math.sin(Math.PI*q):0);
+        if(q===1){const was=a.state;a.state=was==='depart'?'escaped':'perched';a.landed=t;if(was==='approach'&&a.id==='latecomer')a.called=t;if(was==='approach')emit(t,{'bird':'landing','companion':'landing-second','lookout':'flock-land','latecomer':'late-answer'}[a.id]!,a.id);}
+      }
+      if(a.id==='bird'&&a.state==='perched'){a.x=1320+30*smooth(t-6.5);a.y=550+3*smooth(t-6.5);}
+    }
+    const [leader,partner,lookout,late]=agents;
+    if(options.call!==false&&leader.state==='perched'&&t-leader.landed>=4.25&&leader.called===Infinity){leader.called=t;emit(t,'chirp',leader.id);}
+    for(const a of [partner,lookout])if(a.state==='perched'&&a.called===Infinity&&leader.called<Infinity&&t>=Math.max(a.landed+.5,leader.called+(a.id==='lookout'?2:.25))){a.called=t;emit(t,a.id==='lookout'?'lookout-call':'answer',a.id);}
+    const activation=[1.5,leader.called+.25,5.25,options.late===false?Infinity:(options.lateAt??10.5)];
+    agents.forEach((a,i)=>{
+      if(a.state!=='hidden'||t<activation[i])return;
+      const wanted=[0,1,2,1][i],owner=agents.find(other=>other.id===owners.get(wanted));let delay=0;
+      if(owner&&owner.state==='perched'&&!owners.has(3)) {
+        owners.delete(wanted);owners.set(3,owner.id);begin(owner,'yield',3,...perches[3] as [number,number],.75,t);emit(t,'yield-hop',owner.id);delay=.25;
+      } else if(owner)return;
+      owners.set(wanted,a.id);begin(a,'approach',wanted,...perches[wanted] as [number,number],[2.75,1.5,1.25,1][i],t+delay);
+    });
+    const follow=[null,lookout,leader,partner],lag=[0,1,.5,.75];
+    agents.forEach((a,i)=>{
+      const trigger=i===0?17+3.5:follow[i]!.departed+lag[i];
+      if(a.state!=='perched'||t<trigger)return;
+      owners.delete(a.seat);a.departed=t;const delta=[[-520,-310],[620,-240],[400,-300],[-50,-300]][i];
+      begin(a,'depart',-1,a.x+delta[0],a.y+delta[1],[3,2,2.5,1.25][i],t);emit(t,['wings','follow-wings','lookout-wings','late-wings'][i],a.id);
+    });
+    frames.push(agents.map(a=>({...a})));
+  }
+  const result={frames,events:events.filter(e=>e.t<24)};behaviorCache.set(key,result);return result;
+}
+function simulatedActor(t:number,id:string,options:BehaviorOptions={}) {
+  const simulation=simulate(options),at=Math.max(0,Math.min(576,t*24)),i=Math.floor(at),a=simulation.frames[i].find(a=>a.id===id)!,b=simulation.frames[Math.min(576,i+1)].find(a=>a.id===id)!;
+  return {...a,x:a.x+(b.x-a.x)*(at-i),y:a.y+(b.y-a.y)*(at-i)};
+}
+window.BEHAVIOR=(t,options={})=>({actors:simulate(options).frames[Math.max(0,Math.min(576,Math.round(t*24)))].map(a=>({id:a.id,x:a.x,y:a.y,state:a.state,seat:a.seat})),events:simulate(options).events});
+function reactivePose(t:number,id:string):ReturnType<typeof birdPose> {
+  const a=simulatedActor(t,id),land=a.state==='perched',phase=id==='lookout'?1:2;
+  const attention=smooth((t-14-(id==='lookout'?.25:id==='latecomer'?.5:1.25))/1.5);
+  const facing=id==='lookout'?1:-1;
+  return {x:a.x,y:a.y,land,footX:a.x,footY:a.y+30,
+    head:-.12-(facing===1?.65:1.8)*attention,torso:land?.08*Math.sin(t*1.4+phase):-.12,squash:1,
+    wing:land?-.15*Math.sin(t+phase):Math.sin(t*(21+phase)+phase),wrist:land?0:.7*Math.sin(t*(21+phase)-.6),
+    tail:land?.08*Math.sin(t*1.4+phase):-.2,beak:.3*Math.sin(Math.PI*clamp((t-a.called)/.5))};
+}
 function birdPose(t: number) {
   const enter = smooth((t - 1.5) / 2.75), leave = smooth((t - 20.5) / 3);
   const hop = smooth((t - 6.5) / 1), arc = Math.sin(Math.PI * hop) ** 2;
@@ -71,7 +133,7 @@ function birdPose(t: number) {
   const gaze = t < 8 ? -.2 + .3 * smooth((t - 5) / 1) : t < 14 ? -.1 - .25 * smooth((t - 10.5) / 1.5) : -.35 - .5 * smooth((t - 14) / 3) + 1.05 * smooth((t - 19.5) / 1);
   const flying = t < 4.25 || t >= 20.5;
   return { x, y, land, footX: flying ? x : 1320 + 30 * hop, footY: flying ? y + 30 : 580 + 3 * hop - 40 * arc,
-    head: gaze - .2 * Math.sin(Math.PI * smooth((t - 10.75) / .75)), torso: -.22 * gust + .14 * arc, squash: 1 - crouch / 65,
+    head: gaze - .2 * Math.sin(Math.PI * smooth((t - (simulate().events.find(e=>e.type==='answer')?.t??Infinity)) / .75)), torso: -.22 * gust + .14 * arc, squash: 1 - crouch / 65,
     wing: flying ? Math.sin(t * 24) * 1.1 : -.9 * arc - .65 * gust,
     wrist: flying ? Math.sin(t * 24 - .8) * .8 : -.65 * arc + .4 * gust,
     tail: .4 * gust - .3 * arc, beak: .25 * Math.sin(Math.PI * clamp((t - 8.5) / .45)) };
@@ -87,35 +149,11 @@ function legPose(b: ReturnType<typeof birdPose>, side: number) {
     ky: (hy + fy) / 2 + dx / Math.max(distance, 1) * bend, fx, fy };
 }
 
-function companionPose(t: number): ReturnType<typeof birdPose> {
-  const arrival = smooth((t - 8.75) / 1.5), depart = smooth((t - 22) / 2);
-  const yieldStep = smooth((t - 10.75) / .75), arc = Math.sin(Math.PI * yieldStep)**2;
-  const land = t >= 10.25 && t < 22 && !(t > 10.75 && t < 11.5);
-  const settle = t >= 10.25 ? 4 * Math.sin((t - 10.25) * 13) * Math.exp(-(t - 10.25) * 5) : 0;
-  const x = 970 + 195 * arrival - 35 * yieldStep + 470 * depart, y = 350 + 170 * arrival - 260 * depart + settle - 25 * arc;
-  return {x,y,land,footX:x,footY:land?550:y+30,
-    head: -.12 - .24 * Math.sin(Math.PI * smooth((t - 11.25) / .75)) - 2 * smooth((t - 15.25) / .75) + 2 * smooth((t - 20) / 1),
-    torso: .1 * Math.sin(Math.PI * smooth((t - 10.5) / 1.5)), squash: 1,
-    wing: land ? -.2 * Math.sin(Math.PI * smooth((t - 10.5) / 1.5)) : Math.sin(t*23+.7),
-    wrist: land ? 0 : .8*Math.sin(t*23-.2),tail:land?.08*Math.sin(t*1.4):-.2,
-    beak:.3*Math.sin(Math.PI*clamp((t-10.75)/.5))};
-}
+function companionPose(t:number):ReturnType<typeof birdPose> {return reactivePose(t,'companion');}
 const companionFacing = (_t: number) => -1;
 const companionBranch = mk([[1238,558],[1200,547],[1165,550],[1130,552]],{w:5,tone:TONE.nong,wet:.4,dry:.4,prof:'tip',seed:1210});
 
-function ensemblePose(t: number, i: number): ReturnType<typeof birdPose> {
-  const arrival=smooth((t-(i===0?5.25:10.75))/(i===0?1.25:1));
-  const departure=smooth((t-(i===0?21:22.75))/(i===0?2.5:1.25));
-  const x=i===0?1850-420*arrival+400*departure:1050-50*departure;
-  const y=i===0?100+310*arrival-300*departure:650*arrival-300*departure;
-  const land=arrival===1&&departure===0;
-  const attention=smooth((t-(14.25+i*.25))/1.5);
-  return {x,y,land,footX:x,footY:land?(i===0?440:680):y+30,
-    head:-.1-.65*attention+.2*Math.sin(Math.PI*smooth((t-11.5-i*.25)/.5)),
-    torso:land?.05*Math.sin(t*1.5+i):-.12,squash:1,
-    wing:land?-.15*Math.sin(t+i):Math.sin(t*(21+i*2)+i),wrist:land?0:.7*Math.sin(t*(21+i*2)-.6+i),
-    tail:land?.12*Math.sin(t*1.2+i):-.2,beak:.22*Math.sin(Math.PI*clamp((t-(i===0?10.5:11.75))/.25))};
-}
+function ensemblePose(t:number,i:number):ReturnType<typeof birdPose> {return reactivePose(t,i===0?'lookout':'latecomer');}
 const ensembleBranches=[mk([[1370,454],[1430,440],[1500,443]],{w:5,tone:TONE.nong,wet:.3,dry:.4,prof:'tip',seed:1230}),
   mk([[1275,640],[1120,674],[1050,680],[1010,684]],{w:4,tone:TONE.nong,wet:.3,dry:.4,prof:'tip',seed:1231})];
 
@@ -135,8 +173,8 @@ window.PERFORMANCE = t => {
   const b = birdPose(t), leg = legPose(b,-1), other = companionPose(t), camera = cameraPose(t);
   return { phase: t < 8.5 ? 'call preparation' : t < 12 ? 'call and answer' : t < 20.5 ? 'shared attention' : 'staggered departure',
     actors: [{id:'bird',...b,...leg,facing:1},{id:'perch',x:1320+30*smooth(t-6.5),y:580+3*smooth(t-6.5)},
-      {id:'companion',...other,facing:companionFacing(t),visible:t>=8.75,screenX:1100+(other.x-camera.cx)*camera.zoom,screenScale:camera.zoom},
-      ...[0,1].map(i=>({id:i===0?'lookout':'latecomer',...ensemblePose(t,i),facing:i===0?1:-1,visible:t>=(i===0?5.25:10.75)}))]};
+      {id:'companion',...other,facing:companionFacing(t),visible:simulatedActor(t,'companion').state!=='hidden',screenX:1100+(other.x-camera.cx)*camera.zoom,screenScale:camera.zoom},
+      ...[0,1].map(i=>({id:i===0?'lookout':'latecomer',...ensemblePose(t,i),facing:i===0?1:-1,visible:simulatedActor(t,i===0?'lookout':'latecomer').state!=='hidden'}))]};
 };
 function paintBird(b: ReturnType<typeof birdPose>, facing = 1, density = 1) {
   const contexts = [layer.cw, layer.cd];
@@ -185,7 +223,10 @@ window.SHOTS = [
   { start: 17, end: 19.5, framing: 'water insert', move: 'impact push' },
   { start: 19.5, end: 24, framing: 'landscape return', move: 'pull back' },
 ];
-window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: .25, type: 'brush' }, { t: 4.25, type: 'landing' }, { t: 6.5, type: 'hop' }, { t: 7.5, type: 'landing' }, { t: 8.5, type: 'chirp' }, { t: 10.25, type: 'landing-second' }, { t: 10.75, type: 'answer' }, {t:6.5,type:'flock-land'},{t:10.5,type:'lookout-call'},{t:10.75,type:'yield-hop'},{t:11.75,type:'late-answer'},{t:21,type:'lookout-wings'},{t:22.75,type:'late-wings'}, { t: 22, type: 'follow-wings' }, { t: 20.5, type: 'wings' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
+window.EV = [...simulate().events.map(({t,type})=>({t,type})),
+ {t:0,type:'mist'},{t:.25,type:'brush'},{t:3.5,type:'silence'},{t:6.5,type:'hop'},{t:7.5,type:'landing'},
+ {t:7.75,type:'air'},{t:8,type:'leaves'},{t:10.5,type:'wind'},{t:12,type:'silence'},{t:14,type:'fall'},
+ {t:17,type:'water'},{t:18.5,type:'ripple'},{t:19.5,type:'ripple'},{t:19.75,type:'air'},{t:20.5,type:'harmonic'}];
 window.TEXTS = () => [
   { id: 'title', text: data.title, x0: 285, y0: 195, x1: 365, y1: 270 + ([...data.title].length - 1) * 72 },
   { id: 'inscription', text: data.inscription, x0: 540, y0: 947, x1: 1380, y1: 999 },
@@ -206,9 +247,9 @@ window.render = (seconds: number) => {
   draw(layer.ink, birdParts.branch, 1, smooth(t / 1.5));
   draw(layer.ink, companionBranch, 1, smooth(t/1.5));
   for(const branch of ensembleBranches) draw(layer.ink,branch,1,smooth(t/1.5));
-  if(t>=5.25) paintBird(ensemblePose(t,0),1,.68);
-  if(t>=10.75) paintBird(ensemblePose(t,1),-1,.88);
-  if(t>=8.75) paintBird(companionPose(t),companionFacing(t),.8);
+  if(simulatedActor(t,'lookout').state!=='hidden') paintBird(ensemblePose(t,0),1,.68);
+  if(simulatedActor(t,'latecomer').state!=='hidden') paintBird(ensemblePose(t,1),-1,.88);
+  if(simulatedActor(t,'companion').state!=='hidden') paintBird(companionPose(t),companionFacing(t),.8);
   if(t>=1.5) paintBird(birdPose(t));
   if (t >= 0) {
     for (const c of [layer.cw, layer.cd]) { c.save(); c.translate(leafX, leafY); c.rotate(-.3 + Math.sin(fall * 6) * .5 + travel * .1 + (t < 12 ? Math.sin(t * 1.8) * .06 : 0)); }

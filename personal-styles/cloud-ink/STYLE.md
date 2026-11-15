@@ -2,7 +2,7 @@
 
 Based on Chinese Ink Wash (`ink-wash`) from [Lemo-Opuscar by Lemomo (LemoLab)](https://github.com/lemomo-ai/lemo-opuscar). Adapted for a personal Chinese-language studio. Documentation: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), with the additional filmmaking permission in the library's LICENSE.
 
-Default size: 1920×1080. Version 1.6.0. Selected direction: ink wash and Eastern aesthetics. The starter uses landscape, bamboo detail, branch, leaf-follow, water-insert and landscape-return framings. This is an editable implementation, not a claim of a separate visual approval.
+Default size: 1920×1080. Version 1.7.0. Selected direction: ink wash and Eastern aesthetics. The starter uses landscape, bamboo detail, branch, leaf-follow, water-insert and landscape-return framings. This is an editable implementation, not a claim of a separate visual approval.
 
 ## 1. Essence
 
@@ -42,8 +42,14 @@ Dry brush must not become dotted dashes. Do not layer identical parallel strokes
 
 ## 10. Engine
 
-Own scene source: [demo/scene.ts](demo/scene.ts). The project creator strips TypeScript into generated `scene.js`, preserving editable TypeScript. Upstream MIT engines: `ink.js`, `comp.js`, `land.js` and `core/lib.js`. New score source: `studio/audio/score-v6.py`; `score.py` stays as the historical fallback. The library is needed at runtime. Films expose `READY`, deterministic `render(t)`, `DUR`, `EV`, `TEXTS(t)` and the `SHOTS` timeline.
+Own scene source: [demo/scene.ts](demo/scene.ts). The project creator strips TypeScript into generated `scene.js`, preserving editable TypeScript. Upstream MIT engines: `ink.js`, `comp.js`, `land.js` and `core/lib.js`. New score source: `studio/audio/score-v7.py`; `score.py` stays as the historical fallback. The library is needed at runtime. Films expose `READY`, deterministic `render(t)`, `DUR`, `EV`, `TEXTS(t)` and the `SHOTS` timeline.
 
 ## 11. Variation space
 
 New films may use tea steam, a bridge after rain, a crane returning, a family garden or a cultural product. Direct a new treatment and new staging; changing only `content.json` is a technical template variation. Story, props, camera route, tempo and ending remain free. A fresh project retains its own scene source and content; style upgrades never overwrite existing films.
+
+## Round 7 reuse constraints
+
+四鸟保留各自身份与枝位。24Hz固定步长模拟按落稳时长触发呼唤，回应鸟听到后才加入；迟到鸟请求已占枝位时触发让位，离枝跟随前一角色的事件。关闭呼唤、移除迟到者、延后抵达会改变动作结果。叶落仍是预设的共同环境事件。
+
+行为是有限状态规则，不是开放世界智能。主鸟身体表演与镜头仍由导演安排；反事实接口用于验证规则，成片展示默认方案。

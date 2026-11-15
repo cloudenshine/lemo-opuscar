@@ -6,34 +6,34 @@
       "id": "ink-wash",
       "name": "水墨与东方美学",
       "personal": "cloud-ink",
-      "project": "cloud-ink-v7",
+      "project": "cloud-ink-v8",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
-      "finding": "四鸟以加入、让位、追视、接力离枝构成群体编排，保留角色间距。",
+      "finding": "固定步长规则模拟驱动呼唤、让位与接力，支持反事实验证。",
       "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c",
-      "previousProject": "cloud-ink-v6",
-      "previousSha256": "e8dde000c6a577fab49bce0ebd9fd3127e6017f54cc4e15ab18fe65ba59f2f8d"
+      "previousProject": "cloud-ink-v7",
+      "previousSha256": "17bacaec7fd1e0b191e4981ed8463a614c5539a6a0780d2b66a7ff98ca6fee85"
     },
     {
       "id": "swiss-motion",
       "name": "中文编辑部",
       "personal": "chinese-editorial",
-      "project": "editorial-v6",
+      "project": "editorial-v7",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
-      "finding": "四个标题字使用原创独立笔画路径，弯曲重组后成词；正文仍使用本机字体。",
+      "finding": "本机字形骨架自动提取、弧长重采样与路径变形，最终回归完整字形。",
       "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159",
-      "previousProject": "editorial-v5",
-      "previousSha256": "3e26d1f7c5d173143991b0419311138730bbe0c4e4e00a597100b42a31593229"
+      "previousProject": "editorial-v6",
+      "previousSha256": "e5b3a175263309d1de8e7f6241ee1dbacbe63454055510ce730bc7b857b4ea79"
     },
     {
       "id": "dark-keynote",
       "name": "深色科技与产品演示",
       "personal": "dark-product",
-      "project": "product-v6",
+      "project": "product-v7",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
-      "finding": "108个立体薄盒具有真实角点、厚度、可见面和透视文字，摄影机穿行后锁定阅读。",
+      "finding": "WebGL2 深度缓冲、方向光和阴影贴图处理相交几何与遮挡。",
       "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4",
-      "previousProject": "product-v5",
-      "previousSha256": "b276c9de37d669f7e967f68968c2630dac1763cbba2cd5832e46bd0d9ef13402"
+      "previousProject": "product-v6",
+      "previousSha256": "da0a6751d4a2defaaace337326350c831aa159f1e5b2c3516064c86734835f20"
     }
   ]
 }

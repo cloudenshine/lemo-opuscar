@@ -1,6 +1,6 @@
 # 云山墨序 · 本地私人制片室
 
-[二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第六轮优化方案](comparison/ROUND6-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.6 验收](VERIFICATION-v1.6.zh-CN.md)
+[二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第七轮优化方案](comparison/ROUND7-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.7 验收](VERIFICATION-v1.7.zh-CN.md)
 
 这是个人 Fork 的独立扩展。保留 Lemo-Opuscar 上游工具，在 Windows 上增加中文工作台、项目管理、确定性预览和视频导出。仅监听本机，不需要 API Key。源码和工作台 UI 使用 TypeScript；服务使用 Node 标准库，无新增运行时依赖。
 
@@ -47,11 +47,11 @@ node studio/src/cli.ts create product-film --style dark-product
 {"title":"一叶渡晨","inscription":"山静听风，叶落知秋","seal":"云山"}
 ```
 
-`films/<slug>/` 保存独立的 `scene.ts`、`score.py`、`content.json`、`project.json`、`TREATMENT.md`、`CREDITS` 与重建脚本。元数据记录风格和版本，模板升级不改已有作品。修改画面请编辑 `scene.ts`；每次导出会重新生成 `scene.js`。不要手改生成文件。输出为 `out/film.mp4`、`out/stills/t_20.jpg`，生成媒体不纳入 Git 源码；本轮三支样片另通过 [GitHub Release](https://github.com/cloudenshine/lemo-opuscar/releases/tag/studio-v1.6.0) 分发。
+`films/<slug>/` 保存独立的 `scene.ts`、`score.py`、`content.json`、`project.json`、`TREATMENT.md`、`CREDITS` 与重建脚本。元数据记录风格和版本，模板升级不改已有作品。修改画面请编辑 `scene.ts`；每次导出会重新生成 `scene.js`。不要手改生成文件。输出为 `out/film.mp4`、`out/stills/t_20.jpg`，生成媒体不纳入 Git 源码；本轮三支样片另通过 [GitHub Release](https://github.com/cloudenshine/lemo-opuscar/releases/tag/studio-v1.7.0) 分发。
 
 当前模板和声音为 24 秒。更换故事时，先重写 treatment，再改变场景和声音；修改片名仅用于模板技术验证。变更时长必须同步改项目的 `scene.ts`、`score.py`、`studio/src/render.ts` 和预览时间轴，当前没有任意时长编辑器。旧版作品缺少 `score.py` 时才使用共享声音脚本。
 
-v1.6 起，新项目的声音快照来自 `studio/audio/score-v6.py`（score-v5.py、score-v2.py、score-v3.py、score-v4.py 保留），生成 `out/stems/` 下音乐、环境、动作和转场四轨，以及 `sound-manifest.json`。四轨可重建封装前混音；成片的归一化与 AAC 编码另有 `mastering.json` 记录。旧 `studio/audio/score.py` 保留兼容。新项目元数据带 `mastering: verified-v2`，不会修改历史项目的设置。画面保留 `SHOTS` 时间轴，第三轮增加 `PERFORMANCE(t)` 主体姿态和接触诊断，第四轮纳入腿部关节、排版尺度和全部背景对象路径，第五轮补充双角色间距、逐字顺序和摄影机投影约束，第六轮纳入四鸟让位与接力、35条原创笔画、立体几何与无拼缝透视文字；两处静默、音画整帧与变换后的文字边界纳入检查。
+v1.7 起，新项目的声音快照来自 `studio/audio/score-v7.py`（score-v6.py、score-v5.py、score-v2.py、score-v3.py、score-v4.py 保留），生成 `out/stems/` 下音乐、环境、动作和转场四轨，以及 `sound-manifest.json`。四轨可重建封装前混音；成片的归一化与 AAC 编码另有 `mastering.json` 记录。旧 `studio/audio/score.py` 保留兼容。新项目元数据带 `mastering: verified-v2`，不会修改历史项目的设置。画面保留 `SHOTS` 时间轴，第三轮增加 `PERFORMANCE(t)` 主体姿态和接触诊断，第四轮纳入腿部关节、排版尺度和全部背景对象路径，第五轮补充双角色间距、逐字顺序和摄影机投影约束，第六轮纳入四鸟让位与接力、35条原创笔画、立体几何与无拼缝透视文字；两处静默、音画整帧与变换后的文字边界纳入检查。
 
 风格藏书读取上游实际 `style.json`，包括元数据中的未正式索引条目，所以数量可能略高于上游 README 的 99 种。云山墨序、中文编辑部、深色科技三种个人风格可直接创建项目，也可从风格卡片进入。其他上游风格打开规范，由 Agent 按该风格制作。没有下载所有风格的成片、字体或额外数据。
 
@@ -71,7 +71,7 @@ node studio/comparison/prepare.ts
 
 命令从官方 release 下载三个固定校验和的 web 预览，在预留名称不存在时创建并导出三部个人样片，然后测量。已有样片不覆盖；已有项目缺少成片时会停止，先明确渲染该项目再重试。若上游替换了原作文件，会报校验和不符，需先核查来源。原作、个人成片、测量 JSON 与截图保留在本地，不纳入源码提交；个人样片可通过独立 Release 附件分发。重新测量使用 `node studio/comparison/analyze.ts`。原版水墨 `morning-leaf` 为可选历史资料，不在新机器上伪造。
 
-本轮项目为 `cloud-ink-v7`、`editorial-v6`、`product-v6`；上一轮为 `cloud-ink-v6`、`editorial-v5`、`product-v5`，存在时核对保留的 SHA-256。新机器没有旧片时禁用上一轮选项，不以新模板伪造历史版本。
+本轮项目为 `cloud-ink-v8`、`editorial-v7`、`product-v7`；上一轮为 `cloud-ink-v7`、`editorial-v6`、`product-v6`，存在时核对保留的 SHA-256。新机器没有旧片时禁用上一轮选项，不以新模板伪造历史版本。
 
 ## 检查
 
@@ -95,3 +95,5 @@ node studio/src/cli.ts doctor
 本地使用 sparse checkout 跳过大型演示媒体与无关演示源；保留所有风格说明、工具和水墨引擎。如以后需某个风格的演示源，可运行 `git sparse-checkout add '/styles/<slug>/demo/'`，再按其规范准备额外资源。不要仅为画廊显示一次性下载所有大素材。
 
 上游分项许可见 [LICENSE](../LICENSE)。代码 MIT；上游及衍生风格文档 CC BY-NC 4.0，另有自制影片授权。保留署名，不把文档包装为任意商业再分发许可。中文字体使用本机字体，未复制分发，跨平台回退可能改变字形。v1 未安装旁白/语音识别模型，未调用付费接口；相关功能不属于本次已验证路径。
+
+第七轮新增固定步长行为规则及反事实验证、本机字形骨架与通用路径插值、WebGL2深度缓冲和方向光阴影。科技版需要WebGL2；字形结果取决于本机字体。完整边界见对照报告。

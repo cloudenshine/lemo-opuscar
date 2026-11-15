@@ -15,3 +15,6 @@ Fourth revision: original articulated bird rig, large-scale editorial typography
 Fifth revision: original two-bird response choreography, per-character typography and camera projection route. All new sound cues are procedural in score-v5.py; no upstream film samples or new external assets.
 
 Round 6: original ensemble staging, hand-authored display stroke paths, or solid geometry and software texture projection, according to this style. No upstream footage or audio sampled.
+
+Round 7: 四鸟保留各自身份与枝位。24Hz固定步长模拟按落稳时长触发呼唤，回应鸟听到后才加入；迟到鸟请求已占枝位时触发让位，离枝跟随前一角色的事件。关闭呼唤、移除迟到者、延后抵达会改变动作结果。叶落仍是预设的共同环境事件。
+行为是有限状态规则，不是开放世界智能。主鸟身体表演与镜头仍由导演安排；反事实接口用于验证规则，成片展示默认方案。
