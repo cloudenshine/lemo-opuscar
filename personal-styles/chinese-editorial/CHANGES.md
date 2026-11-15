@@ -25,3 +25,9 @@ The artifact rotates out of a stack, columns settle at staggered times, editing 
 选择大尺度排版与阅读窗口交替，另两种候选为持续裁切巨字或增加更多版面。仍为虚构编审练习。
 
 关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。
+
+## 第五轮 · 1.4.0
+
+选择逐字路线与语义对应，另两种候选为文字随机散开或扩展新段落。固定24秒虚构编审练习。
+
+导演路线见DEMO；新增双鸟/字符/摄影机约束及紧凑浏览器验收，声音快照为score-v5.py。旧项目保持不变。

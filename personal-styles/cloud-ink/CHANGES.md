@@ -29,3 +29,9 @@ Six motivated framings now follow landscape, stem detail, branch, falling leaf, 
 在第三轮的观察者基础上，选择关节和接触动作深化；另两种候选为增加镜头数量或延长故事。保留24秒自然片。
 
 关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。
+
+## 第五轮 · 1.5.0
+
+选择让第二只鸟回应已有主角，另两种候选为延长故事或只增加装饰。沿用24秒、暖纸与五色墨。
+
+导演路线见DEMO；新增双鸟/字符/摄影机约束及紧凑浏览器验收，声音快照为score-v5.py。旧项目保持不变。

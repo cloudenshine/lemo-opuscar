@@ -8,6 +8,7 @@ import { mountainLayer, ridgeFn } from '/styles/ink-wash/demo/land.js';
 declare global {
   interface Window {
     PERFORMANCE: (t: number) => {phase: string; actors: Array<{id: string; x: number; y: number; [key: string]: string | number | boolean}>};
+    CAMERA?: (t: number) => Record<string, number>;
     READY: boolean; DUR: number; render: (t: number) => void;
     TEXTS: (t: number) => Array<{ id: string; text: string; x0: number; y0: number; x1: number; y1: number }>;
     EV: Array<{ t: number; type: string }>;
@@ -68,7 +69,7 @@ function birdPose(t: number) {
   const gaze = t < 8 ? -.2 + .3 * smooth((t - 5) / 1) : t < 14 ? -.1 - .25 * smooth((t - 10.5) / 1.5) : -.35 - .5 * smooth((t - 14) / 3) + 1.05 * smooth((t - 19.5) / 1);
   const flying = t < 4.25 || t >= 20.5;
   return { x, y, land, footX: flying ? x : 1320 + 30 * hop, footY: flying ? y + 30 : 580 + 3 * hop - 40 * arc,
-    head: gaze, torso: -.22 * gust + .14 * arc, squash: 1 - crouch / 65,
+    head: gaze - .2 * Math.sin(Math.PI * smooth((t - 10.75) / .75)), torso: -.22 * gust + .14 * arc, squash: 1 - crouch / 65,
     wing: flying ? Math.sin(t * 24) * 1.1 : -.9 * arc - .65 * gust,
     wrist: flying ? Math.sin(t * 24 - .8) * .8 : -.65 * arc + .4 * gust,
     tail: .4 * gust - .3 * arc, beak: .25 * Math.sin(Math.PI * clamp((t - 8.5) / .45)) };
@@ -83,17 +84,45 @@ function legPose(b: ReturnType<typeof birdPose>, side: number) {
   return { hx, hy, kx: (hx + fx) / 2 - dy / Math.max(distance, 1) * bend,
     ky: (hy + fy) / 2 + dx / Math.max(distance, 1) * bend, fx, fy };
 }
+
+function companionPose(t: number): ReturnType<typeof birdPose> {
+  const arrival = smooth((t - 8.75) / 1.5), depart = smooth((t - 22) / 2);
+  const land = t >= 10.25 && t < 22;
+  const settle = t >= 10.25 ? 4 * Math.sin((t - 10.25) * 13) * Math.exp(-(t - 10.25) * 5) : 0;
+  const x = 970 + 195 * arrival + 470 * depart, y = 350 + 170 * arrival - 260 * depart + settle;
+  return {x,y,land,footX:x,footY:land?550:y+30,
+    head: -.12 - .24 * Math.sin(Math.PI * smooth((t - 11.25) / .75)) - 2 * smooth((t - 15.25) / .75) + 2 * smooth((t - 20) / 1),
+    torso: .1 * Math.sin(Math.PI * smooth((t - 10.5) / 1.5)), squash: 1,
+    wing: land ? -.2 * Math.sin(Math.PI * smooth((t - 10.5) / 1.5)) : Math.sin(t*23+.7),
+    wrist: land ? 0 : .8*Math.sin(t*23-.2),tail:land?.08*Math.sin(t*1.4):-.2,
+    beak:.3*Math.sin(Math.PI*clamp((t-10.75)/.5))};
+}
+const companionFacing = (_t: number) => -1;
+const companionBranch = mk([[1238,558],[1200,547],[1165,550],[1130,552]],{w:5,tone:TONE.nong,wet:.4,dry:.4,prof:'tip',seed:1210});
+function cameraPose(t: number) {
+  const fall = smooth((t - 14) / 3), travel = smooth((t - 17) / 7);
+  const leafX = 1230 - fall * 180 - travel * 310, leafY = 525 + fall * 286;
+  let zoom = 1, cx = 960, cy = 540;
+  if (t < 4) { zoom = 1 + smooth(t / 4) * .08; cx += smooth(t / 4) * 45; }
+  else if (t < 8) { zoom = 1.65; cx = 1220; cy = 560 - 5 * smooth((t - 4) / 4); }
+  else if (t < 14) { zoom = 1.85; cx = 1190 + 65 * smooth((t - 8) / 3.5); cy = 555; }
+  else if (t < 17) { zoom = 1.85 + .15 * fall; cx = leafX + 25; cy = leafY + 30; }
+  else if (t < 19.5) { zoom = 2.25 - .1 * smooth((t - 17) / 3); cx = 1020; cy = 790; }
+  else { const p = smooth((t - 19.5) / 4); zoom = 1.7 - .68 * p; cx = 1170 - 210 * p; cy = 650 - 110 * p; }
+  return {zoom,cx,cy};
+}
 window.PERFORMANCE = t => {
-  const b = birdPose(t), leg = legPose(b, -1);
-  return { phase: t < 4.25 ? 'arrive' : t < 7.5 ? 'hop' : t < 14 ? 'balance' : t < 20.5 ? 'track' : 'depart',
-    actors: [{ id: 'bird', ...b, ...leg }, { id: 'perch', x: 1320 + 30 * smooth(t - 6.5), y: 580 + 3 * smooth(t - 6.5) }] };
+  const b = birdPose(t), leg = legPose(b,-1), other = companionPose(t), camera = cameraPose(t);
+  return { phase: t < 8.5 ? 'call preparation' : t < 12 ? 'call and answer' : t < 20.5 ? 'shared attention' : 'staggered departure',
+    actors: [{id:'bird',...b,...leg,facing:1},{id:'perch',x:1320+30*smooth(t-6.5),y:580+3*smooth(t-6.5)},
+      {id:'companion',...other,facing:companionFacing(t),visible:t>=8.75,screenX:1100+(other.x-camera.cx)*camera.zoom,screenScale:camera.zoom}]};
 };
-function paintBird(t: number) {
-  if (t < 1.5) return;
-  const b = birdPose(t), contexts = [layer.cw, layer.cd];
+function paintBird(b: ReturnType<typeof birdPose>, facing = 1, density = 1) {
+  const contexts = [layer.cw, layer.cd];
+  for(const c of contexts) {c.save();c.translate(b.x,b.y);c.scale(facing,1);c.translate(-b.x,-b.y);}
   const part = (stroke: unknown, x: number, y: number, angle = 0, alpha = 1) => {
     for (const c of contexts) { c.save(); c.translate(x, y); c.rotate(angle); }
-    draw(layer.ink, stroke, 1, alpha); for (const c of contexts) c.restore();
+    draw(layer.ink, stroke, 1, alpha * density); for (const c of contexts) c.restore();
   };
   for (const side of [-1, 1]) {
     const leg = legPose(b, side);
@@ -109,7 +138,7 @@ function paintBird(t: number) {
   for (const c of contexts) { c.save(); c.translate(-19,-17); c.rotate(b.head); }
   part(birdParts.head,0,0); part(birdParts.beak,0,0,-b.beak); part(birdParts.beak,0,3,b.beak,.7);
   const eye = layer.cd; eye.fillStyle = '#eee6d4'; eye.beginPath(); eye.arc(-1,-3,2,0,Math.PI*2); eye.fill();
-  for (const c of contexts) { c.restore(); c.restore(); }
+  for (const c of contexts) { c.restore(); c.restore(); c.restore(); }
 }
 
 function typography(t: number) {
@@ -135,7 +164,7 @@ window.SHOTS = [
   { start: 17, end: 19.5, framing: 'water insert', move: 'impact push' },
   { start: 19.5, end: 24, framing: 'landscape return', move: 'pull back' },
 ];
-window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: .25, type: 'brush' }, { t: 4.25, type: 'landing' }, { t: 6.5, type: 'hop' }, { t: 7.5, type: 'landing' }, { t: 8.5, type: 'chirp' }, { t: 20.5, type: 'wings' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
+window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: .25, type: 'brush' }, { t: 4.25, type: 'landing' }, { t: 6.5, type: 'hop' }, { t: 7.5, type: 'landing' }, { t: 8.5, type: 'chirp' }, { t: 10.25, type: 'landing-second' }, { t: 10.75, type: 'answer' }, { t: 22, type: 'follow-wings' }, { t: 20.5, type: 'wings' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
 window.TEXTS = () => [
   { id: 'title', text: data.title, x0: 285, y0: 195, x1: 365, y1: 270 + ([...data.title].length - 1) * 72 },
   { id: 'inscription', text: data.inscription, x0: 540, y0: 947, x1: 1380, y1: 999 },
@@ -146,13 +175,7 @@ window.render = (seconds: number) => {
   layer.clear();
   const fall = smooth((t - 14) / 3), travel = smooth((t - 17) / 7);
   const leafX = 1230 - fall * 180 - travel * 310, leafY = 525 + fall * 286;
-  let zoom = 1, cx = 960, cy = 540;
-  if (t < 4) { zoom = 1 + smooth(t / 4) * .08; cx += smooth(t / 4) * 45; }
-  else if (t < 8) { zoom = 1.65; cx = 1220; cy = 560 - 5 * smooth((t - 4) / 4); }
-  else if (t < 14) { zoom = 1.85; cx = 1190 + 65 * smooth((t - 8) / 3.5); cy = 555; }
-  else if (t < 17) { zoom = 1.85 + .15 * fall; cx = leafX + 25; cy = leafY + 30; }
-  else if (t < 19.5) { zoom = 2.25 - .1 * smooth((t - 17) / 3); cx = 1020; cy = 790; }
-  else { const p = smooth((t - 19.5) / 4); zoom = 1.7 - .68 * p; cx = 1170 - 210 * p; cy = 650 - 110 * p; }
+  const {zoom,cx,cy} = cameraPose(t);
   const camera = (depth: number) => { const z = 1 + (zoom - 1) * depth; layer.xf(z, 1100 - (960 + (cx - 960) * depth) * z, 570 - (540 + (cy - 540) * depth) * z); };
   camera(.25); layer.cw.globalAlpha = .72 + .28 * smooth(t / 4); layer.cw.drawImage(far, 0, 0);
   camera(.6); layer.cw.globalAlpha = smooth((t - 1) / 5); layer.cw.drawImage(near, 0, 0); layer.cw.globalAlpha = 1;
@@ -160,7 +183,9 @@ window.render = (seconds: number) => {
   drawSeq(layer.ink, stems, smooth(t / 1.5), .88);
   drawSeq(layer.ink, leaves, smooth((t - .5) / 2), .85);
   draw(layer.ink, birdParts.branch, 1, smooth(t / 1.5));
-  paintBird(t);
+  draw(layer.ink, companionBranch, 1, smooth(t/1.5));
+  if(t>=8.75) paintBird(companionPose(t),companionFacing(t),.8);
+  if(t>=1.5) paintBird(birdPose(t));
   if (t >= 0) {
     for (const c of [layer.cw, layer.cd]) { c.save(); c.translate(leafX, leafY); c.rotate(-.3 + Math.sin(fall * 6) * .5 + travel * .1 + (t < 12 ? Math.sin(t * 1.8) * .06 : 0)); }
     draw(layer.ink, fallenLeaf, 1, smooth(t / 1.5));

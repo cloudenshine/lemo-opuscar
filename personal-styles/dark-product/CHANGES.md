@@ -26,3 +26,9 @@ Twenty-seven cards occupy three projected depth planes. A dolly/drift leads to a
 选择增加有身份的连续对象与分批路径，另两种候选为仅增加随机背景卡或另起更长产品片。固定24秒原创概念演示。
 
 关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。
+
+## 第五轮 · 1.4.0
+
+选择把摄影机路线与108个对象的路由分离，另两种候选为继续堆积对象或增加无关镜头。24秒原创概念演示。
+
+导演路线见DEMO；新增双鸟/字符/摄影机约束及紧凑浏览器验收，声音快照为score-v5.py。旧项目保持不变。

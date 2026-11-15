@@ -35,43 +35,73 @@ try {
       assert.deepEqual(await page.locator('canvas').screenshot(), first, `${style} ${at}s frame-order independence`);
     }
 
-    const performance = await page.evaluate(() => {
-      const at = (t: number) => window.PERFORMANCE(t);
-      return { samples: Array.from({length: 577}, (_,i) => at(i/24)), drag: [6,7,8].map(at), contact: [4.25,5,10,19].map(at) };
-    });
-    for (let i=1;i<performance.samples.length;i++) {
-      for(const a of performance.samples[i-1].actors.filter(actor=>actor.id!=='pointer')) {
-        const b=performance.samples[i].actors.find(actor=>actor.id===a.id);
-        assert.ok(b,`${style} protagonist identity`);
-        assert.ok(Math.hypot(b.x-a.x,b.y-a.y)<85,`${style} ${a.id} teleport at frame ${i}`);
+
+    // Keep the full trajectory audit in the browser; transfer only its compact findings.
+    const findings = await page.evaluate(style => {
+      const samples = Array.from({length:577},(_,i)=>window.PERFORMANCE(i/24));
+      const errors = new Set<string>();
+      const check = (ok: boolean, name: string) => {if(!ok) errors.add(name);};
+      for(let i=1;i<samples.length;i++) for(const actor of samples[i-1].actors.filter(a=>a.id!=='pointer')) {
+        const next=samples[i].actors.find(a=>a.id===actor.id);
+        check(Boolean(next),'persistent identity');
+        if(next) check(Math.hypot(next.x-actor.x,next.y-actor.y)<85,'world motion continuity');
       }
-    }
-    if(style==='cloud-ink') {
-      for(const p of performance.contact) {const [bird,branch]=p.actors;assert.equal(bird.footY,branch.y);assert.equal(bird.footX,branch.x);assert.equal(bird.land,true);}
-      for(const sample of performance.samples) {const b=sample.actors[0];
-        assert.ok(Math.abs(Math.hypot(Number(b.hx)-Number(b.kx),Number(b.hy)-Number(b.ky))-19)<1e-6,'upper leg length');
-        assert.ok(Math.abs(Math.hypot(Number(b.fx)-Number(b.kx),Number(b.fy)-Number(b.ky))-19)<1e-6,'lower leg length');
+      if(style==='cloud-ink') {
+        for(const frame of [102,120,240,456]) {const [bird,branch]=samples[frame].actors;check(bird.footY===branch.y&&bird.footX===branch.x&&bird.land===true,'planted contact');}
+        for(const sample of samples) {
+          const b=sample.actors[0], other=sample.actors.find(a=>a.id==='companion')!;
+          check(Math.abs(Math.hypot(Number(b.hx)-Number(b.kx),Number(b.hy)-Number(b.ky))-19)<1e-6,'upper leg length');
+          check(Math.abs(Math.hypot(Number(b.fx)-Number(b.kx),Number(b.fy)-Number(b.ky))-19)<1e-6,'lower leg length');
+          if(other.visible) {check(Math.hypot(b.x-other.x,b.y-other.y)>55,'body separation');check(Math.abs(Number(other.facing))>=.5,'companion keeps body volume');}
+        }
+        for(const sample of samples.slice(210,247)) {const other=sample.actors.find(a=>a.id==='companion')!;check(Number(other.screenX)-100*Number(other.screenScale)>480,'arrival clears inscription column');}
+        const answer=samples[258].actors.find(a=>a.id==='companion')!;
+        check(answer.facing===-1&&answer.footY===550,'answer faces caller on separate perch');
+        check(samples[510].actors[0].land===false&&samples[504].actors.find(a=>a.id==='companion')!.land===true,'staggered departure');
+        check(samples[168].actors[0].land===false&&samples[168].actors[0].y<samples[156].actors[0].y-30&&samples[180].actors[0].land===true,'hop release and landing');
+        check(Number(samples[408].actors[0].head)<Number(samples[336].actors[0].head),'gaze follows leaf');
+        check(samples[552].actors[0].y<samples[492].actors[0].y-200,'upward departure');
+      } else if(style==='dark-product') {
+        for(let i=0;i<samples.length;i++) {
+          const sample=samples[i],h=sample.actors[0];
+          check(new Set(sample.actors.filter(a=>a.id!=='pointer').map(a=>a.id)).size===108,'108 identities');
+          check(Number(h.screenX)-Number(h.w)*Number(h.screenScale)/2>=64&&Number(h.screenX)+Number(h.w)*Number(h.screenScale)/2<=1856,'hero stays horizontally framed');
+          check(Number(h.screenY)-Number(h.h)*Number(h.screenScale)/2>=260&&Number(h.screenY)+Number(h.h)*Number(h.screenScale)/2<=940,'hero stays vertically framed');
+          for(const actor of sample.actors) {
+            if(actor.id.startsWith('cloud-')) check(actor.y-Number(actor.h)/2>=260&&actor.y+Number(actor.h)/2<=940,'world stage bounds');
+            check(Number(actor.depth)>100&&Number.isFinite(Number(actor.screenScale)),'near plane safety');
+            if(i&&actor.id!=='pointer') {const prev=samples[i-1].actors.find(a=>a.id===actor.id)!;check(Math.hypot(Number(actor.screenX)-Number(prev.screenX),Number(actor.screenY)-Number(prev.screenY))<120,'projected continuity');}
+          }
+        }
+        for(const t of [6,7,8]) {const [h,c]=window.PERFORMANCE(t).actors;
+          check(c.held===true&&c.x-h.x===30&&c.y-h.y===-20,'world drag contact');
+          check(Math.abs((Number(c.screenX)-Number(h.screenX))/Number(h.screenScale)-30)<1e-7,'projected drag contact');
+        }
+        check(samples[204].actors[1].held===false,'release cue');
+        const rigs=[0,3.5,10.5,14,19.5].map(t=>window.CAMERA!(t));
+        check(Math.max(...rigs.map(r=>r.yaw))-Math.min(...rigs.map(r=>r.yaw))>.45,'viewing axis change');
+        check(rigs[3].yaw===0&&rigs[3].dolly===0,'locked reading insert');
+      } else {
+        const opening=samples[12].actors.filter(a=>a.id.startsWith('opening-'));
+        check(opening[0].angle!==opening[1].angle,'independent glyph trajectories');
+        const rejected=samples[252].actors.filter(a=>a.id.startsWith('reject-'));
+        check(Number(rejected[0].progress)>Number(rejected[5].progress),'ordered character rejection');
+        const landed=samples[492].actors.filter(a=>a.id.startsWith('poster-'));
+        check(landed[1].x-landed[0].x===260,'final letter order');
+        check(Math.abs(Number(samples[450].actors[1].angle))>1.5,'quarter turn');
+        const sizes=[0,5].map(t=>window.TEXTS(t).find(b=>b.id==='opening-word')!);
+        check((sizes[0].x1-sizes[0].x0)/(sizes[1].x1-sizes[1].x0)>7,'type scale span');
+        const final=window.TEXTS(20);
+        check(final.find(b=>b.id==='poster-word')!.y1<final.find(b=>b.id==='claim')!.y0,'poster conclusion spacing');
+        check(Number(samples[336].actors[1].w)>1000&&Number(samples[336].actors[0].w)<200,'selected sheet expansion');
       }
-      assert.equal(performance.samples[168].actors[0].land,false,'hop releases contact');
-      assert.ok(performance.samples[168].actors[0].y<performance.samples[156].actors[0].y-30,'hop clears the branch');
-      assert.equal(performance.samples[180].actors[0].land,true,'hop lands');
-      assert.ok(Number(performance.samples[408].actors[0].head)<Number(performance.samples[336].actors[0].head),'gaze follows falling leaf down');
-      assert.ok(performance.samples[552].actors[0].y<performance.samples[492].actors[0].y-200,'bird departs upward');
-    } else if(style==='dark-product') {
-      for(const sample of performance.samples) for(const card of sample.actors.filter(a=>a.id.startsWith('cloud-'))) {
-        assert.ok(card.y-Number(card.h)/2>=260 && card.y+Number(card.h)/2<=940,'projected cards must not cover the headline or footer');
-      }
-      for(const sample of performance.samples) assert.equal(new Set(sample.actors.filter(a=>a.id!=='pointer').map(a=>a.id)).size,108,'108 persistent unique objects');
-      for(const p of performance.drag) {const [card,cursor]=p.actors;assert.equal(cursor.held,true);assert.equal(cursor.x-card.x,30);assert.equal(cursor.y-card.y,-20);}
-      assert.equal(performance.samples[204].actors[1].held,false,'release at the drop cue');
-    } else {
-      assert.ok(Math.abs(Number(performance.samples[450].actors[1].angle))>1.5,'poster quarter-turn');
-      const typeSizes=await page.evaluate(()=>[0,5].map(t=>window.TEXTS(t).find(b=>b.id==='opening-word')!));
-      const finalType=await page.evaluate(()=>window.TEXTS(20));
-      assert.ok(finalType.find(b=>b.id==='poster-word')!.y1<finalType.find(b=>b.id==='claim')!.y0,'poster word leaves space for the conclusion');
-      assert.ok((typeSizes[0].x1-typeSizes[0].x0)/(typeSizes[1].x1-typeSizes[1].x0)>7,'typography scale range');
-      assert.ok(Number(performance.samples[336].actors[1].w)>1000,'chosen paper expands');
-      assert.ok(Number(performance.samples[336].actors[0].w)<200,'unselected material retreats');
+      return [...errors];
+    },style);
+    assert.deepEqual(findings,[],`${style} trajectory audit`);
+    if(style==='dark-product') {
+      await page.evaluate(()=>window.render(0));const header=await page.screenshot({clip:{x:0,y:0,width:1920,height:240}});
+      await page.evaluate(()=>window.render(4));
+      assert.ok((await page.screenshot({clip:{x:0,y:0,width:1920,height:240}})).equals(header),'camera content cannot paint over title');
     }
     const bad = await page.evaluate(() => {
       const failures: string[] = [];

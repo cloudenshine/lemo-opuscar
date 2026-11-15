@@ -6,34 +6,34 @@
       "id": "ink-wash",
       "name": "水墨与东方美学",
       "personal": "cloud-ink",
-      "project": "cloud-ink-v5",
+      "project": "cloud-ink-v6",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
-      "finding": "蹲伏、跳枝、落稳、迎风收翼；固定腿长、翼腕相位差与尾部平衡强化身体动作，仍是简化单角色。",
+      "finding": "双鸟呼唤、回应、共同追视与错时离枝；独立枝位、墨色、姿态和声像，身体间距纳入验收。",
       "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c",
-      "previousProject": "cloud-ink-v4",
-      "previousSha256": "9401a961fcae3263f1394dfb035af09dc6a4137f793cd6661c39f29634d24933"
+      "previousProject": "cloud-ink-v5",
+      "previousSha256": "458d3352e61b5d836f231fd3e1dc29855a7d2e0e542f29440fe0ee1188068887"
     },
     {
       "id": "swiss-motion",
       "name": "中文编辑部",
       "personal": "chinese-editorial",
-      "project": "editorial-v4",
+      "project": "editorial-v5",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
-      "finding": "450px大字收至58px，片尾260px海报转至负90度再正位；阅读窗口保留，尚未实现逐字形态实验。",
+      "finding": "“判断”独立逐字进场和收束，六字概括依次划线，“有据”错峰落位；仍使用完整字体字形。",
       "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159",
-      "previousProject": "editorial-v3",
-      "previousSha256": "cd6558931cc628974d3828b45730e7c968cd679219d227e6c7431ef0dad5eff2"
+      "previousProject": "editorial-v4",
+      "previousSha256": "eabc8911731f69be07caf1b86103637fcbf322ce074540dfeaadefaa43d6f574"
     },
     {
       "id": "dark-keynote",
       "name": "深色科技与产品演示",
       "personal": "dark-product",
-      "project": "product-v4",
+      "project": "product-v5",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
-      "finding": "108个对象跨四层透视、错峰归位、两侧资料带与最终网格；背景也保持身份和连续路径，仍为Canvas投影。",
+      "finding": "独立摄影机绕行、升降、侧向跟随、短推进和回拉；统一投影、焦点转移、主卡完整取景，阅读段锁定。",
       "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4",
-      "previousProject": "product-v3",
-      "previousSha256": "1fc2685e19b16229cfcb86628ac458fe7310cbdb9cd4c5d383da89af288dc858"
+      "previousProject": "product-v4",
+      "previousSha256": "aca971715abb9e4fc165f792caf196fd56a03f76fd110075d436a4b7101afd1c"
     }
   ]
 }

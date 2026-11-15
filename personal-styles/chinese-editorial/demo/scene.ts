@@ -30,7 +30,36 @@ function paperPose(t: number, i: number): Pose {
     y: mix(y, i === 1 ? 560 : 830, edit), w: i === 1 ? mix(mix(410, 500, spread), 1080 + 220 * publish, edit) : mix(mix(410, 500, spread), 180, edit),
     h: i === 1 ? mix(510, 610, edit) : mix(510, 120, edit), scale, angle: (i - 1) * .045 * (1 - spread) + turn };
 }
-window.PERFORMANCE = t => ({ actors: [0, 1, 2].map(i => ({ id: `paper-${i}`, ...paperPose(t, i) })), phase: t < 6 ? 'collect' : t < 12 ? 'verify' : t < 18 ? 'edit' : 'publish' });
+
+type GlyphPose = {x: number; y: number; size: number; angle: number};
+function openingGlyph(t: number, i: number): GlyphPose {
+  const arrive = ease((t-i*.2)/.75), shrink = ease((t-3-i*.125)/.875);
+  return {x:mix(510+i*450,96+i*58,shrink)+(i?160:-160)*(1-arrive)*(1-shrink),
+    y:mix(720,220,shrink)+(i?100:-110)*(1-arrive)*(1-shrink),size:mix(450,58,shrink)*(.78+.22*arrive),
+    angle:(i?.18:-.2)*(1-arrive)*(1-shrink)};
+}
+function rejectGlyph(t: number, i: number) {
+  const progress = ease((t-10.25-i*.125)/.25);
+  return {x:i*34,y:-8*Math.sin(Math.PI*progress),size:34,angle:.07*Math.sin(Math.PI*progress)*(i%2?1:-1),progress};
+}
+function posterGlyph(t: number, i: number): GlyphPose {
+  const p = ease((t-19.5-i*.25)/.5);
+  return {x:i*260+(i?40:-40)*(1-p),y:0,size:260*(.85+.15*p),angle:0};
+}
+function glyphRun(id: string, value: string, poses: GlyphPose[], color: string, weight = 600) {
+  const start = boxes.length;
+  [...value].forEach((ch,i)=>{
+    const p=poses[i];ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+    text(`${id}-${i}`,ch,0,0,p.size,color,weight);ctx.restore();
+  });
+  const glyphBoxes=boxes.splice(start);
+  boxes.push({id,text:value,x0:Math.min(...glyphBoxes.map(b=>b.x0)),y0:Math.min(...glyphBoxes.map(b=>b.y0)),
+    x1:Math.max(...glyphBoxes.map(b=>b.x1)),y1:Math.max(...glyphBoxes.map(b=>b.y1))});
+}
+window.PERFORMANCE = t => ({actors:[...[0,1,2].map(i=>({id:`paper-${i}`,...paperPose(t,i)})),
+  ...[0,1].map(i=>({id:`opening-${i}`,...openingGlyph(t,i)})),
+  ...Array.from({length:6},(_,i)=>({id:`reject-${i}`,...rejectGlyph(t,i)})),
+  ...[0,1].map(i=>({id:`poster-${i}`,...posterGlyph(t,i)}))],phase:t<6?'glyph assembly':t<12?'character rejection':t<18?'edit':'glyph resolution'});
 window.DUR = 24;
 window.SHOTS = [
   { start: 0, end: 6, framing: 'desk spread', move: 'fan settle' },
@@ -38,7 +67,7 @@ window.SHOTS = [
   { start: 12, end: 18, framing: 'edited page', move: 'paper expansion' },
   { start: 18, end: 24, framing: 'publication wall', move: 'layered reveal' },
 ];
-window.EV = [{t:0,type:'type-impact'},{t:4,type:'page'},{t:18,type:'type-flip'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
+window.EV = [{t:0,type:'type-impact'},{t:4,type:'page'},{t:18,type:'type-flip'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:10.5,type:'glyph-cut'},{t:10.75,type:'glyph-cut'},{t:20,type:'glyph-land'},{t:20.25,type:'glyph-land'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
 window.render = seconds => {
   const t = Math.max(0, Math.min(24, seconds)); boxes = []; ctx.setTransform(1,0,0,1,0,0);
   rect(0,0,1920,1080,C.paper); rule(132); rule(964);
@@ -63,13 +92,16 @@ window.render = seconds => {
     if(t<12) {
       text(`source-${i}`,['观察记录','现场访谈','未经核实'][i],x,y+66,30,i===2?C.accent:C.muted,600);
       const lines=[['雨停了','人走进来'],['有人喜欢安静','有人更爱热闹'],['所有人都喜欢','只是一个猜测']][i];
-      lines.forEach((v,j)=>text(`evidence-${i}-${j}`,v,x,y+180+j*66,34));
+      lines.forEach((v,j)=>{
+        if(i===2&&j===0) glyphRun(`evidence-${i}-${j}`,v,[...v].map((_,k)=>{const p=rejectGlyph(t,k);return {...p,x:x+p.x,y:y+180+p.y};}),C.ink,400);
+        else text(`evidence-${i}-${j}`,v,x,y+180+j*66,34);
+      });
       for(let k=0;k<3;k++)rect(x,y+350+k*24,p.w-90-(k%2)*70,5,C.rule);
-      if(i===2&&t>=10.25)rect(x,y+169,(p.w-64)*ease((t-10.25)/.5),4,C.accent);
+      if(i===2&&t>=10.25) for(let k=0;k<6;k++) rect(x+k*34,y+169,34*rejectGlyph(t,k).progress,4,C.accent);
       if(i===1&&t>=7.25)rect(x,y+260,(p.w-64)*ease((t-7.25)/1),3,C.accent);
     } else if(i===1&&t>=13.25) {
       text('verified','可以确认',x,y+76,28,C.accent,600);
-      if(t>=18) text('poster-word','有据',x+135,y+330,260,C.accent,700);
+      if(t>=18) glyphRun('poster-word','有据',[0,1].map(i=>{const g=posterGlyph(t,i);return {...g,x:x+135+g.x,y:y+330};}),C.accent,700);
       text('claim','同一处，也有不同感受。',x,t<18?y+215:y+430,t<18?64:44,C.ink,600);
       text('qualification','两条访谈，不能代表所有人。',x,t<18?y+303:y+490,t<18?34:28,C.muted);
       if(t<18) rect(x,y+355,p.w-100,1,C.rule);
@@ -84,8 +116,7 @@ window.render = seconds => {
     ctx.fillStyle=C.accent;ctx.beginPath();ctx.arc(end,869,6,0,Math.PI*2);ctx.fill();
   }
   if(t<6) {
-    const shrink=ease((t-3)/1);const size=mix(450,58,shrink);
-    text('opening-word','判断',mix(510,96,shrink),mix(720,220,shrink),size,C.ink,700);
+    glyphRun('opening-word','判断',[0,1].map(i=>openingGlyph(t,i)),C.ink,700);
     if(t<3) text('opening-note','先看材料',96,880,38,C.accent,600);
   }
   text('inscription',data.inscription,96,1020,27,C.muted);
