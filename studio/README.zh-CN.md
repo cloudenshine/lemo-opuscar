@@ -1,6 +1,6 @@
 # 云山墨序 · 本地私人制片室
 
-**创作状态更新**：用户已明确否定前七轮作品质量。技术验收记录保留，但不代表创作达标。当前目标是建立个人作品系列；先看[创作重构诊断与路线](research/creative-reset/README.zh-CN.md)、[三片导演方案](research/creative-reset/DIRECTOR-BRIEF.zh-CN.md)和[研究段落](http://127.0.0.1:43821/films/creative-reset-study/index.html)。现有模板是历史技术起点，不是下一部作品的默认故事。
+**创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。当前先验证第一部《空位》：[观看22.5秒研究段落](http://127.0.0.1:43821/films/space-for-two-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
 
 [二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第七轮优化方案](comparison/ROUND7-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.7 验收](VERIFICATION-v1.7.zh-CN.md)
 
