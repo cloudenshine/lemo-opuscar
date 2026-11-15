@@ -2,6 +2,8 @@
 
 Check these before upstream styles. Never overwrite an existing user film when updating a style.
 
+Creative status: the user rejected the first seven rounds as poor work that missed the originals' essence. These starters preserve technical experiments, not an approved artistic standard. Read the [creative reset](../studio/research/creative-reset/README.zh-CN.md) before making a new film; develop a new story and prove its central visual idea before evolving a reusable style.
+
 | English / 中文 | Slug | Base | Description |
 |---|---|---|---|
 | [Cloud & Ink / 云山墨序](cloud-ink/STYLE.md) | cloud-ink | ink-wash | Warm paper, five ink tones, restrained Chinese inscriptions and quiet nature |

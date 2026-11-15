@@ -7,6 +7,12 @@ description: Create, preview and render Chinese films in the user's local Lemo-O
 
 Read `library-root.txt` beside this installed skill for the user's library path. In a repository checkout without that local file, use the repository containing `studio/src/cli.ts`. Never use the upstream managed-library setup script to update this personal Fork: it may reset managed clones.
 
+## Current creative direction
+
+The user rejected rounds 1–7 as poor work that missed the originals' essence. Their goal is a distinctive personal film series. Read `studio/research/creative-reset/README.zh-CN.md`, `DIRECTOR-BRIEF.zh-CN.md` and `VALIDATION.zh-CN.md` first. Technical checks and releases do not establish artistic quality. Do not continue the four-bird / fixed editorial poster / anonymous card-cloud stories by adding more effects.
+
+Before implementation, establish the audience experience, one subject with a goal, a consequential turn, a medium-specific action and an ending that changes the opening. Compare three story structures, choose one, then write motivated shots and a shared sound/picture cue map. Prove the riskiest passage with a short study. Record actual viewing feedback separately from automated checks; mark untested artistic claims as untested. Reuse material engines and directing methods, not a default story, a fixed chapter schedule or the 24-second duration. The existing production studio still requires 24 seconds; independent research can use upstream variable-duration rendering. Generalize production duration only with tests for picture, sound, mux and preview compatibility. The sequence below describes the existing technical toolchain, not a creative approval path.
+
 1. Read `<library>/personal-styles/README.md`, the chosen `STYLE.md`, and `<library>/studio/README.zh-CN.md`.
 2. For a new film, establish topic and intended use from the request. Choose `cloud-ink` for Eastern nature/cultural stories, `chinese-editorial` for evidence and explainers, or `dark-product` for software/product concepts. The default remains ink wash. All starters are Chinese, 1920×1080, 24 fps. Do not ask again for an already supplied preference.
 3. Run `node <library>/studio/src/cli.ts doctor`. Create a unique project with `node <library>/studio/src/cli.ts create <slug> [content.json] --style <style>`. Never overwrite an existing film.
