@@ -1,16 +1,16 @@
-# 一叶渡晨 · 第二轮
+# 一叶渡晨 · 第三轮
 
-Upgrade the existing nature film; do not treat a changed title as a new story.
+延续自然短片：从“风景中有一片叶”发展为“一个生命注意到另一处变化”。候选为增加切镜、扩成长故事、保留短片并增加连续表演；选择第三种。
 
-0–4s: establish the landscape with depth-separated drift; silence 3.5–4s prepares the closer view.
-4–8s: move up bamboo stems; brush growth and its sound start at 4s.
-8–14s: move laterally into the branch, then hold through whole-bus silence at 12–14s.
-14–17s: follow the already-visible leaf as it falls; independent landscape parallax makes travel legible.
-17–20s: cut closer to water contact, the reflected leaf and rings centred on the contact point.
-20–24s: pull back to the landscape while the harmonic and flute answer decay.
+0–4s：山水建立，墨鸟从右上飞入，枝条已在落枝前完成生长；3.5–4s 静默。
+4–8s：切到枝头，4.25s 双足落定，身体压缩缓冲；独立头、颈、翼、尾形成观察姿态。
+8–14s：鸟鸣回答，风动叶片，鸟转头关注；12–14s 留白静默。
+14–17s：镜头跟随叶片下落，鸟的头向下追视。
+17–19.5s：水面接触、倒影与涟漪；鸟在画外保持原枝头位置。
+19.5–24s：切回能容纳枝头和水面的中景；鸟先回望、压身，20.5s 振翼离枝，镜头回到山水。
 
-The title stays on clean paper. Four editable buses contain guqin/flute music, wind/water ambience, material actions and transitions. Pre-entry air at 7.75s and 19.75s bridges shots. No narration or sampled upstream soundtrack.
+脚与枝共享世界接触点，落地缓冲仅作用身体。鸟鸣、落枝、五次振翼为程序声音，非真实野外录音。四轨、两次静默和编码后的响度门槛保留。原作剑客的动作复杂度和冲突强度仍更高。
 
-Create `cloud-ink-v3` with `--style cloud-ink`; keep `morning-leaf` and `cloud-ink-v2` as historical snapshots.
+项目 cloud-ink-v4，模板1.3.0；保留 morning-leaf、cloud-ink-v2、cloud-ink-v3。
 
-Scene: [demo/scene.ts](demo/scene.ts). [Comparison](../../studio/comparison/REVIEW.zh-CN.md).
+源文件：[scene.ts](demo/scene.ts)。[原作与历史对照](../../studio/comparison/REVIEW.zh-CN.md)。

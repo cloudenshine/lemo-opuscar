@@ -6,34 +6,34 @@
       "id": "ink-wash",
       "name": "水墨与东方美学",
       "personal": "cloud-ink",
-      "project": "cloud-ink-v3",
+      "project": "cloud-ink-v4",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
-      "finding": "六段景别、前后景视差、落叶跟拍、入水倒影与回拉；加入吹管回答、风水环境和材质动作，保留原作角色表演的差距。",
+      "finding": "墨鸟入画、落枝缓冲、转头追视与振翼离枝；脚与枝共享接触点，回拉取景容纳离枝动作。仍不及原作剑客的复杂身体表演。",
       "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c",
-      "previousProject": "cloud-ink-v2",
-      "previousSha256": "24d9a29572d28b515b228c3737bde04e09a39e9611885653cb666d7fab7c3f5c"
+      "previousProject": "cloud-ink-v3",
+      "previousSha256": "dce0b4670a1300fa6e384d48086204d4a68f728e5fa0ec098bc929a5b76974fb"
     },
     {
       "id": "swiss-motion",
       "name": "中文编辑部",
       "personal": "chinese-editorial",
-      "project": "editorial-v2",
+      "project": "editorial-v3",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
-      "finding": "散页旋转、错峰归栏、校订推近与成稿收束；纸页、笔划、裁切、落印声音区分，并按章节改变音乐密度。",
+      "finding": "三张材料页贯穿核验、否定、展开与定稿；完整画幅和输出墙替代永久步骤栏。原作极端字号变化与排版实验仍更丰富。",
       "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159",
-      "previousProject": "editorial-demo",
-      "previousSha256": "012c7ae893a02a098955454deccadc9ba732fa6f4d6ad1fb2b015d2b1b23a3fd"
+      "previousProject": "editorial-v2",
+      "previousSha256": "a719bd500882b051cc8215e4a75281bd05a30303b4f49fa73ba12e329e214167"
     },
     {
       "id": "dark-keynote",
       "name": "深色科技与产品演示",
       "personal": "dark-product",
-      "project": "product-v2",
+      "project": "product-v3",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
-      "finding": "三层透视推进、斜视归位、任务卡特写和径向收束；四段和声、低频脉冲、玻璃音与确认音形成层次。",
+      "finding": "同一任务卡贯穿透视卡群、指针抓取拖放、检索详情与关系视图；原作更密集的空间组织与光标性格仍占优势。",
       "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4",
-      "previousProject": "product-demo",
-      "previousSha256": "8a1e32d00e125decffa9600ceef3ebab69f1f0586900c878ae3cdb2edfccd33d"
+      "previousProject": "product-v2",
+      "previousSha256": "ddbee816400b119e0e1d1100c2e5ad52233e610beba87bc29002ce96e79b4fb6"
     }
   ]
 }

@@ -17,3 +17,9 @@ Compared the original 48-second official web preview with the first 24-second pe
 ## 1.2.0 — Second comparison round
 
 Six motivated framings now follow landscape, stem detail, branch, falling leaf, water contact and landscape return. Foreground and landscape use separate parallax depths. The leaf is visible before detachment; reflection and concentric rings follow contact. Four audio buses add a synthesized flute answer, wind/water, distinct brush/contact cues, pre-entry transitions and two silences. Old project and audio fallback remain unchanged.
+
+## 第三轮 · 2026-11-15
+
+延续自然短片：从“风景中有一片叶”发展为“一个生命注意到另一处变化”。候选为增加切镜、扩成长故事、保留短片并增加连续表演；选择第三种。
+
+连续动作和空间模型见 demo/scene.ts；动作诊断 PERFORMANCE 与真实绘制使用同一姿态函数，motion.acceptance.ts 验证主体不瞬移、接触关系及行为方向。新项目快照 score-v3.py，旧作品不迁移。

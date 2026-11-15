@@ -34,6 +34,32 @@ try {
       await page.evaluate(t => { window.render(23); window.render(1); window.render(t); }, at);
       assert.deepEqual(await page.locator('canvas').screenshot(), first, `${style} ${at}s frame-order independence`);
     }
+
+    const performance = await page.evaluate(() => {
+      const at = (t: number) => window.PERFORMANCE(t);
+      return { samples: Array.from({length: 577}, (_,i) => at(i/24)), drag: [6,7,8].map(at), contact: [4.25,5,10,19].map(at) };
+    });
+    for (let i=1;i<performance.samples.length;i++) {
+      for(const a of performance.samples[i-1].actors.filter(actor=>actor.id!=='pointer'&&!actor.id.startsWith('cloud-'))) {
+        const b=performance.samples[i].actors.find(actor=>actor.id===a.id);
+        assert.ok(b,`${style} protagonist identity`);
+        assert.ok(Math.hypot(b.x-a.x,b.y-a.y)<85,`${style} ${a.id} teleport at frame ${i}`);
+      }
+    }
+    if(style==='cloud-ink') {
+      for(const p of performance.contact) {const [bird,branch]=p.actors;assert.equal(bird.footY,branch.y);assert.equal(bird.footX,branch.x);assert.equal(bird.land,true);}
+      assert.ok(Number(performance.samples[408].actors[0].head)<Number(performance.samples[336].actors[0].head),'gaze follows falling leaf down');
+      assert.ok(performance.samples[552].actors[0].y<performance.samples[492].actors[0].y-200,'bird departs upward');
+    } else if(style==='dark-product') {
+      for(const sample of performance.samples.slice(0,144)) for(const card of sample.actors.filter(a=>a.id.startsWith('cloud-'))) {
+        assert.ok(card.y-Number(card.h)/2>=260 && card.y+Number(card.h)/2<=940,'projected cards must not cover the headline or footer');
+      }
+      for(const p of performance.drag) {const [card,cursor]=p.actors;assert.equal(cursor.held,true);assert.equal(cursor.x-card.x,30);assert.equal(cursor.y-card.y,-20);}
+      assert.equal(performance.samples[204].actors[1].held,false,'release at the drop cue');
+    } else {
+      assert.ok(Number(performance.samples[336].actors[1].w)>1000,'chosen paper expands');
+      assert.ok(Number(performance.samples[336].actors[0].w)<200,'unselected material retreats');
+    }
     const bad = await page.evaluate(() => {
       const failures: string[] = [];
       for (let t = 0; t < 24; t += .25) for (const b of window.TEXTS(t)) {

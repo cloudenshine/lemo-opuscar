@@ -7,3 +7,5 @@ Fonts: local Windows KaiTi / SimSun or platform serif fallback; no font file is 
 Sound: original composition using the library's physically modelled guqin, plus original synthesized water and wind. No samples, narration or third-party music.
 
 Second revision: original four-bus synthesis in studio/audio/score-v2.py. NumPy/SciPy synthesis and existing upstream guqin model; no original film audio samples. The ink flute is synthesized, not a recorded xiao.
+
+Third revision: original continuous actor/paper/card choreography and score-v3.py. Bird, paper and pointer sounds are procedural synthesis; no field recordings or upstream film audio.

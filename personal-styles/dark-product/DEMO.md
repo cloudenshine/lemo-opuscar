@@ -1,15 +1,14 @@
-# 归序工作空间 · 第二轮
+# 归序工作空间 · 第三轮
 
-Upgrade the original concept film through projected space and a motivated operation insert.
+候选为更密卡群、更长产品讲解、让同一任务卡经历完整操作；选择第三种。原创概念界面始终披露。
 
-0–3s: enter three depth planes of records; 27 cards arrive on whole-frame subdivisions.
-3–6s: drift sideways and freeze; whole-bus silence 5–6s prepares organization.
-6–12s: individual cards land into assigned slots while the oblique workspace turns frontal.
-12–18s: insert a task card, move the pointer along an arc, click at 13.5s and confirm at 14s; silence 17.25–18s prepares the final reveal.
-18–24s: the cards collapse radially into one workspace and hold the final message.
+0–6s：27张卡片按透视深度排序，镜头轻绕行；指针先试探，再在4.5s选中目标；5–6s静默冻结。
+6–12s：目标卡与指针保持接触，沿弧线拖到右侧资料库，8.5s放下；其余记录有指定槽位。
+12–18s：同一卡片展开为任务详情；13.5s检索点击，14s结果带出来源；17.25–18s静默。
+18–24s：任务详情回到更广的关系视图，卡片保留身份；连线和背景记录形成收束。
 
-Four harmonic regions change by chapter; remove the pulse during inspection. Separate glass arrivals, slot snaps, dry click, two-note confirmation, low collapse, ambience and sweeps into editable buses. The interface is fictional; 1 denotes one workspace, not measured performance.
+音乐四段和声保留，新增试探/抓取/放下/检索事件。Canvas 2.5D 投影，不宣称通用3D或可用SaaS；原作光标性格、物体数量与空间变化仍更丰富。
 
-Create `product-v2` with `--style dark-product`; keep `product-demo` unchanged. This Canvas projection is not a general 3D renderer or a functioning product.
+项目 product-v3，模板1.2.0；保留 product-demo、product-v2。
 
-Scene: [demo/scene.ts](demo/scene.ts). [Comparison](../../studio/comparison/REVIEW.zh-CN.md).
+源文件：[scene.ts](demo/scene.ts)。[原作与历史对照](../../studio/comparison/REVIEW.zh-CN.md)。

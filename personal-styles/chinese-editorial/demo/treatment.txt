@@ -1,12 +1,12 @@
-# 把信息读懂 · 第二轮
+# 把信息读懂 · 第三轮
 
-Upgrade the existing editorial story with physical page motion and stable Chinese reading intervals.
+候选为更大的步骤编号、延长讲解、让材料贯穿编辑过程；选择第三种。撤掉永久左栏，作品使用完整画幅。
 
-0–6s: a rotated stack settles into a spread; a vermilion scan organizes the notes.
-6–12s: three evidence columns arrive at staggered times; underline emphasis follows the reading order.
-12–18s: move into the edit, remove noise lines, then reveal the retained statement at 13.25s. Keep the conclusion clear of moving lines.
-18–24s: a fan of page variants resolves into the final printed statement and holds.
+0–6s：三份独立纸页“观察记录 / 现场访谈 / 未经核实”，内容明确标注为虚构编辑练习。
+6–12s：同一纸页展开成核验网格；来源连线抵达访谈，10.25s 划去“所有人都喜欢”的概括。5.5–6s 静默先清空注意力。
+12–18s：被选纸页向中心展开；其他两页退到边缘，13.25s 出现“同一处，也有不同感受”，并明确两条访谈不能代表所有人；17–18s 静默。
+18–24s：终稿保留物体身份，背景输出墙展开，19.5s 定稿印章落下；结论、限定和来源留足阅读时间。
 
-Two whole-bus silences: 5.5–6s and 17–18s. Separate paper, print, marker, cutting and stamping cues; four buses, changing bass/mallet/percussion, pre-entry paper at 11.75s and 20.25s. Encoded-media verification is required after mastering.
+纸页、批注、否定、定稿有不同事件。材料是演示编审方法的虚构样本，不能当成真实访谈研究。新风格允许仅用于纸页接触层的平面偏移阴影，不增加光泽或立体 UI。
 
-Create `editorial-v2` with `--style chinese-editorial`; keep `editorial-demo` unchanged. The evidence words remain illustrative, not real news or statistics.
+项目 editorial-v3，模板1.2.0；保留 editorial-demo、editorial-v2。

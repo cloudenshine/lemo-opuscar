@@ -28,99 +28,78 @@ function stage() {
 }
 function card(x: number, y: number, w: number, h: number, i: number, accent = false) {
   panel(x, y, w, h, 12, i % 2 ? '#161d2b' : '#1b2333');
-  line(x + 20, y + 24, 24, accent ? C.accent : '#74819b', 5);
-  line(x + 20, y + 47, w * .67); line(x + 20, y + 64, w * .43, '#2d3648', 5);
+  line(x + 20, y + h * .2, 24, accent ? C.accent : '#74819b', 5);
+  line(x + 20, y + h * .46, w * .67); line(x + 20, y + h * .68, w * .43, '#2d3648', 5);
 }
-function device(t: number) {
-  const face = ease((t - 6) / 3.5);
-  ctx.save(); ctx.translate(1272, 550); ctx.transform(.9 + .1 * face, -.045 * (1 - face), .06 * (1 - face), .92 + .08 * face, 0, 0); ctx.translate(-1272, -550);
-  const x = 720, y = 245, w = 1104, h = 610;
-  panel(x, y, w, h, 22, '#111722'); line(x + 28, y + 68, w - 56, '#2c3548', 1);
-  text('app-name', `${data.seal} / 工作空间`, x + 35, y + 45, 24, C.muted);
-  text('tab1', '收集', x + 40, y + 126, 28); text('tab2', '整理', x + 40, y + 194, 28, C.muted); text('tab3', '交付', x + 40, y + 262, 28, C.muted);
-  for (let i = 0; i < 9; i++) {
-    const target = ease((t - 6 - i * .125) / .5);
-    const gx = x + 240 + (i % 3) * 265, gy = y + 112 + Math.floor(i / 3) * 145;
-    const ox = 620 + ((i * 271) % 1030), oy = 190 + ((i * 159) % 650);
-    const px = ox + (gx - ox) * target, py = oy + (gy - oy) * target;
-    card(px, py, 238, 114, i, false);
-    if (t >= 7.5) {
-      ctx.fillStyle = i % 2 ? '#161d2b' : '#1b2333'; ctx.fillRect(gx + 16, gy + 16, 205, 66);
-      text(`item${i}`, ['灵感', '访谈', '草稿', '图片', '任务', '参考', '计划', '复盘', '交付'][i], gx + 22, gy + 49, 28);
-      line(gx + 22, gy + 72, 110, '#384256', 4);
-    }
-  }
-  ctx.restore();
+
+type Pose = {x:number;y:number;w:number;h:number;z:number};
+const smooth=(x:number)=>{const p=clamp(x);return p*p*(3-2*p);};
+const lerp=(a:number,b:number,p:number)=>a+(b-a)*p;
+function cloud(t:number,i:number):Pose {
+  const q=smooth(Math.min(t,5)/5),a=(i%9)/9*Math.PI*2+q*.35,depth=Math.floor(i/9);
+  const z=520+depth*240+Math.sin(a)*170,scale=700/z;
+  return {x:960+Math.cos(a)*(390+depth*110)*scale,y:590+((i%3)-1)*85*scale,w:235*scale,h:142*scale,z};
 }
-function operation(t: number) {
-  const settle = ease((t - 12) / .75);
-  ctx.save(); ctx.translate(1310, 550); ctx.scale(1.08 - .08 * settle, 1.08 - .08 * settle); ctx.translate(-1310, -550);
-  panel(790, 245, 1034, 610, 24, '#161e2d');
-  text('detail-type', '任务 / 研究札记', 846, 324, 28, C.muted);
-  text('detail-title', '把灵感整理成提案', 846, 420, 54, C.ink, 600);
-  line(846, 465, 922, '#384256', 1);
-  for (let i = 0; i < 3; i++) {
-    const y = 534 + i * 78;
-    panel(846, y - 23, 27, 27, 5, '#29324a');
-    ctx.strokeStyle = C.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(852, y - 11); ctx.lineTo(859, y - 3); ctx.lineTo(869, y - 18); ctx.stroke();
-    text(`detail-check${i}`, ['核对事实', '补齐出处', '准备交付'][i], 895, y, 32);
-  }
-  const click = t >= 13.5;
-  panel(1440, 685, 320, 100, 16, click ? '#4d5b8a' : '#293653');
-  text('action', '归档', 1540, 750, 36, C.ink, 600);
-  const p = ease((t - 12.25) / 1.25);
-  const px = 1775 - p * 170, py = 500 + p * 230 - Math.sin(p * Math.PI) * 70;
-  ctx.save(); ctx.translate(px, py); ctx.fillStyle = '#f4f6ff'; ctx.strokeStyle = '#111722'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(14, 37); ctx.lineTo(21, 34); ctx.lineTo(15, 21); ctx.lineTo(28, 21); ctx.closePath(); ctx.fill(); ctx.stroke();
-  if (click) { const q = clamp((t - 13.5) / .4); ctx.globalAlpha = 1 - q; ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(0, 0, 10 + q * 45, 0, Math.PI * 2); ctx.stroke(); }
-  ctx.restore();
-  if (t >= 14) {
-    const slide = (1 - ease((t - 14) / .5)) * 25;
-    panel(1370, 525 + slide, 390, 80, 16, '#29324a');
-    text('confirmation', '已归档 · 可检索', 1410, 578 + slide, 30, C.accent);
-  }
-  ctx.restore();
+function hero(t:number):Pose {
+  const start=cloud(5,4),p=smooth((t-6)/2.5),open=smooth((t-12)/.75),close=smooth((t-18)/1.5);
+  if(t<6)return cloud(t,4);
+  const x=lerp(start.x,1505,p),y=lerp(start.y,560,p)-Math.sin(p*Math.PI)*120;
+  return {x:lerp(lerp(x,960,open),960,close),y:lerp(lerp(y,555,open),570,close),w:lerp(lerp(start.w,360,p),1120,open)*(1-.28*close),h:lerp(lerp(start.h,230,p),570,open)*(1-.15*close),z:200};
 }
-window.DUR = 24;
-window.SHOTS = [{ start: 0, end: 3, framing: 'layered notes', move: 'depth dolly' }, { start: 3, end: 6, framing: 'dense records', move: 'lateral drift and freeze' }, { start: 6, end: 12, framing: 'workspace', move: 'oblique to frontal pull' }, { start: 12, end: 18, framing: 'task insert', move: 'close reveal' }, { start: 18, end: 24, framing: 'one workspace', move: 'radial collapse and hold' }];
-window.EV = [{ t: 0, type: 'pulse' }, { t: 5, type: 'silence' }, { t: 11.75, type: 'sweep' }, { t: 13.5, type: 'click' }, { t: 14, type: 'archive' }, { t: 17.25, type: 'silence' }, { t: 18, type: 'collapse' }, { t: 19.5, type: 'lock' }];
-for (let i = 0; i < 27; i++) window.EV.push({ t: .25 + i * .125, type: 'tile' });
-for (let i = 0; i < 9; i++) window.EV.push({ t: 6.5 + i * .125, type: 'snap' });
-window.render = (time: number) => {
-  const t = Math.max(0, Math.min(23.999, time)); boxes = []; stage();
-  text('brand', data.title, 96, 104, 30, C.ink, 600); text('fiction', '原创概念界面 / 非真实产品演示', 1380, 104, 23, C.muted);
-  if (t < 6) {
-    text('hook', '每个想法，', 96, 430, 74, C.ink, 600); text('hook2', '都有它的位置。', 96, 540, 74, C.ink, 600);
-    text('hook-note', '从分散的记录，回到清晰的工作', 96, 650, 28, C.muted);
-    ctx.save(); ctx.beginPath(); ctx.rect(820, 175, 1020, 735); ctx.clip();
-    for (let i = 26; i >= 0; i--) {
-      const clock = Math.min(t, 5), p = ease((clock - i * .125) / .25);
-      if (p <= 0) continue;
-      const depth = Math.floor(i / 9), z = 500 + depth * 300 - 150 * ease(clock / 5);
-      const perspective = 720 / z, wx = ((i % 3) - 1) * 250 + Math.sin(i * 12.3) * 40 - 55 * ease((clock - 2) / 3);
-      const wy = (Math.floor(i / 3) % 3 - 1) * 175 + (depth - 1) * 65;
-      ctx.save(); ctx.translate(1330 + wx * perspective, 540 + wy * perspective); ctx.scale(perspective, perspective); ctx.rotate(Math.sin(i * 7.8) * .09 * (1 - .5 * ease(clock / 5))); card(-110, -45 + (1 - p) * 90, 238, 110, i); ctx.restore();
-    }
+function pointer(t:number) {
+  const h=hero(t),picked=t>=4.5&&t<8.5;
+  if(t>=4.5&&t<12)return {x:h.x+30,y:h.y-20,held:picked};
+  if(t<4.5) {
+    const q=smooth((t-3)/1.5),wrong=cloud(t,2);
+    return {x:lerp(wrong.x, h.x+30,q),y:lerp(wrong.y,h.y-20,q)-Math.sin(q*Math.PI)*100,held:false};
+  }
+  const q=smooth((t-12)/1.5);
+  return {x:lerp(1535,1360,q),y:lerp(540,735,q)-Math.sin(q*Math.PI)*70,held:false};
+}
+window.PERFORMANCE=t=>({phase:t<4.5?'explore':t<6?'select':t<8.5?'drag':t<12?'stored':t<18?'inspect':'resolve',actors:[{id:'task-4',...hero(t)},{id:'pointer',...pointer(t)},...(t<6?Array.from({length:27},(_,i)=>({id:`cloud-${i}`,...cloud(t,i)})):[])]});
+window.DUR=24;
+window.SHOTS=[{start:0,end:6,framing:'depth cloud',move:'orbit and choose'},{start:6,end:12,framing:'library',move:'drag across space'},{start:12,end:18,framing:'source detail',move:'expand selected object'},{start:18,end:24,framing:'workspace',move:'pull back to relationships'}];
+window.EV=[{t:0,type:'pulse'},{t:2.5,type:'hover'},{t:4.5,type:'grab'},{t:5,type:'silence'},{t:6,type:'sweep'},{t:8.5,type:'drop'},{t:11.75,type:'sweep'},{t:13.5,type:'click'},{t:14,type:'search'},{t:17.25,type:'silence'},{t:18,type:'collapse'},{t:19.5,type:'lock'}];
+window.render=seconds=>{
+  const t=Math.max(0,Math.min(24,seconds));boxes=[];ctx.setTransform(1,0,0,1,0,0);stage();
+  text('brand',data.seal,96,94,30,C.accent,600);text('title',data.title,550,94,30);
+  text('disclosure','原创概念演示',1530,94,24,C.muted);
+  const phase=Math.min(3,Math.floor(t/6));
+  text(`heading-${phase}`,['想法很多，线索在哪？','选中它，放回资料库','找到内容，也找到来源','每个想法，都有来处。'][phase],96,210,56,C.ink,600);
+  if(t>=6&&t<12){panel(1275,310,470,530,22,'#111722');text('library','资料库',1315,370,32,C.accent);}
+  const others=Array.from({length:27},(_,i)=>i).filter(i=>i!==4).map(i=>{
+    const c=cloud(Math.min(t,5),i),p=smooth((t-6-(i%5)*.125)/2),final=smooth((t-18)/1.5);
+    return {i,x:lerp(c.x,270+(i%4)*245,p),y:lerp(c.y,370+Math.floor(i/4)*75,p),w:lerp(c.w,190,p),h:lerp(c.h,64,p),z:c.z,final};
+  }).sort((a,b)=>b.z-a.z);
+  if(t<12||t>=18)for(const c of others){
+    ctx.save();ctx.globalAlpha=t>=18?.25*c.final:1;
+    const x=t>=18?150+(c.i%6)*280:c.x,y=t>=18?340+Math.floor(c.i/6)*116:c.y;
+    card(x-c.w/2,y-c.h/2,c.w,c.h,c.i);ctx.restore();
+  }
+  const h=hero(t);panel(h.x-h.w/2,h.y-h.h/2,h.w,h.h,18,'#1d2840');
+  ctx.strokeStyle=C.accent;ctx.lineWidth=t>=4.5?3:1;ctx.strokeRect(h.x-h.w/2+6,h.y-h.h/2+6,h.w-12,h.h-12);
+  if(t>=12.75){
+    const scale=h.w/1120;ctx.save();ctx.translate(h.x-h.w/2,h.y-h.h/2);ctx.scale(scale,scale);
+    text('task-name','研究札记',42,65,30,C.accent,600);
+    text('task-title','把灵感整理成提案',42,155,54,C.ink,600);
+    text('task-source','来源：自己的阅读与观察',42,230,28,C.muted);
+    line(42,275,1036,'#36435e',1);
+    if(t>=14){text('result','已定位 · 来源完整',42,365,36,C.accent);line(42,397,430*ease((t-14)/.7),C.accent,3);}
+    panel(850,415,220,98,12,t>=13.5?'#344665':'#263751');text('search','检索',905,478,34);
     ctx.restore();
-  } else if (t < 18) {
-    text('workflow', t < 12 ? '有序归位。' : '清晰可见。', 96, 442, 72, C.ink, 600);
-    text('workflow-note', t < 12 ? '把记录整理成可行动的线索' : '需要的内容，都在视线之内', 96, 532, 28, C.muted);
-    if (t < 12) device(t); else operation(t);
-  } else {
-    const p = ease((t - 18) / 1.5), scale = .55 + p * .45;
-    for (let i = 0; i < 9; i++) {
-      const angle = i / 9 * Math.PI * 2 + p * .4, radius = 520 * (1 - p);
-      ctx.save(); ctx.globalAlpha = 1 - p; ctx.translate(1000 + Math.cos(angle) * radius, 500 + Math.sin(angle) * radius * .6); ctx.scale(.7 - .5 * p, .7 - .5 * p); ctx.rotate(angle * .08); card(-119, -57, 238, 114, i); ctx.restore();
-    }
-    ctx.save(); ctx.translate(1040, 515); ctx.scale(scale, scale);
-    ctx.font = '600 420px "Microsoft YaHei", sans-serif'; ctx.fillStyle = C.accent; ctx.fillText('1', -170, 150); ctx.restore();
-    boxes.push({ id: 'one', text: '1', x0: 800, y0: 200, x1: 1250, y1: 740 });
-    text('final', '一个空间，安放所有想法', 500, 828, 55, C.ink, 600);
-    text('meaning', '1 指一个工作空间，不是性能测试数字', 665, 900, 25, C.muted);
-    line(820, 744, 270 * p, C.accent, 3);
+  }else{
+    // Abstract lines carry identity before the close-up, without unreadable moving labels.
+    line(h.x-h.w/2+24,h.y-h.h/2+30,h.w*.2,C.accent,6);
+    line(h.x-h.w/2+24,h.y-h.h/2+60,h.w*.68);line(h.x-h.w/2+24,h.y-h.h/2+84,h.w*.43);
   }
-  text('inscription', data.inscription, 96, 1015, 27, C.muted);
+  if(t>=18){
+    const q=smooth((t-18)/1.5);ctx.strokeStyle='#a4b2ff88';ctx.lineWidth=2;
+    for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(960+side*h.w/2,570);ctx.bezierCurveTo(960+side*610,570,960+side*610,790,960+side*700,790);ctx.stroke();ctx.beginPath();ctx.arc(960+side*700,790,8*q,0,Math.PI*2);ctx.stroke();}
+  }
+  if(t>=2&&t<18){const p=pointer(t);ctx.save();ctx.translate(p.x,p.y);const press=1-.18*Math.sin(Math.PI*clamp((t-13.5)/.25));ctx.scale(press,press);ctx.fillStyle=p.held?C.accent:'#ffffff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(1,34);ctx.lineTo(11,26);ctx.lineTo(20,42);ctx.lineTo(28,37);ctx.lineTo(19,21);ctx.lineTo(32,18);ctx.closePath();ctx.fill();ctx.restore();
+    if(t>=4.5&&t<4.9||t>=8.5&&t<8.9||t>=13.5&&t<13.9){const a=t>=13.5?t-13.5:t>=8.5?t-8.5:t-4.5;ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,12+a*75,0,Math.PI*2);ctx.stroke();}
+  }
+  text('inscription',data.inscription,96,1015,27,C.muted);
 };
-window.TEXTS = t => { window.render(t); return boxes; };
-window.render(0); window.READY = true; document.querySelector('#loading')?.remove();
+window.TEXTS=t=>{window.render(t);return boxes;};window.render(0);window.READY=true;document.querySelector('#loading')?.remove();
 export {};

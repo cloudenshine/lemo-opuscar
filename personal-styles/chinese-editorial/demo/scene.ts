@@ -17,97 +17,71 @@ function text(id: string, value: string, x: number, y: number, size: number, col
 }
 function rect(x: number, y: number, w: number, h: number, color: string) { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); }
 function rule(y: number, start = 96, end = 1824) { rect(start, y, end - start, 1, C.rule); }
-function page(index: number, t: number) {
-  const p = ease((t - index * 6) / .5);
-  const id = `s${index}-`;
-  text(id + 'number', `0${index + 1}`, 96, 805, 390, C.ink, 700);
-  const titles = ['先看问题', '让事实归位', '给判断留白', '形成自己的观点'];
-  text(id + 'heading', titles[index], 96, 330, 58, C.ink, 600);
-  const kicker = ['信息越多，越需要秩序', '事实、来源、结论各就其位', '删去噪声，保留证据', '看见关系，再写结论'];
-  text(id + 'kicker', kicker[index], 96, 400, 27, C.muted);
-  const x = 860, w = 964;
-  if (index === 0) {
-    ctx.save(); ctx.translate(1342, 540); ctx.rotate((1 - ease(t / 3.5)) * -.13); ctx.scale(.87 + .13 * ease(t / 3.5), .87 + .13 * ease(t / 3.5)); ctx.translate(-1342, -540);
-    for (let k = 2; k >= 0; k--) { ctx.save(); ctx.translate(1340, 540); ctx.rotate(k * .035 * (1 - ease((t - 3) / 2))); rect(-460 + k * 12, -290 + k * 8, 930, 570, k % 2 ? '#dedacf' : '#f8f6ee'); ctx.restore(); }
-    rect(x, 246, w, 590, '#e8e3d8');
-    for (let i = 0; i < 7; i++) {
-      const slide = (1 - ease((t - .125 * i) / .5)) * 100;
-      rect(x + 48 + slide, 300 + i * 66, [650, 820, 480, 740, 560, 800, 340][i], 18, i === 4 ? C.accent : '#b6b5a8');
-    }
-    const scan = ease((t - 1.5) / 3.5);
-    rect(x + 30, 274 + scan * 465, w - 60, 2, C.accent);
-    ctx.restore();
-    text(id + 'note', '从一页杂乱的笔记开始', x + 48, 900, 27, C.muted);
-  } else if (index === 1) {
-    const labels = ['事实', '来源', '结论'];
-    for (let i = 0; i < 3; i++) {
-      const cx = x + i * 326;
-      const arrive = ease((t - 6 - i * .25) / .75);
-      ctx.save(); ctx.translate(cx + 151, 541); ctx.rotate((1 - arrive) * (i - 1) * .12); ctx.translate(-cx - 151, -541 + (1 - arrive) * 60);
-      rect(cx, 246, 302, 590, '#fbfaf5');
-      rect(cx, 246, 302 * p, 8, i === 0 ? C.accent : C.ink);
-      text(id + `col${i}`, labels[i], cx + 28, 323, 40, C.ink, 600);
-      const notes = [['做了什么', '发生在哪', '何时发生'], ['原始记录', '交叉核验', '注明出处'], ['可确认项', '仍有疑问', '下一步']];
-      for (let k = 0; k < 3; k++) {
-        text(id + `evidence${i}-${k}`, notes[i][k], cx + 28, 426 + k * 76, 28, C.muted);
-        rect(cx + 28, 445 + k * 76, 246 * ease((t - 6 - k * .15) / .5), 1, C.rule);
-      }
-      text(id + `index${i}`, `0${i + 1}`, cx + 28, 780, 32, C.muted);
-      const focus = ease((t - 8 - i * .75) / .65);
-      rect(cx + 28, 669, 246 * focus, 5, C.accent);
-      ctx.restore();
-    }
-    text(id + 'note', '示意内容，不作为新闻或统计', x, 900, 26, C.muted);
-  } else if (index === 2) {
-    const close = 1 + .07 * ease((t - 12) / 2.5);
-    ctx.save(); ctx.translate(1342, 540); ctx.scale(close, close); ctx.translate(-1342, -540);
-    rect(x, 246, w, 590, '#fbfaf5');
-    for (let i = 0; i < 6; i++) {
-      const keep = false;
-      const collapse = keep ? 1 : 1 - ease((t - 12.3 - i * .1) / .6);
-      rect(x + 48, 322 + i * 72, [650, 780, 530, 740, 640, 400][i], 14 * collapse, keep ? C.ink : '#cfcec4');
-    }
-    if (t >= 13.25) {
-      text(id + 'keep1', '保留证据，', x + 48, 465, 58, C.ink, 600);
-      text(id + 'keep2', '删去多余的判断。', x + 48, 575, 58, C.ink, 600);
-    }
-    rect(x + 48, 640, 780 * ease((t - 12.75) / .75), 5, C.accent);
-    rect(x + 48, 654, 780 * (1 - ease((t - 14.5) / .75)), 2, C.rule);
-    ctx.restore();
-    text(id + 'note', '每一次删减，都保留判断依据', x, 900, 26, C.muted);
-  } else {
-    const settle = ease((t - 18) / 2.5);
-    for (let i = 0; i < 3; i++) {
-      ctx.save(); ctx.translate(1300 + (i - 1) * (200 - 95 * settle), 540 + Math.abs(i - 1) * 40);
-      ctx.rotate((i - 1) * .18 * (1 - settle)); rect(-420, -260, 840, 520, i % 2 ? '#dedacf' : '#e8e3d8');
-      for (let j = 0; j < 5; j++) rect(-360, -180 + j * 75, 620 - j * 40, j === 0 ? 12 : 6, j === 0 ? C.accent : '#b6b5a8'); ctx.restore();
-    }
-    ctx.save(); ctx.translate(1342, 540); ctx.rotate(-.09 * (1 - settle)); ctx.scale(.78 + .22 * settle, .78 + .22 * settle); ctx.translate(-1342, -540);
-    rect(x, 246, w, 590, '#fbfaf5');
-    rect(x + 48, 304, 64 * p, 8, C.accent);
-    text(id + 'quote1', '信息有层次，', x + 48, 466, 64, C.ink, 600);
-    text(id + 'quote2', '观点才有分量。', x + 48, 564, 64, C.ink, 600);
-    rule(648, x + 48, x + w - 48);
-    text(id + 'author', `${data.seal} / 编辑札记`, x + 48, 742, 28, C.muted);
-    ctx.restore();
-    text(id + 'note', '版式是一套规则，故事由你书写', x, 900, 26, C.muted);
-  }
+
+type Pose = { x: number; y: number; w: number; h: number; angle: number };
+const mix = (a: number, b: number, p: number) => a + (b - a) * p;
+function paperPose(t: number, i: number): Pose {
+  const spread = ease((t - 6) / 1.25), edit = ease((t - 12) / 1.25), publish = ease((t - 18) / 1.5);
+  const x = mix(960 + (i - 1) * 460, 960 + (i - 1) * 590, spread);
+  const y = 560 + (i === 1 ? 0 : 25) * (1 - spread);
+  return { x: mix(x, i === 1 ? 960 : 960 + (i - 1) * 720, edit),
+    y: mix(y, i === 1 ? 560 : 830, edit), w: i === 1 ? mix(mix(410, 500, spread), 1080 + 220 * publish, edit) : mix(mix(410, 500, spread), 180, edit),
+    h: i === 1 ? mix(510, 610, edit) : mix(510, 120, edit), angle: (i - 1) * .045 * (1 - spread) };
 }
+window.PERFORMANCE = t => ({ actors: [0, 1, 2].map(i => ({ id: `paper-${i}`, ...paperPose(t, i) })), phase: t < 6 ? 'collect' : t < 12 ? 'verify' : t < 18 ? 'edit' : 'publish' });
 window.DUR = 24;
-window.SHOTS = [{ start: 0, end: 6, framing: 'paper stack', move: 'overhead rotation and push' }, { start: 6, end: 12, framing: 'evidence spread', move: 'staggered reflow' }, { start: 12, end: 18, framing: 'editing detail', move: 'push into selection' }, { start: 18, end: 24, framing: 'finished poster', move: 'fan collapse and scale reveal' }];
-window.EV = [0, 6, 12, 18].map(t => ({ t, type: 'page' }));
-window.EV.push({ t: 5.5, type: 'silence' }, { t: 7.25, type: 'align' }, { t: 9.5, type: 'marker' }, { t: 12.75, type: 'knife' }, { t: 14.5, type: 'edit' }, { t: 17, type: 'silence' }, { t: 18, type: 'stamp' }, { t: 20.5, type: 'stack' });
-for (let i = 0; i < 7; i++) window.EV.push({ t: .5 + i * .125, type: 'print' });
-window.render = (time: number) => {
-  const t = Math.max(0, Math.min(23.999, time)); boxes = [];
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; rect(0, 0, 1920, 1080, C.paper);
-  text('brand', '中文编辑部', 96, 99, 28, C.ink, 600);
-  text('title', data.title, 860, 99, 28);
-  text('edition', '01 / EDITORIAL NOTES', 1485, 99, 22, C.muted);
-  rule(134); page(Math.floor(t / 6), t); rule(962);
-  text('inscription', data.inscription, 96, 1024, 27, C.muted);
-  text('folio', `${Math.floor(t / 6) + 1} / 4`, 1740, 1024, 24, C.muted);
+window.SHOTS = [
+  { start: 0, end: 6, framing: 'desk spread', move: 'fan settle' },
+  { start: 6, end: 12, framing: 'source grid', move: 'spread and trace' },
+  { start: 12, end: 18, framing: 'edited page', move: 'paper expansion' },
+  { start: 18, end: 24, framing: 'publication wall', move: 'layered reveal' },
+];
+window.EV = [{t:0,type:'page'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
+window.render = seconds => {
+  const t = Math.max(0, Math.min(24, seconds)); boxes = []; ctx.setTransform(1,0,0,1,0,0);
+  rect(0,0,1920,1080,C.paper); rule(132); rule(964);
+  text('brand', data.seal, 96, 95, 30, C.ink, 600); text('title', data.title, 550, 95, 30);
+  text('disclosure', '虚构编辑练习', 1530, 95, 24, C.muted);
+  const phase = Math.min(3, Math.floor(t / 6));
+  text(`heading-${phase}`, ['一条判断，从哪里来？','把来源与推断分开','让证据留下来','观点，要有来处。'][phase],96,220,58,C.ink,600);
+  if (t >= 18) {
+    const q = ease((t-18)/1.5);
+    for (let i=0;i<12;i++) {
+      const x=150+(i%6)*278, y=300+Math.floor(i/6)*340;
+      ctx.save();ctx.translate(x,y);ctx.rotate((i%2?1:-1)*.035*q);
+      rect(0,0,230,280,'#e4dfd3');rect(25,40,120*q,8,C.rule);rect(25,70,175*q,5,C.rule);ctx.restore();
+    }
+  }
+  // The selected sheet remains the same object; side notes retain their identity in the tray.
+  for (const i of [0,2,1]) {
+    const p=paperPose(t,i); ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+    rect(-p.w/2+7,-p.h/2+9,p.w,p.h,'#d9d3c7');rect(-p.w/2,-p.h/2,p.w,p.h,'#faf8f1');
+    rect(-p.w/2,-p.h/2,6,p.h,i===1?C.accent:C.rule);
+    const x=-p.w/2+32,y=-p.h/2;
+    if(t<12) {
+      text(`source-${i}`,['观察记录','现场访谈','未经核实'][i],x,y+66,30,i===2?C.accent:C.muted,600);
+      const lines=[['雨停了','人走进来'],['有人喜欢安静','有人更爱热闹'],['所有人都喜欢','只是一个猜测']][i];
+      lines.forEach((v,j)=>text(`evidence-${i}-${j}`,v,x,y+180+j*66,34));
+      for(let k=0;k<3;k++)rect(x,y+350+k*24,p.w-90-(k%2)*70,5,C.rule);
+      if(i===2&&t>=10.25)rect(x,y+169,(p.w-64)*ease((t-10.25)/.5),4,C.accent);
+      if(i===1&&t>=7.25)rect(x,y+260,(p.w-64)*ease((t-7.25)/1),3,C.accent);
+    } else if(i===1&&t>=13.25) {
+      text('verified','可以确认',x,y+76,28,C.accent,600);
+      text('claim','同一处，也有不同感受。',x,y+215,64,C.ink,600);
+      text('qualification','两条访谈，不能代表所有人。',x,y+303,34,C.muted);
+      rect(x,y+355,p.w-100,1,C.rule);
+      text('source-final','来源：观察记录与现场访谈',x,y+410,28,C.muted);
+      if(t>=19.5) { const q=ease((t-19.5)/.25);ctx.save();ctx.translate(p.w/2-125,p.h/2-83);ctx.rotate(-.08);ctx.strokeStyle=C.accent;ctx.lineWidth=3;ctx.strokeRect(-53,-34,106,62);text('approved','定稿',-34,10,34,C.accent,600);ctx.restore();rect(x,y+243,610*q,4,C.accent); }
+    }
+    ctx.restore();
+  }
+  if(t>=7.25&&t<12) {
+    const q=ease((t-7.25)/2), end=370+590*q;
+    ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(370,869);ctx.bezierCurveTo(370,927,end,927,end,869);ctx.stroke();
+    ctx.fillStyle=C.accent;ctx.beginPath();ctx.arc(end,869,6,0,Math.PI*2);ctx.fill();
+  }
+  text('inscription',data.inscription,96,1020,27,C.muted);
 };
-window.TEXTS = t => { window.render(t); return boxes; };
-window.render(0); window.READY = true; document.querySelector('#loading')?.remove();
+window.TEXTS = t => {window.render(t);return boxes;};
+window.render(0);window.READY=true;document.querySelector('#loading')?.remove();
 export {};
