@@ -46,11 +46,43 @@ function posterGlyph(t: number, i: number): GlyphPose {
   const p = ease((t-19.5-i*.25)/.5);
   return {x:i*260+(i?40:-40)*(1-p),y:0,size:260*(.85+.15*p),angle:0};
 }
-function glyphRun(id: string, value: string, poses: GlyphPose[], color: string, weight = 600) {
+// Original centerline lettering, deliberately limited to the four display characters.
+const strokeLetters: Record<string, number[][][]> = {
+  '判': [[[20,12],[25,26]],[[44,10],[37,26]],[[13,34],[49,34]],[[10,54],[51,54]],[[31,29],[31,88]],[[64,20],[64,64]],[[84,10],[84,84],[75,90]]],
+  '断': [[[20,18],[25,27]],[[40,16],[35,27]],[[14,37],[48,37]],[[31,12],[31,75]],[[31,38],[13,65]],[[31,38],[48,61]],[[9,11],[9,85],[50,85]],[[87,12],[59,23]],[[59,23],[59,65],[50,87]],[[59,39],[91,39]],[[79,39],[79,90]]],
+  '有': [[[10,27],[88,27]],[[46,10],[19,53]],[[35,47],[35,88]],[[35,47],[78,47],[78,88],[67,88]],[[35,61],[77,61]],[[35,75],[77,75]]],
+  '据': [[[10,32],[32,32]],[[22,12],[22,87],[14,87]],[[9,65],[34,49]],[[44,15],[86,15],[86,33]],[[45,33],[86,33]],[[44,15],[44,60],[34,88]],[[47,51],[91,51]],[[69,38],[69,67]],[[50,66],[50,89]],[[50,66],[85,66],[85,89]],[[50,89],[85,89]]]
+};
+function strokePose(t: number, character: string, index: number, poster: boolean, glyphIndex: number) {
+  const onset=(poster?19.5:0)+glyphIndex*.125, settle=ease((t-onset)/1.125);
+  const progress=ease((t-onset-index*.0416666667)/.5), source=strokeLetters[character][index];
+  const points=Array.from({length:17},(_,k)=>{
+    const u=k/16, along=u*(source.length-1), at=Math.min(source.length-2,Math.floor(along)), q=along-at;
+    const x=mix(source[at][0],source[at+1][0],q),y=mix(source[at][1],source[at+1][1],q);
+    return [x+(1-settle)*((index%3-1)*18+12*Math.sin(Math.PI*u)),y+(1-settle)*((index%2?1:-1)*14*Math.sin(Math.PI*u)+8*(u-.5))];
+  });
+  return {id:`${poster?'poster':'opening'}-${glyphIndex}-stroke-${index}`,progress,deformation:1-settle,points};
+}
+window.STROKES=t=>['判断','有据'].flatMap((word,section)=>[...word].flatMap((ch,g)=>strokeLetters[ch].map((_,i)=>strokePose(t,ch,i,Boolean(section),g))));
+function strokeGlyph(id: string, ch: string, p: GlyphPose, color: string, t: number, poster: boolean, glyphIndex: number) {
+  const matrix=ctx.getTransform(), all: DOMPoint[]=[];
+  ctx.strokeStyle=color;ctx.lineWidth=p.size*.065;ctx.lineCap='square';ctx.lineJoin='miter';
+  strokeLetters[ch].forEach((_,i)=>{
+    const stroke=strokePose(t,ch,i,poster,glyphIndex), points=stroke.points.map(([x,y])=>[x*p.size/100,(y/100-1)*p.size]);
+    for(const [x,y] of points) for(const [dx,dy] of [[-1,-1],[1,1]]) all.push(matrix.transformPoint({x:x+dx*ctx.lineWidth/2,y:y+dy*ctx.lineWidth/2}));
+    const end=stroke.progress*16;ctx.beginPath();ctx.moveTo(...points[0] as [number,number]);
+    for(let k=1;k<=Math.floor(end);k++)ctx.lineTo(...points[k] as [number,number]);
+    if(end<16){const k=Math.floor(end),q=end-k;ctx.lineTo(mix(points[k][0],points[k+1][0],q),mix(points[k][1],points[k+1][1],q));}
+    if(stroke.progress>0)ctx.stroke();
+  });
+  boxes.push({id,text:ch,x0:Math.min(...all.map(p=>p.x)),y0:Math.min(...all.map(p=>p.y)),x1:Math.max(...all.map(p=>p.x)),y1:Math.max(...all.map(p=>p.y))});
+}
+function glyphRun(id: string, value: string, poses: GlyphPose[], color: string, weight = 600, time = 0) {
   const start = boxes.length;
   [...value].forEach((ch,i)=>{
     const p=poses[i];ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
-    text(`${id}-${i}`,ch,0,0,p.size,color,weight);ctx.restore();
+    if(strokeLetters[ch] && (id==='opening-word'||id==='poster-word')) strokeGlyph(`${id}-${i}`,ch,p,color,time,id==='poster-word',i);
+    else text(`${id}-${i}`,ch,0,0,p.size,color,weight);ctx.restore();
   });
   const glyphBoxes=boxes.splice(start);
   boxes.push({id,text:value,x0:Math.min(...glyphBoxes.map(b=>b.x0)),y0:Math.min(...glyphBoxes.map(b=>b.y0)),
@@ -67,7 +99,7 @@ window.SHOTS = [
   { start: 12, end: 18, framing: 'edited page', move: 'paper expansion' },
   { start: 18, end: 24, framing: 'publication wall', move: 'layered reveal' },
 ];
-window.EV = [{t:0,type:'type-impact'},{t:4,type:'page'},{t:18,type:'type-flip'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:10.5,type:'glyph-cut'},{t:10.75,type:'glyph-cut'},{t:20,type:'glyph-land'},{t:20.25,type:'glyph-land'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
+window.EV = [{t:0,type:'type-impact'},{t:.25,type:'stroke-draw'},{t:.75,type:'stroke-bind'},{t:19.75,type:'stroke-draw'},{t:20.5,type:'stroke-bind'},{t:4,type:'page'},{t:18,type:'type-flip'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:10.5,type:'glyph-cut'},{t:10.75,type:'glyph-cut'},{t:20,type:'glyph-land'},{t:20.25,type:'glyph-land'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
 window.render = seconds => {
   const t = Math.max(0, Math.min(24, seconds)); boxes = []; ctx.setTransform(1,0,0,1,0,0);
   rect(0,0,1920,1080,C.paper); rule(132); rule(964);
@@ -101,7 +133,7 @@ window.render = seconds => {
       if(i===1&&t>=7.25)rect(x,y+260,(p.w-64)*ease((t-7.25)/1),3,C.accent);
     } else if(i===1&&t>=13.25) {
       text('verified','可以确认',x,y+76,28,C.accent,600);
-      if(t>=18) glyphRun('poster-word','有据',[0,1].map(i=>{const g=posterGlyph(t,i);return {...g,x:x+135+g.x,y:y+330};}),C.accent,700);
+      if(t>=18) glyphRun('poster-word','有据',[0,1].map(i=>{const g=posterGlyph(t,i);return {...g,x:x+135+g.x,y:y+330};}),C.accent,700,t);
       text('claim','同一处，也有不同感受。',x,t<18?y+215:y+430,t<18?64:44,C.ink,600);
       text('qualification','两条访谈，不能代表所有人。',x,t<18?y+303:y+490,t<18?34:28,C.muted);
       if(t<18) rect(x,y+355,p.w-100,1,C.rule);
@@ -116,11 +148,11 @@ window.render = seconds => {
     ctx.fillStyle=C.accent;ctx.beginPath();ctx.arc(end,869,6,0,Math.PI*2);ctx.fill();
   }
   if(t<6) {
-    glyphRun('opening-word','判断',[0,1].map(i=>openingGlyph(t,i)),C.ink,700);
+    glyphRun('opening-word','判断',[0,1].map(i=>openingGlyph(t,i)),C.ink,700,t);
     if(t<3) text('opening-note','先看材料',96,880,38,C.accent,600);
   }
   text('inscription',data.inscription,96,1020,27,C.muted);
 };
-window.TEXTS = t => {window.render(t);return boxes;};
+window.TEXTS = t => {window.render(t);return boxes.filter(b=>!(b.id==='opening-word'&&t<1.25)&&!(b.id==='poster-word'&&t<20.75));};
 window.render(0);window.READY=true;document.querySelector('#loading')?.remove();
 export {};

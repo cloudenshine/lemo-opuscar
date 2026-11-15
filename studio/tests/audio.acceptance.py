@@ -5,7 +5,7 @@ import numpy as np
 import soundfile as sf
 
 root = Path(__file__).resolve().parents[2]
-for project in ['cloud-ink-v6', 'editorial-v5', 'product-v5']:
+for project in ['cloud-ink-v7', 'editorial-v6', 'product-v6']:
     out = root/'films'/project/'out'
     manifest = json.loads((out/'sound-manifest.json').read_text(encoding='utf-8'))
     mix, rate = sf.read(out/'mix.wav')

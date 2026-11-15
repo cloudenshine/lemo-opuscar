@@ -8,11 +8,11 @@ const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1512, height: 1100 } });
   await page.goto('http://127.0.0.1:43821');
-  await page.locator('[data-project="editorial-v5"]').click();
+  await page.locator('[data-project="editorial-v6"]').click();
   await page.getByRole('button', { name: '导出影片 ↗', exact: true }).click();
   await page.getByText('导出完成 · 含风格配乐与音效', { exact: true }).waitFor({ timeout: 180000 });
   const href = await page.locator('#download').getAttribute('href');
-  assert.equal(href, '/films/editorial-v5/out/film.mp4');
+  assert.equal(href, '/films/editorial-v6/out/film.mp4');
   const media = await page.request.get(`http://127.0.0.1:43821${href}`, { headers: { Range: 'bytes=0-1023' } });
   assert.equal(media.status(), 206); assert.equal((await media.body()).length, 1024);
   const frame = page.frames().find(f => f.url().includes('/films/'))!;

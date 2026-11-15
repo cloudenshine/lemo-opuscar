@@ -55,6 +55,14 @@ try {
           if(other.visible) {check(Math.hypot(b.x-other.x,b.y-other.y)>55,'body separation');check(Math.abs(Number(other.facing))>=.5,'companion keeps body volume');}
         }
         for(const sample of samples.slice(210,247)) {const other=sample.actors.find(a=>a.id==='companion')!;check(Number(other.screenX)-100*Number(other.screenScale)>480,'arrival clears inscription column');}
+        for(const sample of samples) {
+          const flock=sample.actors.filter(a=>a.id!=='perch'&&(a.visible===undefined||a.visible));
+          for(let i=0;i<flock.length;i++)for(let j=i+1;j<flock.length;j++)check(Math.hypot(flock[i].x-flock[j].x,flock[i].y-flock[j].y)>55,'ensemble body spacing');
+        }
+        check(samples[288].actors.filter(a=>a.id!=='perch').length===4,'four persistent performers');
+        const before=samples[258].actors.find(a=>a.id==='companion')!,after=samples[276].actors.find(a=>a.id==='companion')!;
+        check(after.x-before.x===-35&&samples[267].actors.find(a=>a.id==='companion')!.land===false,'yield hop responds to late entry');
+        check(samples[516].actors.find(a=>a.id==='lookout')!.land===false&&samples[528].actors.find(a=>a.id==='latecomer')!.land===true,'relay departure order');
         const answer=samples[258].actors.find(a=>a.id==='companion')!;
         check(answer.facing===-1&&answer.footY===550,'answer faces caller on separate perch');
         check(samples[510].actors[0].land===false&&samples[504].actors.find(a=>a.id==='companion')!.land===true,'staggered departure');
@@ -75,13 +83,34 @@ try {
         }
         for(const t of [6,7,8]) {const [h,c]=window.PERFORMANCE(t).actors;
           check(c.held===true&&c.x-h.x===30&&c.y-h.y===-20,'world drag contact');
-          check(Math.abs((Number(c.screenX)-Number(h.screenX))/Number(h.screenScale)-30)<1e-7,'projected drag contact');
+          const mesh=window.SOLIDS!(t).find(m=>m.id==='task-4')!,u=.5+30/Number(h.w),v=.5-20/Number(h.h);
+          const [a,b,,d]=mesh.front,weights=[1-u-v,u,v],points=[a,b,d],depth=points.reduce((n,p,i)=>n+p[2]*weights[i],0);
+          const x=points.reduce((n,p,i)=>n+p[0]*p[2]*weights[i],0)/depth,y=points.reduce((n,p,i)=>n+p[1]*p[2]*weights[i],0)/depth;
+          check(Math.hypot(Number(c.screenX)-x,Number(c.screenY)-y)<1e-6,'projected surface drag contact');
         }
         check(samples[204].actors[1].held===false,'release cue');
+        for(let frame=0;frame<=576;frame++) {
+          const meshes=window.SOLIDS!(frame/24);check(meshes.length===108,'108 solid meshes');
+          for(const mesh of meshes) {
+            check(mesh.vertices.length===8&&mesh.faces.length===6,'closed box topology');
+            for(let i=0;i<4;i++)check(Math.abs(Math.hypot(...mesh.vertices[i].map((v,k)=>v-mesh.vertices[i+4][k]))-mesh.thickness)<1e-6,'solid thickness');
+            check(mesh.front.every(p=>p.every(Number.isFinite)&&p[2]>100),'finite visible geometry');
+            if(mesh.id==='task-4')check(mesh.front.every(p=>p[0]>=64&&p[0]<=1856&&p[1]>=260&&p[1]<=940),'projected hero corners stay framed');
+          }
+        }
+        const depths=[0,3,7,10,19.5].map(t=>{const f=window.SOLIDS!(t).find(m=>m.id==='task-4')!.front;return Math.max(...f.map(p=>p[2]))-Math.min(...f.map(p=>p[2]));});
+        check(Math.max(...depths)>30,'front has perspective depth across the camera route');
+        const reading=window.SOLIDS!(15).find(m=>m.id==='task-4')!.front;check(Math.max(...reading.map(p=>p[2]))-Math.min(...reading.map(p=>p[2]))<1e-6,'reading surface faces camera');
         const rigs=[0,3.5,10.5,14,19.5].map(t=>window.CAMERA!(t));
         check(Math.max(...rigs.map(r=>r.yaw))-Math.min(...rigs.map(r=>r.yaw))>.45,'viewing axis change');
         check(rigs[3].yaw===0&&rigs[3].dolly===0,'locked reading insert');
       } else {
+        const strokes=window.STROKES!(.5);
+        check(strokes.length===35&&new Set(strokes.map(s=>s.id)).size===35,'35 distinct editable strokes');
+        check(strokes.filter(s=>s.id.startsWith('opening')).some(s=>s.deformation>.1&&s.progress>0),'strokes actually deform');
+        check(window.STROKES!(2).filter(s=>s.id.startsWith('opening')).every(s=>s.progress===1&&s.deformation===0),'opening strokes resolve before reading');
+        check(window.STROKES!(21).filter(s=>s.id.startsWith('poster')).every(s=>s.progress===1&&s.deformation===0),'poster strokes fully resolve');
+        check(!window.TEXTS(.5).some(b=>b.id==='opening-word')&&!window.TEXTS(20).some(b=>b.id==='poster-word'),'unfinished stroke assemblies are not counted as reading holds');
         const opening=samples[12].actors.filter(a=>a.id.startsWith('opening-'));
         check(opening[0].angle!==opening[1].angle,'independent glyph trajectories');
         const rejected=samples[252].actors.filter(a=>a.id.startsWith('reject-'));
@@ -89,9 +118,9 @@ try {
         const landed=samples[492].actors.filter(a=>a.id.startsWith('poster-'));
         check(landed[1].x-landed[0].x===260,'final letter order');
         check(Math.abs(Number(samples[450].actors[1].angle))>1.5,'quarter turn');
-        const sizes=[0,5].map(t=>window.TEXTS(t).find(b=>b.id==='opening-word')!);
+        const sizes=[2,5].map(t=>window.TEXTS(t).find(b=>b.id==='opening-word')!);
         check((sizes[0].x1-sizes[0].x0)/(sizes[1].x1-sizes[1].x0)>7,'type scale span');
-        const final=window.TEXTS(20);
+        const final=window.TEXTS(21);
         check(final.find(b=>b.id==='poster-word')!.y1<final.find(b=>b.id==='claim')!.y0,'poster conclusion spacing');
         check(Number(samples[336].actors[1].w)>1000&&Number(samples[336].actors[0].w)<200,'selected sheet expansion');
       }
@@ -103,6 +132,7 @@ try {
       await page.evaluate(()=>window.render(4));
       assert.ok((await page.screenshot({clip:{x:0,y:0,width:1920,height:240}})).equals(header),'camera content cannot paint over title');
     }
+    if(style==='dark-product') assert.ok(await page.evaluate(()=>{window.render(15);const d=document.querySelector('canvas')!.getContext('2d')!.getImageData(1100,400,180,40).data;for(let i=0;i<d.length;i+=4)if(d[i]!==29||d[i+1]!==40||d[i+2]!==64)return false;return true;}),'reading texture has no triangle seams');
     const bad = await page.evaluate(() => {
       const failures: string[] = [];
       for (let t = 0; t < 24; t += .25) for (const b of window.TEXTS(t)) {
