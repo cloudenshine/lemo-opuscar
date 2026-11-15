@@ -23,3 +23,9 @@ Six motivated framings now follow landscape, stem detail, branch, falling leaf, 
 延续自然短片：从“风景中有一片叶”发展为“一个生命注意到另一处变化”。候选为增加切镜、扩成长故事、保留短片并增加连续表演；选择第三种。
 
 连续动作和空间模型见 demo/scene.ts；动作诊断 PERFORMANCE 与真实绘制使用同一姿态函数，motion.acceptance.ts 验证主体不瞬移、接触关系及行为方向。新项目快照 score-v3.py，旧作品不迁移。
+
+## 第四轮 · 1.4.0
+
+在第三轮的观察者基础上，选择关节和接触动作深化；另两种候选为增加镜头数量或延长故事。保留24秒自然片。
+
+关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。

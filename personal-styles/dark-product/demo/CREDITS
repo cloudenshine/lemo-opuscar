@@ -9,3 +9,5 @@ Original procedural score; no extracted upstream narration or music.
 Second revision: original four-bus synthesis in studio/audio/score-v2.py. NumPy/SciPy synthesis and existing upstream guqin model; no original film audio samples. The ink flute is synthesized, not a recorded xiao.
 
 Third revision: original continuous actor/paper/card choreography and score-v3.py. Bird, paper and pointer sounds are procedural synthesis; no field recordings or upstream film audio.
+
+Fourth revision: original articulated bird rig, large-scale editorial typography and 108-object routing. New procedural cues in score-v4.py; no upstream footage, music or third-party recordings added.

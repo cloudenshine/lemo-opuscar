@@ -50,34 +50,66 @@ const birdParts = {
   head: mk([[-5,0],[4,-3],[12,0]], {w:25,tone:TONE.nong,wet:.6,dry:.25,prof:'lens',seed:1202}),
   beak: mk([[-7,0],[-29,5]], {w:7,tone:TONE.nong,wet:.3,dry:.4,prof:'tip',seed:1203}),
   wing: mk([[3,-4],[20,8],[42,16]], {w:22,tone:TONE.zhong,wet:.6,dry:.5,prof:'tip',seed:1204}),
+  wingtip: mk([[0,0],[20,6],[43,13]], {w:20,tone:TONE.nong,wet:.4,dry:.45,prof:'tip',seed:1209}),
   tail: mk([[16,9],[43,24],[65,30]], {w:15,tone:TONE.nong,wet:.4,dry:.4,prof:'tip',seed:1205}),
   foot: mk([[0,0],[-3,17],[-13,19],[8,19]], {w:2,tone:TONE.nong,wet:.2,dry:.4,prof:'even',seed:1206}),
   branch: mk([[1238,558],[1280,572],[1320,580],[1360,584]], {w:5,tone:TONE.nong,wet:.5,dry:.4,prof:'tip',seed:1207}),
 };
-function birdPose(t:number) {
-  const enter=smooth((t-1.5)/2.75),leave=smooth((t-20.5)/3),land=t>=4.25&&t<20.5;
-  const settle=t>=4.25?Math.sin((t-4.25)*12)*Math.exp(-(t-4.25)*6)*6:0;
-  const anticipate=4*Math.sin(Math.PI*smooth((t-19.75)/.75));
-  const x=1760-440*enter-520*leave,y=300+250*enter-310*leave+settle+anticipate;
-  const gaze=t<8?-.2+.3*smooth((t-5)/1):t<14?-.1-.25*smooth((t-10.5)/1.5):(-.35-.5*smooth((t-14)/3)+1.05*smooth((t-19.5)/1));
-  return {x,y,land,footX:1320,footY:580,head:gaze,wing:land?.08*Math.sin(t*1.1):Math.sin(t*24)*1.1};
+
+function birdPose(t: number) {
+  const enter = smooth((t - 1.5) / 2.75), leave = smooth((t - 20.5) / 3);
+  const hop = smooth((t - 6.5) / 1), arc = Math.sin(Math.PI * hop) ** 2;
+  const land = t >= 4.25 && t < 20.5 && !(t > 6.5 && t < 7.5);
+  const settle = (at: number) => t >= at ? Math.sin((t - at) * 14) * Math.exp(-(t - at) * 5) * 7 : 0;
+  const crouch = 8 * Math.sin(Math.PI * smooth((t - 6) / .5)) + 7 * Math.sin(Math.PI * smooth((t - 19.75) / .75));
+  const gust = Math.sin(Math.PI * smooth((t - 10.5) / 1.5));
+  const x = 1760 - 440 * enter + 30 * hop - 520 * leave;
+  const y = 300 + 250 * enter + 3 * hop - 45 * arc - 310 * leave + settle(4.25) + settle(7.5) + crouch;
+  const gaze = t < 8 ? -.2 + .3 * smooth((t - 5) / 1) : t < 14 ? -.1 - .25 * smooth((t - 10.5) / 1.5) : -.35 - .5 * smooth((t - 14) / 3) + 1.05 * smooth((t - 19.5) / 1);
+  const flying = t < 4.25 || t >= 20.5;
+  return { x, y, land, footX: flying ? x : 1320 + 30 * hop, footY: flying ? y + 30 : 580 + 3 * hop - 40 * arc,
+    head: gaze, torso: -.22 * gust + .14 * arc, squash: 1 - crouch / 65,
+    wing: flying ? Math.sin(t * 24) * 1.1 : -.9 * arc - .65 * gust,
+    wrist: flying ? Math.sin(t * 24 - .8) * .8 : -.65 * arc + .4 * gust,
+    tail: .4 * gust - .3 * arc, beak: .25 * Math.sin(Math.PI * clamp((t - 8.5) / .45)) };
 }
-window.PERFORMANCE=t=>{const b=birdPose(t);return {phase:t<4.25?'arrive':t<14?'observe':t<20.5?'track':'depart',actors:[{id:'bird',...b},{id:'perch',x:1320,y:580}]};};
-function paintBird(t:number) {
-  if(t<1.5)return;
-  const b=birdPose(t),contexts=[layer.cw,layer.cd];
-  const part=(stroke:unknown,x:number,y:number,angle=0,alpha=1)=>{
-    for(const c of contexts){c.save();c.translate(x,y);c.rotate(angle);}draw(layer.ink,stroke,1,alpha);for(const c of contexts)c.restore();
+function legPose(b: ReturnType<typeof birdPose>, side: number) {
+  const lx = side * 8 * (1 + (1 - b.squash) * .2), ly = 13 * b.squash;
+  const hx = b.x + lx * Math.cos(b.torso) - ly * Math.sin(b.torso);
+  const hy = b.y + lx * Math.sin(b.torso) + ly * Math.cos(b.torso);
+  const fx = b.footX + side * 7, fy = b.footY;
+  const dx = fx - hx, dy = fy - hy, distance = Math.hypot(dx, dy);
+  const bend = Math.sqrt(Math.max(0, 19 ** 2 - (distance / 2) ** 2));
+  return { hx, hy, kx: (hx + fx) / 2 - dy / Math.max(distance, 1) * bend,
+    ky: (hy + fy) / 2 + dx / Math.max(distance, 1) * bend, fx, fy };
+}
+window.PERFORMANCE = t => {
+  const b = birdPose(t), leg = legPose(b, -1);
+  return { phase: t < 4.25 ? 'arrive' : t < 7.5 ? 'hop' : t < 14 ? 'balance' : t < 20.5 ? 'track' : 'depart',
+    actors: [{ id: 'bird', ...b, ...leg }, { id: 'perch', x: 1320 + 30 * smooth(t - 6.5), y: 580 + 3 * smooth(t - 6.5) }] };
+};
+function paintBird(t: number) {
+  if (t < 1.5) return;
+  const b = birdPose(t), contexts = [layer.cw, layer.cd];
+  const part = (stroke: unknown, x: number, y: number, angle = 0, alpha = 1) => {
+    for (const c of contexts) { c.save(); c.translate(x, y); c.rotate(angle); }
+    draw(layer.ink, stroke, 1, alpha); for (const c of contexts) c.restore();
   };
-  // Feet stay on the branch while body compression absorbs the landing.
-  if(b.land){part(birdParts.foot,1316,561);part(birdParts.foot,1330,561);}
-  for(const c of contexts){c.save();c.translate(b.x,b.y);}
-  part(birdParts.tail,0,0,-.12*Math.sin(t*2));part(birdParts.body,0,0);part(birdParts.neck,0,0);
-  part(birdParts.wing,0,0,b.wing,.85);
-  for(const c of contexts){c.save();c.translate(-19,-17);c.rotate(b.head);}
-  part(birdParts.head,0,0);part(birdParts.beak,0,0);
-  const eye=layer.cd;eye.fillStyle='#eee6d4';eye.beginPath();eye.arc(-1,-3,2,0,Math.PI*2);eye.fill();
-  for(const c of contexts){c.restore();c.restore();}
+  for (const side of [-1, 1]) {
+    const leg = legPose(b, side);
+    part(mk([[leg.hx,leg.hy],[leg.kx,leg.ky],[leg.fx,leg.fy],[leg.fx-8,leg.fy+1]], {w:2,tone:TONE.nong,wet:.25,dry:.35,prof:'even',seed:1300+side}),0,0);
+  }
+  for (const c of contexts) { c.save(); c.translate(b.x,b.y); c.rotate(b.torso); c.scale(1 + (1 - b.squash) * .2,b.squash); }
+  part(birdParts.tail,0,0,b.tail);
+  part(birdParts.wing,4,-3,-b.wing*.65,.55);
+  part(birdParts.body,0,0); part(birdParts.neck,0,0);
+  for (const c of contexts) { c.save(); c.rotate(b.wing); }
+  part(birdParts.wing,0,0,0,.85); part(birdParts.wingtip,40,15,b.wrist,.7);
+  for (const c of contexts) c.restore();
+  for (const c of contexts) { c.save(); c.translate(-19,-17); c.rotate(b.head); }
+  part(birdParts.head,0,0); part(birdParts.beak,0,0,-b.beak); part(birdParts.beak,0,3,b.beak,.7);
+  const eye = layer.cd; eye.fillStyle = '#eee6d4'; eye.beginPath(); eye.arc(-1,-3,2,0,Math.PI*2); eye.fill();
+  for (const c of contexts) { c.restore(); c.restore(); }
 }
 
 function typography(t: number) {
@@ -103,7 +135,7 @@ window.SHOTS = [
   { start: 17, end: 19.5, framing: 'water insert', move: 'impact push' },
   { start: 19.5, end: 24, framing: 'landscape return', move: 'pull back' },
 ];
-window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: .25, type: 'brush' }, { t: 4.25, type: 'landing' }, { t: 8.5, type: 'chirp' }, { t: 20.5, type: 'wings' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
+window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: .25, type: 'brush' }, { t: 4.25, type: 'landing' }, { t: 6.5, type: 'hop' }, { t: 7.5, type: 'landing' }, { t: 8.5, type: 'chirp' }, { t: 20.5, type: 'wings' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
 window.TEXTS = () => [
   { id: 'title', text: data.title, x0: 285, y0: 195, x1: 365, y1: 270 + ([...data.title].length - 1) * 72 },
   { id: 'inscription', text: data.inscription, x0: 540, y0: 947, x1: 1380, y1: 999 },

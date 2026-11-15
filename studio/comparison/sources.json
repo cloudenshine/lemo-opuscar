@@ -6,34 +6,34 @@
       "id": "ink-wash",
       "name": "水墨与东方美学",
       "personal": "cloud-ink",
-      "project": "cloud-ink-v4",
+      "project": "cloud-ink-v5",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
-      "finding": "墨鸟入画、落枝缓冲、转头追视与振翼离枝；脚与枝共享接触点，回拉取景容纳离枝动作。仍不及原作剑客的复杂身体表演。",
+      "finding": "蹲伏、跳枝、落稳、迎风收翼；固定腿长、翼腕相位差与尾部平衡强化身体动作，仍是简化单角色。",
       "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c",
-      "previousProject": "cloud-ink-v3",
-      "previousSha256": "dce0b4670a1300fa6e384d48086204d4a68f728e5fa0ec098bc929a5b76974fb"
+      "previousProject": "cloud-ink-v4",
+      "previousSha256": "9401a961fcae3263f1394dfb035af09dc6a4137f793cd6661c39f29634d24933"
     },
     {
       "id": "swiss-motion",
       "name": "中文编辑部",
       "personal": "chinese-editorial",
-      "project": "editorial-v3",
+      "project": "editorial-v4",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
-      "finding": "三张材料页贯穿核验、否定、展开与定稿；完整画幅和输出墙替代永久步骤栏。原作极端字号变化与排版实验仍更丰富。",
+      "finding": "450px大字收至58px，片尾260px海报转至负90度再正位；阅读窗口保留，尚未实现逐字形态实验。",
       "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159",
-      "previousProject": "editorial-v2",
-      "previousSha256": "a719bd500882b051cc8215e4a75281bd05a30303b4f49fa73ba12e329e214167"
+      "previousProject": "editorial-v3",
+      "previousSha256": "cd6558931cc628974d3828b45730e7c968cd679219d227e6c7431ef0dad5eff2"
     },
     {
       "id": "dark-keynote",
       "name": "深色科技与产品演示",
       "personal": "dark-product",
-      "project": "product-v3",
+      "project": "product-v4",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
-      "finding": "同一任务卡贯穿透视卡群、指针抓取拖放、检索详情与关系视图；原作更密集的空间组织与光标性格仍占优势。",
+      "finding": "108个对象跨四层透视、错峰归位、两侧资料带与最终网格；背景也保持身份和连续路径，仍为Canvas投影。",
       "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4",
-      "previousProject": "product-v2",
-      "previousSha256": "ddbee816400b119e0e1d1100c2e5ad52233e610beba87bc29002ce96e79b4fb6"
+      "previousProject": "product-v3",
+      "previousSha256": "1fc2685e19b16229cfcb86628ac458fe7310cbdb9cd4c5d383da89af288dc858"
     }
   ]
 }

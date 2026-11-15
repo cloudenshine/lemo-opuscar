@@ -20,3 +20,9 @@ Twenty-seven cards occupy three projected depth planes. A dolly/drift leads to a
 候选为更密卡群、更长产品讲解、让同一任务卡经历完整操作；选择第三种。原创概念界面始终披露。
 
 连续动作和空间模型见 demo/scene.ts；动作诊断 PERFORMANCE 与真实绘制使用同一姿态函数，motion.acceptance.ts 验证主体不瞬移、接触关系及行为方向。新项目快照 score-v3.py，旧作品不迁移。
+
+## 第四轮 · 1.3.0
+
+选择增加有身份的连续对象与分批路径，另两种候选为仅增加随机背景卡或另起更长产品片。固定24秒原创概念演示。
+
+关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。

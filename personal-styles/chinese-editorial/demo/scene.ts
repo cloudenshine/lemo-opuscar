@@ -18,15 +18,17 @@ function text(id: string, value: string, x: number, y: number, size: number, col
 function rect(x: number, y: number, w: number, h: number, color: string) { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); }
 function rule(y: number, start = 96, end = 1824) { rect(start, y, end - start, 1, C.rule); }
 
-type Pose = { x: number; y: number; w: number; h: number; angle: number };
+type Pose = { x: number; y: number; w: number; h: number; angle: number; scale: number };
 const mix = (a: number, b: number, p: number) => a + (b - a) * p;
 function paperPose(t: number, i: number): Pose {
   const spread = ease((t - 6) / 1.25), edit = ease((t - 12) / 1.25), publish = ease((t - 18) / 1.5);
+  const turn = i === 1 ? -Math.PI / 2 * Math.sin(Math.PI * ease((t - 18) / 1.5)) : 0;
+  const scale = Math.min(1, 640 / (1300 * Math.abs(Math.sin(turn)) + 610 * Math.abs(Math.cos(turn))));
   const x = mix(960 + (i - 1) * 460, 960 + (i - 1) * 590, spread);
   const y = 560 + (i === 1 ? 0 : 25) * (1 - spread);
   return { x: mix(x, i === 1 ? 960 : 960 + (i - 1) * 720, edit),
     y: mix(y, i === 1 ? 560 : 830, edit), w: i === 1 ? mix(mix(410, 500, spread), 1080 + 220 * publish, edit) : mix(mix(410, 500, spread), 180, edit),
-    h: i === 1 ? mix(510, 610, edit) : mix(510, 120, edit), angle: (i - 1) * .045 * (1 - spread) };
+    h: i === 1 ? mix(510, 610, edit) : mix(510, 120, edit), scale, angle: (i - 1) * .045 * (1 - spread) + turn };
 }
 window.PERFORMANCE = t => ({ actors: [0, 1, 2].map(i => ({ id: `paper-${i}`, ...paperPose(t, i) })), phase: t < 6 ? 'collect' : t < 12 ? 'verify' : t < 18 ? 'edit' : 'publish' });
 window.DUR = 24;
@@ -36,14 +38,14 @@ window.SHOTS = [
   { start: 12, end: 18, framing: 'edited page', move: 'paper expansion' },
   { start: 18, end: 24, framing: 'publication wall', move: 'layered reveal' },
 ];
-window.EV = [{t:0,type:'page'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
+window.EV = [{t:0,type:'type-impact'},{t:4,type:'page'},{t:18,type:'type-flip'},{t:5.5,type:'silence'},{t:6,type:'page'},{t:7.25,type:'align'},{t:9.5,type:'marker'},{t:10.25,type:'reject'},{t:12,type:'page'},{t:13.25,type:'edit'},{t:17,type:'silence'},{t:18,type:'stack'},{t:19.5,type:'stamp'}];
 window.render = seconds => {
   const t = Math.max(0, Math.min(24, seconds)); boxes = []; ctx.setTransform(1,0,0,1,0,0);
   rect(0,0,1920,1080,C.paper); rule(132); rule(964);
   text('brand', data.seal, 96, 95, 30, C.ink, 600); text('title', data.title, 550, 95, 30);
   text('disclosure', '虚构编辑练习', 1530, 95, 24, C.muted);
   const phase = Math.min(3, Math.floor(t / 6));
-  text(`heading-${phase}`, ['一条判断，从哪里来？','把来源与推断分开','让证据留下来','观点，要有来处。'][phase],96,220,58,C.ink,600);
+  if (t >= 6) text(`heading-${phase}`, ['一条判断，从哪里来？','把来源与推断分开','让证据留下来','观点，要有来处。'][phase],96,220,58,C.ink,600);
   if (t >= 18) {
     const q = ease((t-18)/1.5);
     for (let i=0;i<12;i++) {
@@ -53,8 +55,8 @@ window.render = seconds => {
     }
   }
   // The selected sheet remains the same object; side notes retain their identity in the tray.
-  for (const i of [0,2,1]) {
-    const p=paperPose(t,i); ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+  for (const i of (t >= 4 ? [0,2,1] : [])) {
+    const p=paperPose(t,i); ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);ctx.scale(p.scale,p.scale);
     rect(-p.w/2+7,-p.h/2+9,p.w,p.h,'#d9d3c7');rect(-p.w/2,-p.h/2,p.w,p.h,'#faf8f1');
     rect(-p.w/2,-p.h/2,6,p.h,i===1?C.accent:C.rule);
     const x=-p.w/2+32,y=-p.h/2;
@@ -67,11 +69,12 @@ window.render = seconds => {
       if(i===1&&t>=7.25)rect(x,y+260,(p.w-64)*ease((t-7.25)/1),3,C.accent);
     } else if(i===1&&t>=13.25) {
       text('verified','可以确认',x,y+76,28,C.accent,600);
-      text('claim','同一处，也有不同感受。',x,y+215,64,C.ink,600);
-      text('qualification','两条访谈，不能代表所有人。',x,y+303,34,C.muted);
-      rect(x,y+355,p.w-100,1,C.rule);
-      text('source-final','来源：观察记录与现场访谈',x,y+410,28,C.muted);
-      if(t>=19.5) { const q=ease((t-19.5)/.25);ctx.save();ctx.translate(p.w/2-125,p.h/2-83);ctx.rotate(-.08);ctx.strokeStyle=C.accent;ctx.lineWidth=3;ctx.strokeRect(-53,-34,106,62);text('approved','定稿',-34,10,34,C.accent,600);ctx.restore();rect(x,y+243,610*q,4,C.accent); }
+      if(t>=18) text('poster-word','有据',x+135,y+330,260,C.accent,700);
+      text('claim','同一处，也有不同感受。',x,t<18?y+215:y+430,t<18?64:44,C.ink,600);
+      text('qualification','两条访谈，不能代表所有人。',x,t<18?y+303:y+490,t<18?34:28,C.muted);
+      if(t<18) rect(x,y+355,p.w-100,1,C.rule);
+      text('source-final','来源：观察记录与现场访谈',x,t<18?y+410:y+550,t<18?28:24,C.muted);
+      if(t>=19.5) { const q=ease((t-19.5)/.25);ctx.save();ctx.translate(p.w/2-125,p.h/2-83);ctx.rotate(-.08);ctx.strokeStyle=C.accent;ctx.lineWidth=3;ctx.strokeRect(-53,-34,106,62);text('approved','定稿',-34,10,34,C.accent,600);ctx.restore();rect(x,y+444,610*q,4,C.accent); }
     }
     ctx.restore();
   }
@@ -79,6 +82,11 @@ window.render = seconds => {
     const q=ease((t-7.25)/2), end=370+590*q;
     ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(370,869);ctx.bezierCurveTo(370,927,end,927,end,869);ctx.stroke();
     ctx.fillStyle=C.accent;ctx.beginPath();ctx.arc(end,869,6,0,Math.PI*2);ctx.fill();
+  }
+  if(t<6) {
+    const shrink=ease((t-3)/1);const size=mix(450,58,shrink);
+    text('opening-word','判断',mix(510,96,shrink),mix(720,220,shrink),size,C.ink,700);
+    if(t<3) text('opening-note','先看材料',96,880,38,C.accent,600);
   }
   text('inscription',data.inscription,96,1020,27,C.muted);
 };

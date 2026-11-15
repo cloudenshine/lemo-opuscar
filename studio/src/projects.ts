@@ -66,7 +66,7 @@ export async function createProject(id: string, data: Content, base = FILMS, sty
   try {
     for (const file of ['index.html', 'CREDITS']) await fs.copyFile(path.join(template, file), path.join(dir, file));
     for (const file of ['build.ps1', 'build.sh']) await fs.copyFile(path.join(TEMPLATE, file), path.join(dir, file));
-    await fs.copyFile(path.join(ROOT, 'studio/audio/score-v3.py'), path.join(dir, 'score.py'));
+    await fs.copyFile(path.join(ROOT, 'studio/audio/score-v4.py'), path.join(dir, 'score.py'));
     const scene = await fs.readFile(path.join(template, 'scene.ts'), 'utf8');
     await fs.writeFile(path.join(dir, 'scene.ts'), scene);
     await fs.writeFile(path.join(dir, 'scene.js'), stripTypeScriptTypes(scene));

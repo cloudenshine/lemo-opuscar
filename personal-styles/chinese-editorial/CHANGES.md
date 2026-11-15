@@ -19,3 +19,9 @@ The artifact rotates out of a stack, columns settle at staggered times, editing 
 候选为更大的步骤编号、延长讲解、让材料贯穿编辑过程；选择第三种。撤掉永久左栏，作品使用完整画幅。
 
 连续动作和空间模型见 demo/scene.ts；动作诊断 PERFORMANCE 与真实绘制使用同一姿态函数，motion.acceptance.ts 验证主体不瞬移、接触关系及行为方向。新项目快照 score-v3.py，旧作品不迁移。
+
+## 第四轮 · 1.3.0
+
+选择大尺度排版与阅读窗口交替，另两种候选为持续裁切巨字或增加更多版面。仍为虚构编审练习。
+
+关节/排版/密集对象约束见 motion.acceptance.ts，声音快照升级为score-v4.py。旧项目与上游引擎保持不变。
