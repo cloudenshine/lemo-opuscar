@@ -1,6 +1,6 @@
 # 云山墨序：二次开发方案
 
-本文保留首版规划。2026-11-15 的追加需求已扩展为三套个人风格，实施与证据见 [对照报告](comparison/REVIEW.zh-CN.md) 和 [v1.1 验收](VERIFICATION-v1.1.zh-CN.md)。
+本文保留首版规划。第二轮镜头与声音优化见 [本轮方案](comparison/ROUND2-PLAN.zh-CN.md) 和 [v1.2 验收](VERIFICATION-v1.2.zh-CN.md)。2026-11-15 的追加需求已扩展为三套个人风格，实施与证据见 [对照报告](comparison/REVIEW.zh-CN.md) 和 [v1.1 验收](VERIFICATION-v1.1.zh-CN.md)。
 
 ## 目标与交付边界
 

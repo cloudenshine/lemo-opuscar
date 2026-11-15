@@ -5,3 +5,5 @@ Code is used under the MIT License; the original notice is in LICENSES/MIT.txt i
 Style grammar is adapted from Chinese Ink Wash; docs retain the library's CC BY-NC 4.0 terms and additional film-making permission (see LICENSE).
 Fonts: local Windows KaiTi / SimSun or platform serif fallback; no font file is redistributed.
 Sound: original composition using the library's physically modelled guqin, plus original synthesized water and wind. No samples, narration or third-party music.
+
+Second revision: original four-bus synthesis in studio/audio/score-v2.py. NumPy/SciPy synthesis and existing upstream guqin model; no original film audio samples. The ink flute is synthesized, not a recorded xiao.

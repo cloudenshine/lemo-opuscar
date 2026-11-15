@@ -6,28 +6,34 @@
       "id": "ink-wash",
       "name": "水墨与东方美学",
       "personal": "cloud-ink",
-      "project": "cloud-ink-v2",
+      "project": "cloud-ink-v3",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/ink-wash.mp4",
-      "finding": "加强落叶近景与题跋留白；原作的角色动作、浪潮及景别反差仍更丰富。",
-      "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c"
+      "finding": "六段景别、前后景视差、落叶跟拍、入水倒影与回拉；加入吹管回答、风水环境和材质动作，保留原作角色表演的差距。",
+      "sha256": "38c2d3681aa7d49a5d2199a319e4934a1b89d182ace9446c3575eccfa606533c",
+      "previousProject": "cloud-ink-v2",
+      "previousSha256": "24d9a29572d28b515b228c3737bde04e09a39e9611885653cb666d7fab7c3f5c"
     },
     {
       "id": "swiss-motion",
       "name": "中文编辑部",
       "personal": "chinese-editorial",
-      "project": "editorial-demo",
+      "project": "editorial-v2",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/swiss-motion.mp4",
-      "finding": "加入中文证据分栏、清晰层级与删减节奏；原作的旋转海报和变体墙更具动态张力。",
-      "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159"
+      "finding": "散页旋转、错峰归栏、校订推近与成稿收束；纸页、笔划、裁切、落印声音区分，并按章节改变音乐密度。",
+      "sha256": "c4c63bfdf31ba5dddf1e81912244dddd29317845c3aaa04ce945a4f7b42df159",
+      "previousProject": "editorial-demo",
+      "previousSha256": "012c7ae893a02a098955454deccadc9ba732fa6f4d6ad1fb2b015d2b1b23a3fd"
     },
     {
       "id": "dark-keynote",
       "name": "深色科技与产品演示",
       "personal": "dark-product",
-      "project": "product-demo",
+      "project": "product-v2",
       "original": "https://github.com/lemomo-ai/lemo-opuscar/releases/download/web/dark-keynote.mp4",
-      "finding": "加入中文概念界面、归位与发现流程；原作的光标表演、密集编排和 2.5D 空间更成熟。",
-      "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4"
+      "finding": "三层透视推进、斜视归位、任务卡特写和径向收束；四段和声、低频脉冲、玻璃音与确认音形成层次。",
+      "sha256": "1a441812461fe54e10572efde07b28b1e69c90679eb963958a896f9c9b04b9a4",
+      "previousProject": "product-demo",
+      "previousSha256": "8a1e32d00e125decffa9600ceef3ebab69f1f0586900c878ae3cdb2edfccd33d"
     }
   ]
 }

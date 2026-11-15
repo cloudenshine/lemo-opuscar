@@ -13,9 +13,9 @@ Local Chinese sans-serif, full glyph coverage, no redistributed proprietary font
 ## 5. Motion
 24fps, no random per-frame noise. Short typed entrances land on whole-frame subdivisions. Cards settle into assigned slots, not nearest-neighbour flicker. Freeze at the decision; a soft light band reveals the resolved workspace.
 ## 6. Camera
-The starter uses a wide information stage, a framed workspace and a large-number close composition. A pointer approaches a task card, clicks at 13.5s, and triggers an archive confirmation at 14s. It does not yet match the original's 2.5D depth, multi-shot inserts or expressive cursor acting. Add those only when motivated by the new brief.
+Version 1.1.0 projects 27 cards on three depth planes, drifts and freezes them, then pulls an oblique workspace into a frontal view. A dedicated task-card insert makes the 13.5s click and 14s archive confirmation readable. Cards collapse radially into the final single-space composition. These are Canvas projections and transforms, not a general 3D renderer; the original's depth choreography and cursor acting remain more complex.
 ## 7. Sound
-Clean synthesized glass tones, low pulse, a quiet pad, short interface ticks. Spawn/settle/reveal/collapse cues are shared through EV. Silence 5–6s clears attention before the resolved state. No voice is added without a narration brief.
+Glass arrivals, slot snaps, a dry click, a two-note confirmation and a low collapse impulse carry distinct functions. Four harmonic regions follow accumulation, ordering, inspection and resolution; the inspection drops the pulse. Four editable buses include ambience and transition sweeps, stereo reflections and music ducking. Literal silence at 5–6s and 17.25–18s clears attention. No voice is added without a narration brief.
 ## 8. Native moves
 Notes accumulate, assigned destinations establish order, a soft band reveals the product, one large number summarises the promise. The count denotes one workspace, not measured speed or adoption.
 ## 9. Pitfalls

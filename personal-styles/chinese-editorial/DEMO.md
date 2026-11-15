@@ -1,9 +1,14 @@
-# Read the Information · 把信息读懂
+# 把信息读懂 · 第二轮
 
-One example among many. Don't reuse its story, arc, shots, props or timings.
+Upgrade the existing editorial story with physical page motion and stable Chinese reading intervals.
 
-0–6s: a page of unstructured notes creates the question. 6–12s: notes acquire separate columns for fact, source and conclusion. 12–18s: unneeded marks collapse under an editing line. 18–24s: a brief conclusion sits in generous whitespace. The source contains no real news or measured statistics.
+0–6s: a rotated stack settles into a spread; a vermilion scan organizes the notes.
+6–12s: three evidence columns arrive at staggered times; underline emphasis follows the reading order.
+12–18s: move into the edit, remove noise lines, then reveal the retained statement at 13.25s. Keep the conclusion clear of moving lines.
+18–24s: a fan of page variants resolves into the final printed statement and holds.
 
-The visual scene is [demo/scene.ts](demo/scene.ts); EV exports major print/edit cues to the original procedural score. No base-demo poster, concert name, composition or melody is copied.
+Two whole-bus silences: 5.5–6s and 17–18s. Separate paper, print, marker, cutting and stamping cues; four buses, changing bass/mallet/percussion, pre-entry paper at 11.75s and 20.25s. Encoded-media verification is required after mastering.
 
-From the repository root: `node studio/src/cli.ts create editorial-demo --style chinese-editorial`, then `node studio/src/cli.ts render editorial-demo`. Output is `films/editorial-demo/out/film.mp4`. CREDITS stays with each project; generated media remains local.
+Create `editorial-v2` with `--style chinese-editorial`; keep `editorial-demo` unchanged. The evidence words remain illustrative, not real news or statistics.
+
+Scene: [demo/scene.ts](demo/scene.ts). [Comparison](../../studio/comparison/REVIEW.zh-CN.md).

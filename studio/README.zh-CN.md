@@ -1,12 +1,12 @@
 # 云山墨序 · 本地私人制片室
 
-[二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.1 验收](VERIFICATION-v1.1.zh-CN.md)
+[二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第二轮优化方案](comparison/ROUND2-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.2 验收](VERIFICATION-v1.2.zh-CN.md)
 
 这是个人 Fork 的独立扩展。保留 Lemo-Opuscar 上游工具，在 Windows 上增加中文工作台、项目管理、确定性预览和视频导出。仅监听本机，不需要 API Key。源码和工作台 UI 使用 TypeScript；服务使用 Node 标准库，无新增运行时依赖。
 
 ## 安装与启动
 
-以下命令均从本仓库根目录运行。需要 Node 24+、FFmpeg/FFprobe 7+、Git Bash（sh）、uv 和 Python 3.12。安装脚本仅建立项目依赖，不安装系统软件或修改全局配置。最终封装复用上游两遍响度测量与过采样限幅，不依赖单遍归一化猜测音量。
+以下命令均从本仓库根目录运行。需要 Node 24+、FFmpeg/FFprobe 7+、Git Bash（sh）、uv 和 Python 3.12。安装脚本仅建立项目依赖，不安装系统软件或修改全局配置。旧项目保留上游封装；新项目使用动态归一化后测量实际 AAC 成片的闭环流程，最多三次修正，响度或峰值不合格则拒绝替换成片。目标为 −14 ±1 LUFS、真峰值不高于 −1 dBTP。
 
 ```powershell
 ./studio/Install.ps1
@@ -51,6 +51,8 @@ node studio/src/cli.ts create product-film --style dark-product
 
 当前模板和声音为 24 秒。更换故事时，先重写 treatment，再改变场景和声音；修改片名仅用于模板技术验证。变更时长必须同步改项目的 `scene.ts`、`score.py`、`studio/src/render.ts` 和预览时间轴，当前没有任意时长编辑器。旧版作品缺少 `score.py` 时才使用共享声音脚本。
 
+v1.2 起，新项目的声音快照来自 `studio/audio/score-v2.py`，生成 `out/stems/` 下音乐、环境、动作和转场四轨，以及 `sound-manifest.json`。四轨可重建封装前混音；成片的归一化与 AAC 编码另有 `mastering.json` 记录。旧 `studio/audio/score.py` 保留兼容。新项目元数据带 `mastering: verified-v2`，不会修改历史项目的设置。画面增加 `SHOTS` 时间轴；两处静默、音画整帧与变换后的文字边界纳入检查。
+
 风格藏书读取上游实际 `style.json`，包括元数据中的未正式索引条目，所以数量可能略高于上游 README 的 99 种。云山墨序、中文编辑部、深色科技三种个人风格可直接创建项目，也可从风格卡片进入。其他上游风格打开规范，由 Agent 按该风格制作。没有下载所有风格的成片、字体或额外数据。
 
 ```powershell
@@ -61,13 +63,15 @@ node studio/src/cli.ts create product-film --style dark-product
 
 ## 与原作对照
 
-打开 [本地对照室](http://127.0.0.1:43821/compare)，切换三个风格，独立播放、选听音轨或按全片百分比定位。页面列出实测指标、分镜和原作仍占优势的部分。首次在另一台机器部署时：
+打开 [本地对照室](http://127.0.0.1:43821/compare)，切换三个风格，左侧可选原作或上一轮个人版，右侧是本轮优化。支持独立播放、选听音轨或按全片百分比定位。页面列出实测指标、分镜和原作仍占优势的部分。首次在另一台机器部署时：
 
 ```powershell
 node studio/comparison/prepare.ts
 ```
 
 命令从官方 release 下载三个固定校验和的 web 预览，在预留名称不存在时创建并导出三部个人样片，然后测量。已有样片不覆盖；已有项目缺少成片时会停止，先明确渲染该项目再重试。若上游替换了原作文件，会报校验和不符，需先核查来源。原作、个人成片、测量 JSON 与截图均保留在本地，不纳入源码提交。重新测量使用 `node studio/comparison/analyze.ts`。原版水墨 `morning-leaf` 为可选历史资料，不在新机器上伪造。
+
+本轮项目为 `cloud-ink-v3`、`editorial-v2`、`product-v2`；上一轮为 `cloud-ink-v2`、`editorial-demo`、`product-demo`，存在时核对保留的 SHA-256。新机器没有旧片时禁用上一轮选项，不以新模板伪造历史版本。
 
 ## 检查
 
@@ -77,6 +81,8 @@ npm --prefix studio test
 npm --prefix studio run guard
 node studio/tests/browser.acceptance.ts
 node studio/tests/comparison.acceptance.ts
+node studio/tests/motion.acceptance.ts
+.venv/Scripts/python.exe studio/tests/audio.acceptance.py
 node studio/src/cli.ts doctor
 ```
 

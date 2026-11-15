@@ -1,8 +1,32 @@
 {
-  "slug": "chinese-editorial", "en": "Chinese Editorial", "cn": "中文编辑部",
-  "based_on": "swiss-motion", "borrows": [], "library_version": "3a7132b", "version": "1.0.0", "created": "2026-11-15",
-  "line": "Warm paper, Chinese typography and precise editorial rhythm.", "line_cn": "暖白纸张、墨黑文字与朱红标记，让事实和观点各就其位。",
-  "category_cn": "我的风格", "category_en": "Personal styles", "uses": ["中文解说", "资讯", "编辑札记"], "size": "1920x1080",
-  "defaults": {"title":"把信息读懂","inscription":"先核事实，再下判断","seal":"编审"},
-  "chapters": ["提问", "归类", "删减", "观点"], "sound": "印刷打击与低音节拍"
+  "slug": "chinese-editorial",
+  "en": "Chinese Editorial",
+  "cn": "中文编辑部",
+  "based_on": "swiss-motion",
+  "borrows": [],
+  "library_version": "3a7132b",
+  "version": "1.1.0",
+  "created": "2026-11-15",
+  "line": "Warm paper, Chinese typography and precise editorial rhythm.",
+  "line_cn": "暖白纸张、墨黑文字与朱红标记，让事实和观点各就其位。",
+  "category_cn": "我的风格",
+  "category_en": "Personal styles",
+  "uses": [
+    "中文解说",
+    "资讯",
+    "编辑札记"
+  ],
+  "size": "1920x1080",
+  "defaults": {
+    "title": "把信息读懂",
+    "inscription": "先核事实，再下判断",
+    "seal": "编审"
+  },
+  "chapters": [
+    "提问",
+    "归类",
+    "删减",
+    "观点"
+  ],
+  "sound": "印刷、裁切与分章节配乐"
 }

@@ -37,10 +37,14 @@ const pairs = [];
 for (const pair of manifest.pairs) {
   const original = await measure(path.join(dir, 'source', `${pair.id}.mp4`), `${pair.id}-original.jpg`);
   const personal = await measure(path.join(ROOT, 'films', pair.project, 'out/film.mp4'), `${pair.id}-personal.jpg`);
-  pairs.push({ ...pair, originalMetrics: original, personalMetrics: personal });
+  const previousFile = path.join(ROOT, 'films', pair.previousProject, 'out/film.mp4');
+  const previousMetrics = await fs.access(previousFile).then(() => measure(previousFile, `${pair.id}-previous.jpg`)).catch((e: NodeJS.ErrnoException) => { if (e.code !== 'ENOENT') throw e; return null; });
+  if (previousMetrics && previousMetrics.sha256 !== pair.previousSha256) throw new Error(`Historical film changed: ${pair.previousProject}`);
+  const sound = JSON.parse(await fs.readFile(path.join(ROOT, 'films', pair.project, 'out/sound-manifest.json'), 'utf8'));
+  pairs.push({ ...pair, originalMetrics: original, personalMetrics: personal, previousMetrics, sound });
   console.log(`${pair.id}: original ${original.integratedLufs} LUFS / personal ${personal.integratedLufs} LUFS`);
 }
 const previousFile = path.join(ROOT, 'films/morning-leaf/out/film.mp4');
-const previousInk = await fs.access(previousFile).then(() => measure(previousFile, 'ink-wash-previous.jpg')).catch((e: NodeJS.ErrnoException) => { if (e.code !== 'ENOENT') throw e; return null; });
+const previousInk = await fs.access(previousFile).then(() => measure(previousFile, 'ink-wash-first.jpg')).catch((e: NodeJS.ErrnoException) => { if (e.code !== 'ENOENT') throw e; return null; });
 await fs.writeFile(path.join(dir, 'analysis.json'), JSON.stringify({ ...manifest, measuredAt: new Date().toISOString(), method: '6fps 160x90 grayscale mean absolute frame difference; descriptive only, not a quality score. Loudness measured on delivered encoded media.', pairs, previousInk }, null, 2));
 console.log('Saved .studio/comparison/analysis.json');

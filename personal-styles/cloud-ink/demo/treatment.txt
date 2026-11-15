@@ -1,16 +1,14 @@
-# 一叶渡晨 / A Leaf Carries the Morning
+# 一叶渡晨 · 第二轮
 
-This is a reusable technical starting point, not a substitute for directing a new film.
+Upgrade the existing nature film; do not treat a changed title as a new story.
 
-A leaf leaves a bamboo branch and carries the stillness of a mountain morning onto water. No people, no sword, no battle, no borrowed footage or melody.
+0–4s: establish the landscape with depth-separated drift; silence 3.5–4s prepares the closer view.
+4–8s: move up bamboo stems; brush growth and its sound start at 4s.
+8–14s: move laterally into the branch, then hold through whole-bus silence at 12–14s.
+14–17s: follow the already-visible leaf as it falls; independent landscape parallax makes travel legible.
+17–20s: cut closer to water contact, the reflected leaf and rings centred on the contact point.
+20–24s: pull back to the landscape while the harmonic and flute answer decay.
 
-0–4s: already-visible pale mountains, a measured push into morning mist. A low guqin tone opens the air.
-4–8s: loaded bamboo stems paint themselves from the bank upward; dry-brush nodes break the smooth ink.
-8–12s: leaves answer the stems; a gentle lateral move gives the branch room.
-12–14s: literal whole-bus silence. The picture holds before a leaf separates.
-14–17s: one leaf turns, falls and levels as it touches the blank-paper water; a quiet brushed breath precedes the impact.
-17–24s: open rings follow the landing; the camera eases back, and the leaf drifts out of the rings. A high harmonic leaves a long quiet tail.
+The title stays on clean paper. Four editable buses contain guqin/flute music, wind/water ambience, material actions and transitions. Pre-entry air at 7.75s and 19.75s bridges shots. No narration or sampled upstream soundtrack.
 
-The fixed title and inscription sit in empty paper and remain readable for the whole film. Chinese system fonts are used locally and are not bundled. The vermilion seal is the only accent.
-
-Differences from the base demo: nature instead of a swordsman; an already-painted opening instead of a drop; falling leaf instead of splitting a wave; low-density free-time score instead of combat acceleration; no mounted-scroll ending. Source engines remain upstream MIT code.
+Create `cloud-ink-v3` with `--style cloud-ink`; keep `morning-leaf` and `cloud-ink-v2` as historical snapshots.

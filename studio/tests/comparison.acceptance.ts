@@ -32,6 +32,13 @@ try {
     await page.locator('#position').fill(id === 'ink-wash' ? '62' : '38'); await page.locator('#position').dispatchEvent('input');
     await page.waitForFunction(() => Array.from(document.querySelectorAll('video')).every(v => !v.seeking));
     await page.screenshot({ path: path.join(ROOT, `.studio/comparison/${id}-page.png`) });
+    await page.locator('#reference').selectOption('previous');
+    await page.waitForFunction(() => { const v = document.querySelector<HTMLVideoElement>('#original')!; return v.readyState >= 2 && v.duration === 24 && v.currentSrc.includes('/films/'); });
+    assert.equal(await page.locator('#reference-heading').textContent(), '上一轮个人版');
+    await page.locator('#original').evaluate(async (v: HTMLVideoElement) => { await v.play(); });
+    await page.waitForFunction(() => document.querySelector<HTMLVideoElement>('#original')!.currentTime > .4);
+    await page.locator('#original').evaluate((v: HTMLVideoElement) => v.pause());
+    await page.locator('#reference').selectOption('original');
   }
   await page.locator('summary').click();
   await page.waitForFunction(() => Array.from(document.querySelectorAll('figure img')).every(i => (i as HTMLImageElement).naturalWidth > 0));
@@ -41,5 +48,5 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   await page.screenshot({ path: path.join(ROOT, '.studio/comparison/mobile.png') });
   assert.deepEqual(errors, []);
-  console.log('PASS all three pairs: H.264 playback, normalized seeking, separate audio, contact sheets, range download, mobile');
+  console.log('PASS all three pairs: original/previous/current playback, normalized seeking, separate audio, contact sheets, range download, mobile');
 } finally { await browser.close(); server.closeAllConnections(); await new Promise<void>(r => server.close(() => r())); }

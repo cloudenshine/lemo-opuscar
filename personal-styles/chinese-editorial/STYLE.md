@@ -13,9 +13,9 @@ Chinese sans-serif is primary: local Microsoft YaHei / Noto Sans CJK SC. System 
 ## 5. Motion
 Smooth 24fps. Clip/wipe or precise linear/smoothstep movement; no bounce. Decorative arrivals occur on 120 BPM subdivisions. Removal reduces a line's thickness to zero, with a clear edit cue.
 ## 6. Camera
-Locked spreads make cause and effect readable. Reflow and meaningful type-scale contrast are preferred to ornamental zoom. A future film may pan by one page or reveal a wall of outputs. The starter has less camera variety than the original Swiss demo; this is an acknowledged limit, not a claimed improvement.
+A stable left editorial column anchors the action. The right artifact rotates and pushes from a paper stack, reflows with staggered columns, pushes into an edit, then collapses a fan of outputs into a finished poster. Version 1.1.0 retains stable reading intervals after movement. The original's more extreme type choreography remains a reference advantage.
 ## 7. Sound
-Dry paper/printing transients, low pulse, restrained mallet notes. Major visual cues are exported in EV and read by the score. Literal silence before the final statement. No guqin inherited from the ink template and no unnecessary cinematic risers.
+Dry page swishes, print impacts, marker friction, cutting and stamping have distinct cues. Bass, mallets and percussion change by chapter; the editing section thins out before the final harmonic resolution. Four editable buses, two literal silences, gentle shared transient control and encoded-media verification replace the original uniform pulse. EV stays on whole frames. No guqin inherited from the ink template.
 ## 8. Native moves
 Unsorted notes become three evidence columns; a knife line removes noise; a large numeral anchors each step; an editorial conclusion replaces the artifact. These are a vocabulary, not a mandatory story.
 ## 9. Pitfalls

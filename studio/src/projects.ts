@@ -66,12 +66,12 @@ export async function createProject(id: string, data: Content, base = FILMS, sty
   try {
     for (const file of ['index.html', 'CREDITS']) await fs.copyFile(path.join(template, file), path.join(dir, file));
     for (const file of ['build.ps1', 'build.sh']) await fs.copyFile(path.join(TEMPLATE, file), path.join(dir, file));
-    await fs.copyFile(path.join(ROOT, 'studio/audio/score.py'), path.join(dir, 'score.py'));
+    await fs.copyFile(path.join(ROOT, 'studio/audio/score-v2.py'), path.join(dir, 'score.py'));
     const scene = await fs.readFile(path.join(template, 'scene.ts'), 'utf8');
     await fs.writeFile(path.join(dir, 'scene.ts'), scene);
     await fs.writeFile(path.join(dir, 'scene.js'), stripTypeScriptTypes(scene));
     await fs.writeFile(path.join(dir, 'content.json'), JSON.stringify(data, null, 2) + '\n');
-    await fs.writeFile(path.join(dir, 'project.json'), JSON.stringify({ style, version: metadata.version, created: new Date().toISOString() }, null, 2) + '\n');
+    await fs.writeFile(path.join(dir, 'project.json'), JSON.stringify({ style, version: metadata.version, mastering: 'verified-v2', created: new Date().toISOString() }, null, 2) + '\n');
     await fs.copyFile(path.join(template, 'treatment.txt'), path.join(dir, 'TREATMENT.md'));
   } catch (error) {
     // The directory was created exclusively by this invocation; never remove an existing project.

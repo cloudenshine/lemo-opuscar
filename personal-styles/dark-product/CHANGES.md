@@ -10,3 +10,7 @@
 | Audio | Sampled phasing ensemble plus voice | Procedural glass/synth cues, no voice | Offline repeatability; fewer timbres |
 
 Comparative evidence and unresolved limits: [review](../../studio/comparison/REVIEW.zh-CN.md).
+
+## 1.1.0 — Second comparison round
+
+Twenty-seven cards occupy three projected depth planes. A dolly/drift leads to an oblique-to-frontal workspace, a dedicated task-card insert and a radial collapse. The pointer performs a readable archive action. Four harmonic regions, distinct arrival/slot/click/confirmation sounds, stereo reflections, music ducking and two silences replace the uniform pulse. This remains an original concept animation, not a full 3D engine or working SaaS.

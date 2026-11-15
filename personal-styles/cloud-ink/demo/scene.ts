@@ -10,6 +10,7 @@ declare global {
     READY: boolean; DUR: number; render: (t: number) => void;
     TEXTS: (t: number) => Array<{ id: string; text: string; x0: number; y0: number; x1: number; y1: number }>;
     EV: Array<{ t: number; type: string }>;
+    SHOTS: Array<{ start: number; end: number; framing: string; move: string }>;
   }
 }
 const W = 1920, H = 1080;
@@ -56,7 +57,15 @@ function typography(t: number) {
   void t;
 }
 window.DUR = 24;
-window.EV = [{ t: 0, type: 'mist' }, { t: 4, type: 'brush' }, { t: 8, type: 'leaves' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 20, type: 'harmonic' }];
+window.SHOTS = [
+  { start: 0, end: 4, framing: 'landscape', move: 'parallax drift' },
+  { start: 4, end: 8, framing: 'bamboo detail', move: 'rise' },
+  { start: 8, end: 14, framing: 'branch close', move: 'lateral track and hold' },
+  { start: 14, end: 17, framing: 'falling leaf', move: 'subject follow' },
+  { start: 17, end: 20, framing: 'water insert', move: 'impact push' },
+  { start: 20, end: 24, framing: 'landscape return', move: 'pull back' },
+];
+window.EV = [{ t: 0, type: 'mist' }, { t: 3.5, type: 'silence' }, { t: 4, type: 'brush' }, { t: 7.75, type: 'air' }, { t: 8, type: 'leaves' }, { t: 10.5, type: 'wind' }, { t: 12, type: 'silence' }, { t: 14, type: 'fall' }, { t: 17, type: 'water' }, { t: 18.5, type: 'ripple' }, { t: 19.5, type: 'ripple' }, { t: 19.75, type: 'air' }, { t: 20.5, type: 'harmonic' }];
 window.TEXTS = () => [
   { id: 'title', text: data.title, x0: 285, y0: 195, x1: 365, y1: 270 + ([...data.title].length - 1) * 72 },
   { id: 'inscription', text: data.inscription, x0: 540, y0: 947, x1: 1380, y1: 999 },
@@ -65,28 +74,38 @@ window.TEXTS = () => [
 window.render = (seconds: number) => {
   const t = Math.max(0, Math.min(24, seconds));
   layer.clear();
-  const push = smooth(t / 8) * .06 - smooth((t - 17) / 7) * .04;
-  const pan = smooth((t - 8) / 8) * -70;
-  const close = smooth((t - 11) / 2) * (1 - smooth((t - 17.5) / 3.5));
-  const zoom = 1 + push + close * .72;
-  layer.xf(zoom, 960 - (960 + close * 230) * zoom + pan, 540 - (540 + close * 160) * zoom);
-  layer.cw.globalAlpha = .72 + .28 * smooth(t / 4); layer.cw.drawImage(far, -pan * .5, 0);
-  layer.cw.globalAlpha = smooth((t - 1) / 5); layer.cw.drawImage(near, 0, 0); layer.cw.globalAlpha = 1;
-  drawSeq(layer.ink, stems, smooth((t - 3) / 5), .88);
-  drawSeq(layer.ink, leaves, smooth((t - 6) / 5), .85);
   const fall = smooth((t - 14) / 3), travel = smooth((t - 17) / 7);
-  if (t >= 14) {
-    for (const c of [layer.cw, layer.cd]) { c.save(); c.translate(1230 - fall * 180 - travel * 310, 525 + fall * 286); c.rotate(-.3 + Math.sin(fall * 6) * .5 + travel * .1); }
-    draw(layer.ink, fallenLeaf, 1, smooth((t - 14) * 4));
+  const leafX = 1230 - fall * 180 - travel * 310, leafY = 525 + fall * 286;
+  let zoom = 1, cx = 960, cy = 540;
+  if (t < 4) { zoom = 1 + smooth(t / 4) * .08; cx += smooth(t / 4) * 45; }
+  else if (t < 8) { zoom = 1.65; cx = 1220; cy = 740 - 130 * smooth((t - 4) / 4); }
+  else if (t < 14) { zoom = 1.85; cx = 1190 + 65 * smooth((t - 8) / 3.5); cy = 555; }
+  else if (t < 17) { zoom = 1.85 + .15 * fall; cx = leafX + 25; cy = leafY + 30; }
+  else if (t < 20) { zoom = 2.25 - .1 * smooth((t - 17) / 3); cx = 1020; cy = 790; }
+  else { const p = smooth((t - 20) / 3.5); zoom = 2.15 - 1.13 * p; cx = 1020 - 60 * p; cy = 790 - 250 * p; }
+  const camera = (depth: number) => { const z = 1 + (zoom - 1) * depth; layer.xf(z, 1100 - (960 + (cx - 960) * depth) * z, 570 - (540 + (cy - 540) * depth) * z); };
+  camera(.25); layer.cw.globalAlpha = .72 + .28 * smooth(t / 4); layer.cw.drawImage(far, 0, 0);
+  camera(.6); layer.cw.globalAlpha = smooth((t - 1) / 5); layer.cw.drawImage(near, 0, 0); layer.cw.globalAlpha = 1;
+  camera(1);
+  drawSeq(layer.ink, stems, smooth((t - 4) / 4), .88);
+  drawSeq(layer.ink, leaves, smooth((t - 8) / 3.75), .85);
+  if (t >= 8) {
+    for (const c of [layer.cw, layer.cd]) { c.save(); c.translate(leafX, leafY); c.rotate(-.3 + Math.sin(fall * 6) * .5 + travel * .1 + (t < 12 ? Math.sin(t * 1.8) * .06 : 0)); }
+    draw(layer.ink, fallenLeaf, 1, smooth((t - 8) / .5));
     for (const c of [layer.cw, layer.cd]) c.restore();
+    if (t >= 17) {
+      for (const c of [layer.cw, layer.cd]) { c.save(); c.translate(leafX, 830); c.scale(1, -.25); c.rotate(-.3 + Math.sin(fall * 6) * .5 + travel * .1); }
+      draw(layer.ink, fallenLeaf, 1, .15 * smooth((t - 17) / .4));
+      for (const c of [layer.cw, layer.cd]) c.restore();
+    }
   }
-  for (const onset of [17, 18.6, 20.4]) {
+  for (const onset of [17, 18.5, 19.5]) {
     const age = t - onset;
     if (age <= 0 || age >= 5) continue;
     const radius = 24 + 90 * Math.pow(age, .6), points: number[][] = [];
     for (let i = 0; i <= 44; i++) {
       const a = i / 44 * Math.PI * 1.85;
-      points.push([1020 + Math.cos(a) * radius, 820 + Math.sin(a) * radius * .16]);
+      points.push([1050 + Math.cos(a) * radius, 811 + Math.sin(a) * radius * .16]);
     }
     draw(layer.ink, mk(points, { w: 1.5, tone: .24, dry: .6, wet: .3, seed: 600 + onset * 10 }), 1, (1 - age / 5) * smooth(age * 3));
   }

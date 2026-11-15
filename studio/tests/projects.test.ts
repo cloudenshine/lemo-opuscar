@@ -39,7 +39,7 @@ test('personal styles create distinct snapshots and reject unsupported templates
       assert.equal(result.style, style);
       const meta = JSON.parse(await fs.readFile(path.join(base, style, 'project.json'), 'utf8'));
       assert.equal(meta.style, style);
-      assert.match(await fs.readFile(path.join(base, style, 'score.py'), 'utf8'), /silence_start/);
+      assert.match(await fs.readFile(path.join(base, style, 'score.py'), 'utf8'), /sound-manifest/);
     }
     assert.equal((await listProjects(base)).length, 3);
     const ink = await fs.readFile(path.join(base, 'cloud-ink/scene.ts'), 'utf8');

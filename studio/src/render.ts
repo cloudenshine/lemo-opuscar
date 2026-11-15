@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { ROOT, projectPath, within, compileProject, personalStyle } from './projects.ts';
+import { masterVideo } from './master.ts';
 
 export type Job = { id: string; project: string; state: 'running' | 'done' | 'failed'; stage: string; error?: string; video?: string };
 export function run(command: string, args: string[], log: (text: string) => void = () => {}) {
@@ -43,7 +44,11 @@ export async function renderProject(id: string, stage: (s: string) => void = () 
   await execute(python, [score, path.join(out, 'mix.wav'), style, path.join(out, 'events.json')]);
   stage('混音与封装');
   const relative = (name: string) => path.relative(ROOT, path.join(out, name)).split(path.sep).join('/');
-  await execute('sh', ['core/render/mux.sh', relative('video.mp4'), relative('mix.wav'), relative('film.pending.mp4'), '24', '0']);
+  if (metadata.mastering === 'verified-v2') {
+    await masterVideo(path.join(out, 'video.mp4'), path.join(out, 'mix.wav'), path.join(out, 'film.pending.mp4'), log);
+  } else {
+    await execute('sh', ['core/render/mux.sh', relative('video.mp4'), relative('mix.wav'), relative('film.pending.mp4'), '24', '0']);
+  }
   await fs.rename(path.join(out, 'film.pending.mp4'), path.join(out, 'film.mp4'));
   stage('生成封面');
   await execute(process.execPath, ['core/render/still.mjs', dir, '20', '--out', path.join(out, 'stills')]);

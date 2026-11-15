@@ -1,4 +1,4 @@
-type Project = { id: string; style: string; title: string; inscription: string; seal: string; url: string; video: string | null };
+type Project = { id: string; style: string; version: string; title: string; inscription: string; seal: string; url: string; video: string | null };
 type Style = { slug: string; cn: string; en: string; category_cn?: string; personal: boolean; creatable: boolean; guide: string; line_cn?: string; uses?: string[]; defaults?: { title: string; inscription: string; seal: string }; chapters?: string[]; sound?: string };
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 let current: Project | null = null, projects: Project[] = [], styles: Style[] = [], category = '全部';
@@ -16,8 +16,8 @@ function formContent() { return { title: field('title'), inscription: field('ins
 function styleDetails(resetContent = false) {
   const style = styles.find(s => s.slug === field('style-picker'));
   if (!style) return;
-  el('active-style-name').textContent = style.cn; el('active-style-en').textContent = ' / ' + style.en;
-  el('style-note').textContent = `${style.sound || ''} · 24 秒`;
+  el('active-style-name').textContent = style.cn; el('active-style-en').textContent = ` / ${style.en}${current ? ' · v' + current.version : ''}`;
+  el('style-note').textContent = `${current ? '项目已保存的画面与配乐' : style.sound || ''} · 24 秒`;
   el('chapters').replaceChildren(...(style.chapters || []).map((name, i) => { const span = document.createElement('span'); span.textContent = `0${i+1} ${name}`; return span; }));
   if (resetContent && style.defaults) for (const id of ['title', 'inscription', 'seal'] as const) el<HTMLInputElement>(id).value = style.defaults[id];
 }
@@ -55,7 +55,7 @@ function renderProjects() {
     const button = document.createElement('button'); button.className = `project ${current?.id === p.id ? 'selected' : ''}`; button.dataset.project = p.id;
     const tile = document.createElement('span'); tile.className = 'tile'; tile.textContent = p.title[0];
     const text = document.createElement('span'), title = document.createElement('strong'), detail = document.createElement('small');
-    title.textContent = p.title; detail.textContent = `${styles.find(s => s.slug === p.style)?.cn || '云山墨序'} · ${p.video ? '已导出' : '待导出'}`; text.append(title, detail); button.append(tile, text); button.onclick = () => select(p); target.append(button);
+    title.textContent = p.title; detail.textContent = `${styles.find(s => s.slug === p.style)?.cn || '云山墨序'} v${p.version} · ${p.video ? '已导出' : '待导出'}`; text.append(title, detail); button.append(tile, text); button.onclick = () => select(p); target.append(button);
   }
 }
 el('new-project').onclick = () => {

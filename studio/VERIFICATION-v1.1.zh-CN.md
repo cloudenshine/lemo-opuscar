@@ -1,5 +1,7 @@
 # 三风格与原作对照：v1.1 验收
 
+此页为历史记录；当前版本见 [v1.2 验收](VERIFICATION-v1.2.zh-CN.md)。
+
 日期：2026-11-15（Asia/Shanghai）。基于已交付的 `4f19b25` 继续开发；分支 `codex/ink-oriental-studio`。首版记录见 [v1 验收](VERIFICATION.zh-CN.md)，对比方法、数据与不足见 [原作对照报告](comparison/REVIEW.zh-CN.md)。
 
 ## 本次交付

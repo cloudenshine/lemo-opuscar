@@ -2,7 +2,7 @@
 
 Based on Chinese Ink Wash (`ink-wash`) from [Lemo-Opuscar by Lemomo (LemoLab)](https://github.com/lemomo-ai/lemo-opuscar). Adapted for a personal Chinese-language studio. Documentation: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), with the additional filmmaking permission in the library's LICENSE.
 
-Default size: 1920×1080. Version 1.1.0. Selected direction: ink wash and Eastern aesthetics. The starter now moves into the leaf before returning to the wider landscape, and reserves clean paper behind the title. This is an editable implementation, not a claim of a separate visual approval.
+Default size: 1920×1080. Version 1.2.0. Selected direction: ink wash and Eastern aesthetics. The starter uses landscape, bamboo detail, branch, leaf-follow, water-insert and landscape-return framings. This is an editable implementation, not a claim of a separate visual approval.
 
 ## 1. Essence
 
@@ -30,7 +30,7 @@ Use a slow push to notice something, lateral motion to give it room, a pull back
 
 ## 7. Sound palette
 
-Original sparse guqin writing in a pentatonic collection, soft brush air, water and paper. Model strings with the library's `core/audio/pluck.py`; avoid generic piano. Cue sounds to actions, never loop a stock phrase. Include a literal whole-bus silence with short edge fades. Voice is optional and never added automatically; any future voice requires a transcript check. Export stereo sound with a target near −14 LUFS and true peak below −1 dBTP.
+Original sparse guqin writing, a synthesized breath-led flute answer, soft brush air and water. Model strings with `core/audio/pluck.py`; the flute is a synthesis voice, not a recorded xiao. Music, ambience, material actions and transitions are separate buses. Use two literal whole-bus silences after reverb, with short edge fades; duck music under important contact sounds. Voice is optional. Encoded stereo deliveries must measure −14 ±1 LUFS with true peak at or below −1 dBTP.
 
 ## 8. Native moves
 
@@ -42,7 +42,7 @@ Dry brush must not become dotted dashes. Do not layer identical parallel strokes
 
 ## 10. Engine
 
-Own scene source: [demo/scene.ts](demo/scene.ts). The project creator strips TypeScript into a generated per-project `scene.js`, leaving editable TypeScript source beside it. Upstream MIT engines: `styles/ink-wash/demo/ink.js`, `comp.js`, `land.js`, and `core/lib.js`. Original score: `studio/audio/score.py`. The library must be available at runtime. Film pages expose `READY`, `render(t)`, `DUR`, `EV`, and `TEXTS(t)`.
+Own scene source: [demo/scene.ts](demo/scene.ts). The project creator strips TypeScript into generated `scene.js`, preserving editable TypeScript. Upstream MIT engines: `ink.js`, `comp.js`, `land.js` and `core/lib.js`. New score source: `studio/audio/score-v2.py`; `score.py` stays as the historical fallback. The library is needed at runtime. Films expose `READY`, deterministic `render(t)`, `DUR`, `EV`, `TEXTS(t)` and the `SHOTS` timeline.
 
 ## 11. Variation space
 

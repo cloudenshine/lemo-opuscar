@@ -13,3 +13,7 @@ Story-specific choices live in DEMO.md, not in the style invariants.
 ## 1.1.0 — Reference-led revision
 
 Compared the original 48-second official web preview with the first 24-second personal film. The original has stronger shot-scale contrast and much more complex character action. The personal revision adds a motivated leaf close view from 11–17.5s, returns to the wider landscape by 21s, and clears a soft paper field behind the title. The original bamboo/paper engine and calm story remain; no original footage or soundtrack is reused in the personal film. The old `morning-leaf` project is retained separately. See [comparison evidence](../../studio/comparison/REVIEW.zh-CN.md). Complex character acting and traced calligraphy remain outside this starter's vocabulary.
+
+## 1.2.0 — Second comparison round
+
+Six motivated framings now follow landscape, stem detail, branch, falling leaf, water contact and landscape return. Foreground and landscape use separate parallax depths. The leaf is visible before detachment; reflection and concentric rings follow contact. Four audio buses add a synthesized flute answer, wind/water, distinct brush/contact cues, pre-entry transitions and two silences. Old project and audio fallback remain unchanged.
