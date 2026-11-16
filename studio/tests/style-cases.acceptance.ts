@@ -19,9 +19,14 @@ try {
   assert.equal(await page.locator('article').count(), 99);
   assert.equal(await page.locator('input[type=radio]').count(), 297);
   assert.equal(await page.locator('input:checked').count(), 0);
+  assert.equal(await page.locator('input[type=radio]:disabled').count(), 297);
+  assert.match(await page.locator('#archive-notice').innerText(), /不再作为待选方案/);
+  await page.evaluate(() => localStorage.setItem('lemo-style-case-candidates-v1', JSON.stringify({ 'ink-wash': { choice: 'B', note: '旧稿意见必须保留' } })));
+  await page.reload();
+  assert.equal(await page.locator('#ink-wash input[value=B]').isChecked(), true);
+  assert.equal(await page.locator('#ink-wash textarea').inputValue(), '旧稿意见必须保留');
   await page.locator('#search').fill('中国水墨');
   assert.equal(await page.locator('article:visible').count(), 1);
-  await page.locator('#ink-wash input[value=B]').check();
   await page.locator('#ink-wash summary').click();
   await page.locator('#ink-wash textarea').fill('保留命题，结尾再讨论。');
   await page.reload();
@@ -35,7 +40,8 @@ try {
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#export').click(); const download = await downloadPromise;
   const data = JSON.parse(await fs.readFile((await download.path())!, 'utf8'));
-  assert.equal(data.status, 'selection-draft-not-production-approval');
+  assert.equal(data.status, 'rejected-proposal-history-not-approval');
+  assert.equal(data.revision, 'v1-rejected');
   assert.equal(Object.keys(data.choices).length, 99);
   assert.deepEqual(data.choices['ink-wash'], { choice: 'B', note: '保留命题，结尾再讨论。' });
   await page.locator('#ink-wash .clear').click();
@@ -46,9 +52,25 @@ try {
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: path.join(evidence, 'mobile.png') });
   const json = await page.request.get(`${base}/films/style-case-candidates/content.json`);
-  assert.equal(json.status(), 200); assert.equal((await json.json()).rows.length, 99);
+  assert.equal(json.status(), 200);
+  const archived = await json.json();
+  assert.equal(archived.rows.length, 99);
+  assert.equal(archived.status, 'rejected-by-user-archive-only');
+  await page.goto(`${base}/films/style-case-research/index.html`);
+  assert.equal(await page.locator('article').count(), 99);
+  assert.equal(await page.locator('input[type=radio]').count(), 0);
+  await page.locator('#filter').fill('热成像');
+  assert.equal(await page.locator('article:visible').count(), 1);
+  await page.locator('#filter').fill('');
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.screenshot({ path: path.join(evidence, 'research-mobile.png') });
+  const research = await (await page.request.get(`${base}/films/style-case-research/content.json`)).json();
+  assert.equal(research.revisedCandidates, 0);
+  assert.equal(research.fullVideoReviews, 0);
+  assert.equal(research.rows.length, 99);
+  assert.equal(await page.locator('a[href="RESEARCH-QUEUE.tsv"]').count(), 0);
   assert.deepEqual(errors, []);
-  console.log('PASS 99 styles, 297 candidates, no default choices, search/category filters, persistence, notes, export, clear and mobile layout. Content selections remain unconfirmed.');
+  console.log('PASS rejected archive, disabled choices, preserved history/notes, archival export, filters, 99 research entries, honest progress and mobile layout.');
 } finally {
   await browser.close(); server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve()));
 }

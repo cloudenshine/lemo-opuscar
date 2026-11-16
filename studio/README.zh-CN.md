@@ -2,7 +2,7 @@
 
 **创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。用户比较后选择保留第四版，并要求停止本轮打磨：[观看保留的第四版](http://127.0.0.1:43821/films/space-for-two-v4-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film-v4/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film-v4/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
 
-**最新范围纠正**：目标是99种风格各一个案例。每种风格先提三个内容候选，由用户选定后再制作。[99×3完整审阅页](http://127.0.0.1:43821/films/style-case-candidates/index.html) · [计划与复现](research/style-cases/README.zh-CN.md)。此前自由选题再选风格的六项提案不作为当前执行方案。
+**最新内容反馈**：目标仍是99种风格各一个案例、每种三个候选；旧297提案已因缺乏吸引力与价值被用户退回。先研究现实平台作品，每个候选分别推导内容价值与相关观众，禁止预设统一受众。[跨平台研究与99项研究入口](http://127.0.0.1:43821/films/style-case-research/index.html) · [旧稿档案](http://127.0.0.1:43821/films/style-case-candidates/index.html) · [计划与复现](research/style-cases/README.zh-CN.md)。新版297候选尚未交付，研究问题不是已成立选题；此前六项自由选题也不作为当前执行方案。
 
 [二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第七轮优化方案](comparison/ROUND7-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.7 验收](VERIFICATION-v1.7.zh-CN.md)
 

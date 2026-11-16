@@ -1,6 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cases, validateCandidates } from '../research/style-cases/catalog.ts';
+import { researchQueue } from '../research/style-cases/research.ts';
+
+test('research covers all styles without converting hypotheses into approved pitches', async () => {
+  const rows = await researchQueue();
+  assert.deepEqual(rows.map(r => r.slug), (await cases()).map(r => r.slug));
+  assert.equal(new Set(rows.map(r => r.question)).size, 99);
+  assert.equal(new Set(rows.map(r => r.audienceHypothesis)).size, 99);
+  for (const row of rows) {
+    assert.equal(row.status, 'research-question-not-approved-pitch');
+    assert.ok(row.evidenceGap.length > 10);
+  }
+});
 
 test('every fixed-index style has three individually titled content candidates with no default choice', async () => {
   const rows = await cases();
