@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>空位 · 第五版</title>
+<style>*{box-sizing:border-box}body{background:#142f39;color:#e8dcc3;margin:0;font:17px/1.8 system-ui,sans-serif}main{max-width:1320px;padding:48px 28px;margin:auto}h1{font-weight:400;font-size:clamp(48px,7vw,100px);line-height:1.1;margin:20px 0}small{color:#a9bab5;letter-spacing:2px}p{max-width:860px;color:#bcc9c0}video{display:block;width:100%;background:#0c232c;aspect-ratio:16/9;margin:26px 0}.paired{aspect-ratio:32/9}a{color:#e3bc83}button{font:inherit;padding:8px 18px;color:#142f39;background:#e3bc83;border:0;border-radius:3px;cursor:pointer;margin:0 10px 15px 0}button[aria-pressed=true]{outline:2px solid #e3bc83;outline-offset:4px}details{border-top:1px solid #4b6265;padding:22px 0}summary{cursor:pointer;font-size:23px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}img{width:100%;display:block}figure{margin:0}figcaption{font-size:14px;color:#bacac2;margin:8px 0 22px}footer{padding:35px 0;border-top:1px solid #4b6265}</style>
+<main><small>个人作品系列 / 根据观看反馈修改 / 未定稿</small><h1>空位 · 第五版</h1><p>32秒 · 无对白。先看画面，再展开说明。故事与动作时序保留，本次重绘全片人物的身体、四肢、头部和手。</p>
+<video id="current" controls preload="metadata" poster="/films/space-for-two-v5/out/stills/t_10.2.jpg" src="/films/space-for-two-v5/out/film.mp4"></video>
+<button id="ending">从修改段落开始看</button><button id="mute" aria-pressed="false">静音复看</button>
+<details><summary>看完后再判断</summary><p>请先用自己的话描述后半段发生了什么。伸手之前为什么停住？两个人各自作出了什么回应？结束时，谁的状态改变了？如果仍需说明才能理解，请记下具体时间。</p></details>
+<details><summary>本次修改依据</summary><p>本轮针对“像皮影戏，只有几个转动轴”的问题：胸、腰、胯各自塑形，弯腰时胸背与腰部改变轮廓；四肢改为连续且宽窄变化的袖管和裤管；点头时眼眉、下颌和脸部朝向共同变化；手从圆点改成有掌根、指节与拇指的轮廓。原有故事、接触轨迹和镜头时序保留，便于对照人物结构的改动。</p><p>这些是实现出来的表达尝试，是否清楚仍需观看判断。声音沿用第四版；人物仍是二维程序绘制，并非三维角色或逐帧手绘。内部仍有骨架约束，新版增加的是表面形变和体积提示，实际自然度需要观看判断。</p></details>
+<details><summary>关键动作对照</summary><div class="grid">
+<figure><img loading="lazy" src="/films/space-for-two-v5/out/stills/t_17.15.jpg" alt="包下沉后重新承重"><figcaption>17.15 / 吃力时胸背与腰部形变</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v5/out/stills/t_19.55.jpg" alt="先把视线转向提出帮助的人"><figcaption>19.55 / 带转面的脸部与双眼</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v5/out/stills/t_20.62.jpg" alt="较快低头，较慢回正的接受动作"><figcaption>20.62 / 下颌与五官共同响应</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v5/out/stills/t_27.5.jpg" alt="共同承托后松手休息"><figcaption>27.5 / 手掌与身体放松后的形态</figcaption></figure>
+</div></details>
+<details open><summary>同一段动作 · 左第四版 / 右第五版</summary><video class="paired" controls muted preload="metadata" src="/films/space-for-two-v5-comparison/out/film.mp4"></video><p>16.7–28.5秒，静音同步对照。左侧是修改前，右侧是本轮人物。保持相同接触轨迹和镜头，直接判断轮廓、体积与表演有没有改善。</p></details>
+<details><summary>第四版 · 修改前</summary><video controls preload="none" src="/films/space-for-two-v4/out/film.mp4"></video><p>32秒；本轮改变的是人物绘制结构。</p></details>
+<details><summary>第三版 · 更早实验</summary><video controls preload="none" src="/films/space-for-two-v3/out/film.mp4"></video><p>32秒；对照点头、承重与收手时的节奏。</p></details>
+<details><summary>第二版 · 更早实验</summary><video controls preload="none" src="/films/space-for-two-v2/out/film.mp4"></video><p>28.5秒；第三版从此版的后半段歧义开始改写。</p></details>
+<details><summary>第一版 · 保留的起点</summary><video controls preload="none" src="/films/space-for-two-proof/out/film.mp4"></video><p>22.5秒；只有让座与共同等待。</p></details>
+<footer><a href="/films/content-style-atlas/index.html">完整99种风格适配表 →</a><p>选择形式仍以内容需要为依据。此页不代表完整个人作品系列已经完成。</p></footer></main>
+<script>const film=document.querySelector('#current');document.querySelector('#ending').addEventListener('click',async()=>{film.currentTime=16.7;try{await film.play()}catch{}});document.querySelector('#mute').addEventListener('click',async(e)=>{film.muted=!film.muted;e.currentTarget.setAttribute('aria-pressed',String(film.muted));e.currentTarget.textContent=film.muted?'恢复声音':'静音复看';film.currentTime=16.7;try{await film.play()}catch{}});</script></html>
