@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-16",
+  "passed": true,
+  "model": "gemini-4-hydrogen-high",
+  "scope": "full-timeline-model-assisted-narrative-and-audio-review-not-human-real-time-viewing",
+  "pilot": "silent-film",
+  "sourceSha256": "57198d76bf4224c208b61b9e1609f4bea9474e932a00b7b8db82462b124d6323",
+  "visualDurationSeconds": 54.208333,
+  "decodedAudioDurationSeconds": 54.122688,
+  "controls": [
+    {
+      "test": "20-second digital silence, content undisclosed",
+      "observed": "No words, music or audible events reported",
+      "passed": true
+    },
+    {
+      "test": "54-second blind audio with different speech at beginning, middle and end",
+      "expected": ["Cobalt seven", "Lantern thirty one", "Apricot eighty six"],
+      "observed": ["Cobalt 7", "Lantern 31", "Apricot 86"],
+      "passed": true,
+      "limitation": "Word order and tail coverage passed; estimated timestamps were imprecise and are not accepted as measurements"
+    },
+    {
+      "test": "Complete original audio decoded once and split into fourteen contiguous native-audio inputs",
+      "observed": "Fourteen recorded native reads and fourteen substantive descriptions, including the final mechanical pulses after music fades",
+      "passed": true,
+      "limitation": "Analysis audio is mono 16 kHz; this is not a stereo imaging or mastering assessment"
+    },
+    {
+      "test": "Continuous visual sequence, sixfold retimed native video, followed by editorial causal check",
+      "observed": "Correctly identifies escaping loaf, failed grab, seesaw launch, fruit leaving frame, delayed helmet impact, shared halves and final iris wink; the launch-wait-impact sequence was also checked against source images",
+      "passed": true,
+      "limitation": "Effective visual sampling approximately six frames per original second; not frame-exact performance verification"
+    },
+    {
+      "test": "Audio-only recheck of the narrative turn, without source visuals or story descriptions",
+      "observed": "Rapid piano becomes sparse; mechanical pulses emerge during the pause; sustained harmony follows. This corrects the first analysis that placed the sustained harmony too early",
+      "passed": true
+    }
+  ],
+  "acceptedCreativeFindings": [
+    "A visible launch followed by an empty interval makes the viewer anticipate the delayed consequence before the policeman does",
+    "The score losing density, then yielding to mechanical ambience, creates a genuine pause before the sharing scene",
+    "The final shared raised halves echo the opening raised whole loaf; a repeated action changes meaning rather than adding an explanatory slogan"
+  ],
+  "rejectedClaims": [
+    "The earlier claim that the audio lasts about twelve seconds",
+    "The first long-audio analysis timestamps, including a claimed sustained-harmony entry near 28.5 seconds",
+    "Identifying a low musical accent as definitely a separate physical collision effect",
+    "Claiming frame-exact audiovisual synchronization or identifying instrument samples by ear"
+  ],
+  "batchRule": "Every original needs its own complete native audio read, full visual timeline and editorial audit; pilot success alone does not certify any other film or candidate"
+}

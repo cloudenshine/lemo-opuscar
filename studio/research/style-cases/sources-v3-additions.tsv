@@ -1,0 +1,14 @@
+id	title	url	role	checked	boundary
+N04	Unicode：文字显示问题	https://www.unicode.org/help/display_problems.html	字符、编码与字体事实	已读缺字、字形处理与错误解码三类说明	只支持区分故障环节；具体终端与字体回退必须实测，不能把所有方框都归为同一原因
+N05	NIST：X射线质量衰减系数	https://physics.nist.gov/PhysRefData/XrayMassCoef/chap2.html	窄束单能衰减模型	已读指数衰减、质量厚度及能量依赖说明	不等于真实多能安检设备完整模型，不证明材料自动识别或安检结论
+S17	BART：2020年Milpitas与Berryessa两站开放	https://www.bart.gov/news/articles/2020/news20200519	历史开通事件与连接	已读2020-06-13开通、站点与VTA及AC Transit连接说明	历史页面不同位置班次信息可能属于不同更新，不用于2026出行；网络图与具体换乘计算尚待取得
+H15	MWRD：芝加哥水环境工程历史	https://mwrd.org/what-we-do/history-protecting-our-water-environment	工程机构历史说明	已读1900改道、人工水道、下游去向与建制时的反对意见	机构自述需结合下游视角，不把污染移走写成污染消失，不给当前流速或水质结论
+H16	伊利诺伊州档案馆：1900芝加哥河改道照片	https://www.ilsos.gov/departments/archives/online-exhibits/100-documents/1900-photo-reverse-chicago-river.html	具体档案与时间解释	已读照片为开通翌日象征性仪式、下游争议和摄影记录目的	原始图像使用条件仍须落实；不以仪式照片冒充实际开通瞬间，不编照片外的对话
+S14	EPA：测量城市热岛	https://www.epa.gov/heatislands/measuring-heat-islands	测量对象与方法	已读气温与地表温度、传感器、时段和空间覆盖限制段落	不能把卫星地表温度当成人体所处气温；不提供任何新城市的实测结论
+S15	Chandra：2020三组天文数据声化	https://chandra.si.edu/photo/2020/sonify/	具体作品的映射规则	已读银河中心、仙后座A、创生之柱的扫描方向、音高、响度与元素声部说明	三组映射不同；不是太空麦克风录音；本轮未完整播放这些外部声化作品
+P01	FIFA：跑动进攻防线身后空间	https://www.fifatrainingcentre.com/en/practice/talent-coach-programme/sessions/movement-to-attack-the-space-in-behind.php	训练机制事实	已读2024训练文章的2对1、诱饵跑动、传球与启动时机段落	支持训练原理，不证明拟拍比赛已经发生这些动作；视频尚未完整观摩
+S16	NASA：Mars Climate Orbiter事故调查第一阶段报告	https://discovery.larc.nasa.gov/PDF_FILES/MCO_report_2.pdf	调查原始报告	已读1999-11-10报告执行摘要、单位错误及其他过程未拦截错误的说明	报告列明毁于大气或离开火星两种可能；不能编造坠毁画面、通话或把责任归为某个人
+H11	Kew：植物绘画为何仍用于科学记录	https://www.kew.org/read-and-watch/what-is-botanic-art	科学绘画方法	已读艺术家与分类学家协作、细节选择、解剖、测量比例段落	支持图版用途与方法，不提供任意叶片病因；文中优于照片的表述不是所有情境的比较结论
+H12	LOC：电照明早期应用与历史地图	https://blogs.loc.gov/maps/2024/10/lighting-america-the-early-adoption-of-electric-light/	历史事实与直接评论	已读电照明应用、1894华盛顿不同灯具并存、历史地图例子及页面5条评论	评论来自4名具名账号含作者回复，不能当总体口碑；地图年份不等于设备启用年份
+H13	美国国家档案馆：1880电灯改进专利图	https://www.archives.gov/historical-docs/edisons-light-bulb-patent	原始文书说明	已读专利图说明及1880-01-27日期	不据此宣称一人独自发明所有电灯技术或专利即普及
+H14	Science Museum Group：剪刀馆藏目录	https://collection.sciencemuseumgroup.org.uk/search/objects/object_type/scissors	具体对象入口	已读折叠剪、理发剪、手术剪等目录分类及年代范围	本轮只核目录，单件结构、用途细节与图片许可仍须逐件读条目，不能编唯一发明者

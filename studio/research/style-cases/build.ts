@@ -4,7 +4,9 @@ import { ROOT } from '../../src/projects.ts';
 import { cases } from './catalog.ts';
 import { buildResearch } from './research.ts';
 import { buildV2 } from './build-v2.ts';
+import { buildV3 } from './build-v3.ts';
 
+await buildV3();
 await buildV2();
 await buildResearch();
 
