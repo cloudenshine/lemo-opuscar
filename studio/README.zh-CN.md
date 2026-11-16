@@ -1,5 +1,7 @@
 # 云山墨序 · 本地私人制片室
 
+**最新制作进展**：用户从297个候选选出86-A运河缺水、58-C勇者拆包、93-A透明窗，并在完整方案后要求继续。首轮[三部审看页](http://127.0.0.1:43821/films/selected-trio-v1-review/index.html)提供90秒运河内容样片、70秒像素表演样片、72秒热成像实验分镜；第三项全程标明非实测，仍缺真实连续实验素材。[制作方案](research/selected-trio-v1/TREATMENT.md) · [验证与限制](research/selected-trio-v1/REVIEW.md)。内容确认不等于成片质量通过，其余候选保持讨论状态。
+
 **创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。用户比较后选择保留第四版，并要求停止本轮打磨：[观看保留的第四版](http://127.0.0.1:43821/films/space-for-two-v4-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film-v4/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film-v4/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
 
 **最新内容反馈**：目标是99种风格各一个案例、每种三个候选，每个候选分别推导内容价值与相关观众，禁止预设统一受众。[第三稿297项内容复审](http://127.0.0.1:43821/films/style-case-candidates-v3/index.html)已落地：88条保留、167条修改、42条重写，逐条包含声音安排和理由；99支原片完成完整时间轴模型辅助声画分析及编辑复核，0支待补。另有62条来源边界和6处有限评论语境，不冒称全平台口碑或真人逐帧观摩。[声画验证及对照报告](research/style-cases/EVIDENCE-v3.zh-CN.md) · [第二稿存档](http://127.0.0.1:43821/films/style-case-candidates-v2/index.html) · [旧稿档案](http://127.0.0.1:43821/films/style-case-candidates/index.html) · [计划与复现](research/style-cases/README.zh-CN.md)。讨论稿不代表制作确认，此前六项自由选题也不作为当前执行方案。
