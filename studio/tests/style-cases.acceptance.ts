@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+import { once } from 'node:events';
+import type { AddressInfo } from 'node:net';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { chromium } from 'playwright-core';
+import { createStudio } from '../src/server.ts';
+import { ROOT } from '../src/projects.ts';
+
+const server = createStudio(); server.listen(0, '127.0.0.1'); await once(server, 'listening');
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1400, height: 960 } });
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  await page.goto(`${base}/films/style-case-candidates/index.html`);
+  const evidence = path.join(ROOT, '.studio/style-cases'); await fs.mkdir(evidence, { recursive: true });
+  await page.screenshot({ path: path.join(evidence, 'desktop.png') });
+  assert.equal(await page.locator('article').count(), 99);
+  assert.equal(await page.locator('input[type=radio]').count(), 297);
+  assert.equal(await page.locator('input:checked').count(), 0);
+  await page.locator('#search').fill('中国水墨');
+  assert.equal(await page.locator('article:visible').count(), 1);
+  await page.locator('#ink-wash input[value=B]').check();
+  await page.locator('#ink-wash summary').click();
+  await page.locator('#ink-wash textarea').fill('保留命题，结尾再讨论。');
+  await page.reload();
+  assert.equal(await page.locator('#ink-wash input[value=B]').isChecked(), true);
+  assert.equal(await page.locator('#ink-wash textarea').inputValue(), '保留命题，结尾再讨论。');
+  await page.locator('#unselected').check();
+  assert.equal(await page.locator('article:visible').count(), 98);
+  await page.locator('#unselected').uncheck();
+  await page.locator('#category').selectOption({ label: '传统工艺' });
+  assert.equal(await page.locator('article:visible').count(), 7);
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#export').click(); const download = await downloadPromise;
+  const data = JSON.parse(await fs.readFile((await download.path())!, 'utf8'));
+  assert.equal(data.status, 'selection-draft-not-production-approval');
+  assert.equal(Object.keys(data.choices).length, 99);
+  assert.deepEqual(data.choices['ink-wash'], { choice: 'B', note: '保留命题，结尾再讨论。' });
+  await page.locator('#ink-wash .clear').click();
+  assert.equal(await page.locator('input[type=radio]:checked').count(), 0);
+  assert.equal(await page.locator('#ink-wash textarea').inputValue(), '保留命题，结尾再讨论。');
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: path.join(evidence, 'mobile.png') });
+  const json = await page.request.get(`${base}/films/style-case-candidates/content.json`);
+  assert.equal(json.status(), 200); assert.equal((await json.json()).rows.length, 99);
+  assert.deepEqual(errors, []);
+  console.log('PASS 99 styles, 297 candidates, no default choices, search/category filters, persistence, notes, export, clear and mobile layout. Content selections remain unconfirmed.');
+} finally {
+  await browser.close(); server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve()));
+}
