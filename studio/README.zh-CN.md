@@ -2,6 +2,8 @@
 
 **创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。用户比较后选择保留第四版，并要求停止本轮打磨：[观看保留的第四版](http://127.0.0.1:43821/films/space-for-two-v4-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film-v4/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film-v4/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
 
+系列继续推进：[第二批内容候选](research/creative-reset/NEXT-CONTENTS.zh-CN.md)。先确认内容，再比较风格与制作方案；《空位》保留旧版的决定不变。
+
 [二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第七轮优化方案](comparison/ROUND7-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.7 验收](VERIFICATION-v1.7.zh-CN.md)
 
 这是个人 Fork 的独立扩展。保留 Lemo-Opuscar 上游工具，在 Windows 上增加中文工作台、项目管理、确定性预览和视频导出。仅监听本机，不需要 API Key。源码和工作台 UI 使用 TypeScript；服务使用 Node 标准库，无新增运行时依赖。
