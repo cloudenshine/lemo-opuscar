@@ -1,0 +1,44 @@
+id	title	url	role	checked	boundary
+S12	NASA：2023巴拿马运河船舶积压	https://science.nasa.gov/earth/earth-observatory/panama-canal-traffic-backup-151778/	历史事件与真实影像	已读2023-08-18影像说明及淡水、船闸和通行限制段落	不是2026航行情报；影像中船数不等于全部排队船数
+S13	NSF NEON：机载激光雷达及数据产品	https://www.neonscience.org/data-collection/lidar	实测点云来源与测量方法	已读激光回波、L1分类点云、DTM/DSM及WREF示例	具体瓦片与许可尚未下载核验；图示不等于已计算结果
+N03	RFC 9293：TCP	https://www.rfc-editor.org/rfc/rfc9293.html	协议事实来源	已读可靠传输、重传及确认号相关条款	不是所有网络协议都采用TCP；艺术线路不代表实际布线
+M05	Bartosz Ciechanowski：Gears	https://ciechanow.ski/gears/	工程解释与事实来源	已读齿轮几何和角速度说明；未操作全部交互	具体机构仍须按齿数与尺寸计算；不是新片实测
+M06	Bartosz Ciechanowski：Sound	https://ciechanow.ski/sound/	物理解释与方法参照	已读空气粒子、压力与传播说明；未完整听音	不是声学实验数据；音频和模型须另验证
+M07	Bartosz Ciechanowski：Internal Combustion Engine	https://ciechanow.ski/internal-combustion-engine/	工程解释与事实来源	已读连杆曲轴把往复运动转成转动的说明	具体几何及动力计算待落实；不提供拆修指导
+M08	Ploopy Classic Trackball开源仓库	https://github.com/ploopyco/classic-trackball	真实工程对象与材料入口	已核仓库包含机械、PCB与固件目录	尚未下载核许可及硬件版本；不得当作已验证CAD
+H08	Visit Baarle：飞地历史	https://m-en.visitbaarle.com/informatie/geschiedenis	当地历史与地理来源	已读中世纪地块、1843划界与1995最后边界确认说明	制作须再对照具体地块图和条约；不用旅游文案推全球排名
+H09	NPS：纽约土地历史时间线	https://www.nps.gov/articles/000/timeline.htm	机构历史说明	已读1664四艘军舰、投降与更名段落	只支撑本次交接；不是全部殖民史或原住民视角
+H10	美国国家档案馆：路易斯安那购地的文件过程	https://www.archives.gov/publications/prologue/2003/spring/louisiana-purchase.html	历史与档案来源	已读港口目标、扩大交易、签约与融资文书段落	国家间主权交易不等于原住民自愿让地；不能抹掉已有居民
+B01	何同学：为了不用倒垃圾，我们做了这个	https://www.bilibili.com/video/BV1JDMQzUEwy/	作品与原帖评论	原帖元数据、热门评论、4条非置顶最新评论；部分播放画面	历史高传播案例；未完整听看。借鉴需求、失败与趣味的关系，不复制垃圾桶情节。
+B02	毕导：无穷之后的世界	https://www.bilibili.com/video/BV1gcfWYqEsf/	作品与原帖评论	原帖元数据、热门区争议和作者补充	评论显示概念边界需要讲清；评论不是数学论证，不据此宣称反直觉结论正确。
+B03	影视飓风：AI可以取代我，那我的意义是	https://www.bilibili.com/video/BV1QMSjBREzr/	作品与原帖评论	原帖元数据、热门区及参与者回复	支持真实经历与创作动机的选题假设，不证明AI能力边界；未完整听看。
+F01	Retirement Plan：导演与编辑解读	https://www.shortoftheweek.com/2025/11/28/retirement-plan/	创作参照	作品介绍与导演讨论	借鉴具体欲望累积的表达效率；未取得原帖评论，不复制退休清单故事。
+F02	The Backrooms：短片编辑评介	https://www.shortoftheweek.com/2022/03/29/the-backrooms/	创作参照	2022短片评介	非2026电影评价，不当成完整原片观摩。
+F03	NFB：Necktie	https://www.nfb.ca/film/necktie/?ctlgsrc=mr	创作参照	官方作品页	仅作为日常物件承载人物愿望的参照，不搬用领带故事。
+X01	适老化改造、老年创作等平台案例报道	https://www.cqnews.net/web/content_1511066696649482240.html	需求线索	二手报道，非原帖评论	仅支持继续调查具体生活处境；不虚构老人采访、用户反馈或传播量。
+D01	知识类创作者年度案例报道	https://finance.sina.com.cn/roll/2025-12-29/doc-inhenaui7943255.shtml	传播背景	报道中的风雪夜灯、混子哥案例	历史报道；不能代替具体原片、史料或评论核实。
+N01	Parable of the Polygons	https://ncase.me/polygons/	机制参照	原作文字与模型规则	规则会产生群体结果；未亲自跑完交互，不将模型当社会定律。新提案使用另拟规则。
+N02	3Blue1Brown：神经网络	https://www.3blue1brown.com/lessons/neural-networks/	解释方法	原作图文课程	建立可操作直觉的参照；不是新选题事实的万能来源，未完整听看视频。
+M01	Bartosz：Mechanical Watch	https://ciechanow.ski/mechanical-watch/	工程解释参照	原作图文、部件分工	只支撑文中机构；新机构须另核结构、尺寸和运动约束。
+M02	Bartosz：Bicycle	https://ciechanow.ski/bicycle/	工程事实与解释参照	原作图文、力与约束	理想模型有简化；不要把动画当骑行操作教学或真实实测。
+M03	Bartosz：Airfoil	https://ciechanow.ski/airfoil/	工程解释参照	原作图文、流动可视化	流线必须对应计算或明确示意；不编造风洞数据。
+M04	iFixit：We Hot-Wired the iPhone 16	https://www.ifixit.com/News/100352/we-hot-wired-the-iphone-16	实物拆解与评论	正文及首屏可见评论	2024特定机型；读者追问SIM、可维修性及芯片朝向，不外推所有手机。
+H01	大都会：巨浪的颜料与套印分析	https://www.metmuseum.org/es/essays/hokusai-great-wave	馆藏研究	研究文章正文	支持颜料与印刷关系；不挪用名画构图，不将来源图片默认视为可商用。
+H02	V&A：日本木版画	https://www.vam.ac.uk/articles/japanese-woodblock-prints-ukiyo-e	历史与工艺	馆方文章正文	支持版画传播及题材背景；拟人故事另标虚构。
+H03	剑桥：制作中世纪手稿	https://www.corpus.cam.ac.uk/articles/making-medieval-manuscripts	历史工艺	馆方文章	制作分工与材料入口；具体书页、年代、损伤原因须逐件核验。
+H04	国会图书馆：1906年市场街影片	https://www.loc.gov/item/00694408	档案入口	馆方检索摘要；正文403	可查找原档案，不能据此声称全片已看或具体人物身份已知。
+H05	CyArk：开放三维数据	https://www.cyark.org/whatwedo/openaccess/	实证材料入口	官方项目与数据说明	具体数据集、精度、许可和缺损均待核；开放不等于无限制使用。
+H06	Smithsonian：Apollo 11指令舱三维馆藏	https://3d.si.edu/object/nasm_A19700102000	实证材料入口	官方馆藏检索结果	未下载模型；不能凭扫描推断宇航员主观感受或舱内事件。
+S01	NASA：Aral Sea（2003）	https://science.nasa.gov/earth/earth-observatory/aral-sea-3730/	历史环境证据	正文及影像日期	1989/2003历史对比；不得将2003预测写成2026现状。
+S02	NASA：城市热岛说明	https://science.nasa.gov/climate-change/faq/can-you-explain-the-urban-heat-island-effect/	科学背景	官方检索条目	局部温差需实测；地表温度不等于人体感受或气温。
+S03	自然历史博物馆：蓝闪蝶	https://www.nhm.ac.uk/discover/spotlight-blue-morpho.html	生物事实	正文结构色段落	具体物种、性别与角度有差异；不外推所有蓝色生物。
+S04	Nikon 2025显微视频获奖作品说明	https://www.microscope.healthcare.nikon.com/es_AMS/about/news/15th-annual-nikon-small-world-in-motion-competition-winner-magnifies-self-pollination-process-in-a-common-wildflower	获奖与观察方法	主办方正文、自花传粉过程和拍摄说明	奖项已核，未完整观看获奖片或读取评论；不得将某植物策略普遍化。
+S05	FLIR：热成像能否透视	https://www.flir.com/en-gb/discover/home-outdoor/can-thermal-imaging-see-through-walls/	仪器事实	正文玻璃、金属与墙体段落	仪器频段和材料影响结果；需同场可见光与校准信息，非医疗诊断。
+S06	BART：无障碍设施	https://www.bart.gov/guide/accessibility	真实公共服务背景	官方设施说明	有设施不等于任何时刻全程可达；不推断中国城市或实时故障。
+S07	联合国统计司：时间利用分类	https://unstats.un.org/UNSDWebsite/demographic-social/time-use/guidelines/IX/	统计口径入口	官方检索条目	拟议日记实验不代表全体人口；照料的并行时间不可简单加总。
+S08	Our World in Data：女性无偿照料时间	https://ourworldindata.org/grapher/share-of-day-women-spend-on-unpaid-domestic-and-care-work	公开数据入口	数据图表检索	各国年份与口径待逐项核验；候选不预填结果。
+C01	Backrooms观众关于声音来源的讨论	https://www.reddit.com/r/KanePixelsBackrooms/comments/1q26ejp/ff2_question/	直接社区讨论	主帖与前4条对话	少数观众讨论角色能否听见声音；不代表总体口碑，不混同2022短片评论。
+S09	NASA：数据声化	https://www.nasa.gov/data-sonifications/	科学表达参照	官方说明与作品入口	数据转换成声音，不是太空现场录音；新映射须公开，不声称唯一正确音色。
+S10	BART：电梯状态与替代路线	https://www.bart.gov/stations/elevators	公共服务事实	正文与站点替代路线入口	设施、实时状态和可达路径不同；本次不记录某站当前停运结论。
+H07	Smithsonian：调查Columbia舱壁手写痕迹	https://airandspace.si.edu/stories/editorial/investigating-writing-columbias-walls	馆方历史证据入口	官方搜索摘要；正文403	馆方摘要记载Collins确认日历出自自己；其余字迹身份与原图仍需核实。
+S11	PLATEAU：开放三维城市模型	https://www.mlit.go.jp/plateau/open-data/	真实几何数据入口	官方目录与数据链接	已核目录存在；具体城市、年份、LOD、许可和高度精度待下载检查，不凭目录声称测量完成。

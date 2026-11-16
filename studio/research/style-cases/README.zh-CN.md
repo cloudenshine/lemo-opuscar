@@ -1,14 +1,18 @@
 # 99种风格案例计划：每种三个内容候选
 
-## 最新反馈：旧稿已退回，先研究价值
+## 当前交付：第二稿297个内容候选
 
 2026-11-16：用户否定旧297条候选的吸引力与内容价值，要求参考现实各平台高评、高质量与高热点作品后再提方案。同时明确：**每种风格的内容方向与相关观众不同，不得要求整套项目先选统一受众**。
 
-当前入口：[跨平台研究与99项研究清单](http://127.0.0.1:43821/films/style-case-research/index.html) · [研究底稿与证据限制](RESEARCH.zh-CN.md) · [逐项研究问题](RESEARCH-QUEUE.tsv)。本轮12个案例入口、99项研究问题已整理；未完整观摩参考影片，未完成评论抽样，新版297候选尚未交付。
+当前入口：[99种风格 × 三个新候选](http://127.0.0.1:43821/films/style-case-candidates-v2/index.html) · [新稿证据与评论记录](EVIDENCE-v2.zh-CN.md) · [297条手写内容](revised-candidates.tsv) · [43条来源及核实边界](sources-v2.tsv) · [99支原片画面观察](observations-v2.tsv)。每条包括完整内容路径、观看回报、风格理由、现实依据和开拍前待验证项，不是只有标题的研究清单。
+
+已经逐项检查99支官方原片的六帧抽样，四支另看24帧；直接阅读3个B站原帖、1个iFixit页面与1组Reddit讨论的部分评论。**完整动态与声音观摩仍未完成**；详细范围、日期与可回查锚点见证据报告。不把历史高传播称为当前热点，不将目录入口说成已下载可用素材。
+
+审阅页支持类别筛选、内容搜索、跳到任一风格、选择A/B/C、写意见和导出。没有默认选项，使用独立存储键`lemo-style-case-candidates-v2`。导出状态为`discussion-draft-not-production-approval`；选择是讨论草稿，不自动开拍。技术校验不证明297条都足够吸引人。
 
 `candidates.json`保留为被退回的第一稿。旧审阅页改为档案，禁用新增选择，保留历史意见与导出；导出明确标为旧稿记录，不是新版确认。未来新稿必须使用新的版本和存储键，不能把旧A/B/C选择套到新内容上。
 
-以下旧稿说明保留作历史记录，其中“待选择”和构思流程已被本节及研究底稿取代，不构成当前制作授权。
+以下第一稿说明保留作历史记录；当前内容以`revised-candidates.tsv`为准，事实与方法来源不能互相替代。修理、照料、创作劳动等题材仍有重复风险，具体确认时继续去重，不以数量代替质量。
 
 ## 最新任务定义
 
@@ -26,7 +30,7 @@
 - 本地[完整审阅页](http://127.0.0.1:43821/films/style-case-candidates/index.html)，可筛类别、搜编号或内容、标记候选、写意见、取消选择及导出草稿。
 - 选择只保存在当前浏览器。导出JSON用于讨论和确认，不自动启动渲染，也不上传用户意见。
 
-旧稿现仅供复盘，不再邀请选择；下一版应在研究证据充分后重新提供，三个都不合适时继续重写同一风格，不跳过覆盖。
+旧稿现仅供复盘，不再邀请选择；第二稿已在独立页面提供，三个都不合适时继续重写同一风格，不跳过覆盖。
 
 ## 构思依据与限制
 
@@ -53,7 +57,11 @@
 
 在仓库根目录：
 
+首次复现联系表需要Node 24+、GitHub CLI可访问公开Release、FFmpeg/FFprobe和可用的系统字体；原片只下载到忽略目录，不提交媒体。前两条命令可能耗时较长，抽帧不等于人工观摩。
+
 ```powershell
+node studio/research/style-cases/inspect-references.ts
+node studio/research/style-cases/make-overviews.ts
 node studio/research/style-cases/build.ts
 npm --prefix studio run typecheck
 npm --prefix studio test
@@ -61,6 +69,6 @@ npm --prefix studio run guard
 node studio/tests/style-cases.acceptance.ts
 ```
 
-同一构建命令同时生成忽略的`films/style-case-research/`研究页和`films/style-case-candidates/`旧稿档案：页面`index.html`、数据`content.json`，旧稿另有`CANDIDATES.zh-CN.md`。不手工编辑这些产物。源码、研究文档与手写旧候选提交到GitHub，用户浏览器中的选择不纳入提交。
+联系表已齐备时直接从`build.ts`开始。同一构建命令生成忽略的`films/style-case-candidates-v2/`新版、`films/style-case-research/`第一阶段研究档案和`films/style-case-candidates/`旧稿档案。新版含`index.html`、`content.json`、可离线阅读的`CANDIDATES.zh-CN.md`及99张联系表；页面由本地创作台服务。不要手工编辑产物。手写候选、核查记录、源码和测试同步GitHub；用户浏览器的选择、下载媒体及运行数据不提交。
 
-检查覆盖旧99项与297候选完整性、研究清单99项覆盖、旧稿禁用选择与历史恢复、意见保留、档案导出、筛选、静态数据访问与手机布局。技术检查不验证研究假设，也不代表创作质量验收；本轮没有渲染影片。
+检查覆盖新旧候选完整性、来源映射、99条视觉观察、旧稿与新稿存储隔离、无默认选择、意见保存、讨论稿导出、搜索跳转、图片与数据访问及手机布局。技术检查不验证研究假设，也不代表创作质量验收；本轮没有制作新成片。
