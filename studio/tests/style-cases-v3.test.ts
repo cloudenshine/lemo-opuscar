@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { promises as fs } from 'node:fs';
 import { editorialCases, mergeEditorial, validateObservation, STORAGE_KEY, type Editorial } from '../research/style-cases/v3.ts';
 import { revisedCases, STORAGE_KEY as OLD_KEY } from '../research/style-cases/v2.ts';
 
@@ -34,4 +35,15 @@ test('a complete native-read record still fails publication if its narrative omi
   validateObservation(o);
   o.beats[o.beats.length - 1].end -= 1;
   assert.throws(() => validateObservation(o), /Missing ending|Invalid narrative/);
+});
+
+test('the historical admissions pitch matches the original counts and keeps the two exceptions', async () => {
+  const facts = JSON.parse(await fs.readFile(new URL('../research/style-cases/ucb-admissions-facts.json', import.meta.url), 'utf8'));
+  const rows: { department: string; counts: number[] }[] = facts.rows;
+  const sums = [0, 0, 0, 0];
+  for (const r of rows) r.counts.forEach((n, i) => { assert.ok(Number.isInteger(n) && n >= 0); sums[i] += n; });
+  assert.deepEqual(sums, [1198, 1493, 557, 1278]);
+  assert.equal(sums.reduce((a, b) => a + b), 4526);
+  assert.deepEqual(rows.filter(({ counts: c }) => c[2] / (c[2] + c[3]) > c[0] / (c[0] + c[1])).map(r => r.department), ['A', 'B', 'D', 'F']);
+  assert.ok(sums[2] / (sums[2] + sums[3]) < sums[0] / (sums[0] + sums[1]));
 });

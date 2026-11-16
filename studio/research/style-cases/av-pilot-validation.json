@@ -49,5 +49,11 @@
     "Identifying a low musical accent as definitely a separate physical collision effect",
     "Claiming frame-exact audiovisual synchronization or identifying instrument samples by ear"
   ],
+  "authorCrosscheck": {
+    "source": "styles/silent-film/DEMO.md",
+    "sequence": "Read after the independent audiovisual pilot and after drafting the new candidates",
+    "confirmed": "The author's documented chain gag, delayed consequence, projector-only pause, recurring loaf gesture and iris ending agree with the observed structure.",
+    "distinction": "The documentation names the reed-organ sample and states that piano supplies action accents rather than separate foley. This is production documentation, not evidence that every timbre was identified by ear; documentation timestamps are not substituted for listening."
+  },
   "batchRule": "Every original needs its own complete native audio read, full visual timeline and editorial audit; pilot success alone does not certify any other film or candidate"
 }

@@ -33,6 +33,18 @@ test('truncated or unsuccessful CLI streams never become successful analyses', (
   assert.throws(() => parseResponse('{"event":"result"'));
 });
 
+test('a completed tool event without a file path cannot certify an audio read', () => {
+  const data = { clips: [{ file: 'a00.wav', heard: 'A sustained note' }] };
+  const events = [
+    { step_update: { step_type: 'tool', state: 'ACTIVE', tool_info: { name: 'read_file', parameters: { Path: 'a00.wav' } } } },
+    { step_update: { step_type: 'tool', state: 'DONE', tool_info: { name: 'read_file' } } },
+    { event: 'result', result: { status: 'SUCCESS', response: JSON.stringify(data) } },
+  ];
+  const result = parseResponse(events.map(e => JSON.stringify(e)).join('\n'));
+  assert.deepEqual(result.reads, []);
+  assert.throws(() => validateAudio(result.data, spans(4, 4, 'a', 'wav'), result.reads), /Unverified/);
+});
+
 test('PCM comparison handles WAV metadata rather than assuming a 44-byte header', () => {
   const b = Buffer.alloc(38);
   b.write('RIFF'); b.writeUInt32LE(30, 4); b.write('WAVE', 8);

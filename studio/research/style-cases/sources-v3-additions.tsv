@@ -1,4 +1,8 @@
 id	title	url	role	checked	boundary
+N06	R官方手册：UCBAdmissions	https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/UCBAdmissions.html	1973年六个大院系录取数据定义	已读4526条汇总观测、变量定义、整体计数与分院系解释	仅为六个大院系的历史汇总，不是全校全部申请；不能单凭此证明不存在任何歧视或解释申请选择的全部原因
+N07	R源码：UCBAdmissions原始数组	https://raw.githubusercontent.com/wch/r-source/trunk/src/library/datasets/data/UCBAdmissions.R	可重算原始计数	已逐项读24个计数及Admit、Gender、Dept的维度顺序	展示须引用数据出处，计数不能变更；不是当代招生数据或个人经历
+S18	NPS：大峡谷尺度说明	https://www.nps.gov/grca/faqs.htm	具体地形的尺度背景	已读South Rim附近垂直高差、河谷与步道距离、两岸距离不同定义	页面含其他可能更新的旅游信息，本提案只使用尺度背景；不据此提供当前路线、开放状态或行程建议
+S19	USGS：3D Elevation Program	https://www.usgs.gov/3d-elevation-program	真实高程数据入口与使用条件	已读产品、空间元数据入口及免费无使用限制说明	尚未下载大峡谷具体瓦片；不能把产品目录当已验证高程精度
 N04	Unicode：文字显示问题	https://www.unicode.org/help/display_problems.html	字符、编码与字体事实	已读缺字、字形处理与错误解码三类说明	只支持区分故障环节；具体终端与字体回退必须实测，不能把所有方框都归为同一原因
 N05	NIST：X射线质量衰减系数	https://physics.nist.gov/PhysRefData/XrayMassCoef/chap2.html	窄束单能衰减模型	已读指数衰减、质量厚度及能量依赖说明	不等于真实多能安检设备完整模型，不证明材料自动识别或安检结论
 S17	BART：2020年Milpitas与Berryessa两站开放	https://www.bart.gov/news/articles/2020/news20200519	历史开通事件与连接	已读2020-06-13开通、站点与VTA及AC Transit连接说明	历史页面不同位置班次信息可能属于不同更新，不用于2026出行；网络图与具体换乘计算尚待取得
@@ -12,3 +16,5 @@ H11	Kew：植物绘画为何仍用于科学记录	https://www.kew.org/read-and-w
 H12	LOC：电照明早期应用与历史地图	https://blogs.loc.gov/maps/2024/10/lighting-america-the-early-adoption-of-electric-light/	历史事实与直接评论	已读电照明应用、1894华盛顿不同灯具并存、历史地图例子及页面5条评论	评论来自4名具名账号含作者回复，不能当总体口碑；地图年份不等于设备启用年份
 H13	美国国家档案馆：1880电灯改进专利图	https://www.archives.gov/historical-docs/edisons-light-bulb-patent	原始文书说明	已读专利图说明及1880-01-27日期	不据此宣称一人独自发明所有电灯技术或专利即普及
 H14	Science Museum Group：剪刀馆藏目录	https://collection.sciencemuseumgroup.org.uk/search/objects/object_type/scissors	具体对象入口	已读折叠剪、理发剪、手术剪等目录分类及年代范围	本轮只核目录，单件结构、用途细节与图片许可仍须逐件读条目，不能编唯一发明者
+N08	Steffen与Hotchkiss：登机方式实验	https://arxiv.org/pdf/1108.5211	座位干扰与过道干扰的机制依据	已读摘要、实验设置、方法与结果段：72人在12排单通道模拟机舱，五种方法；研究明示没有重复运行各方法	仅支持局部干扰解释，不把动画时长当实测、不外推当代航空公司最优方案
+N09	NIST DLMF：吉布斯现象与非一致收敛	https://dlmf.nist.gov/6.16	原片数学表述的独立交叉核查	已读§6.16(i)的部分和公式、固定点极限及随N移动的极值说明；本地重算N=1/2/25/400	约8.949%为跳变幅度的渐近过冲比例，不能说每个有限N都相同，不能把移动极值极限与逐点极限混同

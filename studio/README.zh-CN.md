@@ -2,7 +2,7 @@
 
 **创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。用户比较后选择保留第四版，并要求停止本轮打磨：[观看保留的第四版](http://127.0.0.1:43821/films/space-for-two-v4-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film-v4/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film-v4/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
 
-**最新内容反馈**：目标是99种风格各一个案例、每种三个候选，每个候选分别推导内容价值与相关观众，禁止预设统一受众。[第三稿297项内容复审](http://127.0.0.1:43821/films/style-case-candidates-v3/index.html)已落地：90条保留、165条修改、42条重写，逐条包含声音安排和理由；61支原片完成完整时间轴模型辅助声画分析及编辑复核，38支待补。另有56条来源边界和6处有限评论语境，不冒称全平台口碑或真人逐帧观摩。[声画验证及对照报告](research/style-cases/EVIDENCE-v3.zh-CN.md) · [第二稿存档](http://127.0.0.1:43821/films/style-case-candidates-v2/index.html) · [旧稿档案](http://127.0.0.1:43821/films/style-case-candidates/index.html) · [计划与复现](research/style-cases/README.zh-CN.md)。讨论稿不代表制作确认，此前六项自由选题也不作为当前执行方案。
+**最新内容反馈**：目标是99种风格各一个案例、每种三个候选，每个候选分别推导内容价值与相关观众，禁止预设统一受众。[第三稿297项内容复审](http://127.0.0.1:43821/films/style-case-candidates-v3/index.html)已落地：88条保留、167条修改、42条重写，逐条包含声音安排和理由；99支原片完成完整时间轴模型辅助声画分析及编辑复核，0支待补。另有62条来源边界和6处有限评论语境，不冒称全平台口碑或真人逐帧观摩。[声画验证及对照报告](research/style-cases/EVIDENCE-v3.zh-CN.md) · [第二稿存档](http://127.0.0.1:43821/films/style-case-candidates-v2/index.html) · [旧稿档案](http://127.0.0.1:43821/films/style-case-candidates/index.html) · [计划与复现](research/style-cases/README.zh-CN.md)。讨论稿不代表制作确认，此前六项自由选题也不作为当前执行方案。
 
 [二次开发方案](PLAN.zh-CN.md) · [三套个人风格](../personal-styles/README.md) · [第七轮优化方案](comparison/ROUND7-PLAN.zh-CN.md) · [原作对照报告](comparison/REVIEW.zh-CN.md) · [v1.7 验收](VERIFICATION-v1.7.zh-CN.md)
 

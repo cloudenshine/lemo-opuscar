@@ -7,6 +7,7 @@ import { researchDir, validateObservation, type Editorial, type Observation } fr
 
 const edits: Editorial[] = (await Promise.all((await fs.readdir(path.join(researchDir, 'editorial-v3'))).filter(f => f.endsWith('.json')).map(f => fs.readFile(path.join(researchDir, 'editorial-v3', f), 'utf8').then(JSON.parse)))).flat();
 const observations: Observation[] = [];
+const corrections = JSON.parse(await fs.readFile(path.join(researchDir, 'av-editorial-corrections-v3.json'), 'utf8')) as { slug: string; hash: string; story?: string; beats: { start: number; audible?: string; visible?: string; function?: string }[]; uncertainties: string[] }[];
 for (const edit of edits) {
   const dir = path.join(ROOT, '.studio/av-review-v3-verified', edit.slug);
   const file = path.join(dir, 'review.json');
@@ -30,6 +31,22 @@ for (const edit of edits) {
     audioInputs: raw.audioPlan.length, videoInputs: raw.videoPlan.length, method: raw.method,
     story: raw.review.story, ending: raw.review.ending, beats: raw.review.beats, uncertainties: raw.review.uncertainties ?? [],
     editorialReviewed: !/待补|未成功输出|重试中/.test(edit.lesson) };
+  const correction = corrections.find(c => c.slug === edit.slug);
+  if (correction) {
+    if (correction.hash !== hash) throw new Error(`Editorial correction targets another source: ${edit.slug}`);
+    if (correction.story) observation.story = correction.story;
+    for (const beat of correction.beats) {
+      const targets = observation.beats.filter(b => b.start === beat.start);
+      if (targets.length !== 1) throw new Error(`Ambiguous corrected beat: ${edit.slug}`);
+      for (const key of ['audible', 'visible', 'function'] as const) {
+        if (beat[key] !== undefined) {
+          if (!beat[key]!.trim()) throw new Error(`Empty editorial correction: ${edit.slug}`);
+          targets[0][key] = beat[key]!;
+        }
+      }
+    }
+    observation.uncertainties.push(...correction.uncertainties);
+  }
   validateObservation(observation);
   observations.push(observation);
 }

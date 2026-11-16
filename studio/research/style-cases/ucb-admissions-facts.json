@@ -1,0 +1,15 @@
+{
+  "scope": "1973 applicants to the six largest graduate departments, not all Berkeley applicants",
+  "source": "https://raw.githubusercontent.com/wch/r-source/trunk/src/library/datasets/data/UCBAdmissions.R",
+  "documentation": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/UCBAdmissions.html",
+  "columns": ["maleAdmitted", "maleRejected", "femaleAdmitted", "femaleRejected"],
+  "rows": [
+    { "department": "A", "counts": [512, 313, 89, 19] },
+    { "department": "B", "counts": [353, 207, 17, 8] },
+    { "department": "C", "counts": [120, 205, 202, 391] },
+    { "department": "D", "counts": [138, 279, 131, 244] },
+    { "department": "E", "counts": [53, 138, 94, 299] },
+    { "department": "F", "counts": [22, 351, 24, 317] }
+  ],
+  "boundary": "These aggregate counts do not establish every causal mechanism or prove the absence of all discrimination. They are historical, not current admissions evidence."
+}

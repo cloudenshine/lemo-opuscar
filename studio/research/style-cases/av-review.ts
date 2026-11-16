@@ -57,7 +57,7 @@ export function parseResponse(stdout: string) {
   const text = result.response.trim().replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
   const reads = events.filter(e => e.step_update?.step_type === 'tool' && e.step_update.state === 'DONE')
     .map(e => e.step_update.tool_info).filter(t => t?.name === 'read_file' || t?.name === 'view_file')
-    .map(t => path.win32.basename(t.parameters.Path ?? t.parameters.AbsolutePath ?? ''));
+    .map(t => path.win32.basename(t.parameters?.Path ?? t.parameters?.AbsolutePath ?? '')).filter(Boolean);
   return { data: responseJson(text) as Record<string, any>, reads, usage: result.usage, conversation: result.conversation_id };
 }
 
