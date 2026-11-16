@@ -1,0 +1,17 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>空位 · 第三版</title>
+<style>*{box-sizing:border-box}body{background:#142f39;color:#e8dcc3;margin:0;font:17px/1.8 system-ui,sans-serif}main{max-width:1320px;padding:48px 28px;margin:auto}h1{font-weight:400;font-size:clamp(48px,7vw,100px);line-height:1.1;margin:20px 0}small{color:#a9bab5;letter-spacing:2px}p{max-width:860px;color:#bcc9c0}video{display:block;width:100%;background:#0c232c;aspect-ratio:16/9;margin:26px 0}a{color:#e3bc83}button{font:inherit;padding:8px 18px;color:#142f39;background:#e3bc83;border:0;border-radius:3px;cursor:pointer;margin:0 10px 15px 0}button[aria-pressed=true]{outline:2px solid #e3bc83;outline-offset:4px}details{border-top:1px solid #4b6265;padding:22px 0}summary{cursor:pointer;font-size:23px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}img{width:100%;display:block}figure{margin:0}figcaption{font-size:14px;color:#bacac2;margin:8px 0 22px}footer{padding:35px 0;border-top:1px solid #4b6265}</style>
+<main><small>个人作品系列 / 根据观看反馈修改 / 未定稿</small><h1>空位 · 第三版</h1><p>32秒 · 无对白。先看画面，再展开说明。前段让座保留，本次重做后半段。</p>
+<video id="current" controls preload="metadata" poster="/films/space-for-two-v3/out/stills/t_10.2.jpg" src="/films/space-for-two-v3/out/film.mp4"></video>
+<button id="ending">从修改段落开始看</button><button id="mute" aria-pressed="false">静音复看</button>
+<details><summary>看完后再判断</summary><p>请先用自己的话描述后半段发生了什么。伸手之前为什么停住？两个人各自作出了什么回应？结束时，谁的状态改变了？如果仍需说明才能理解，请记下具体时间。</p></details>
+<details><summary>本次修改依据</summary><p>你的反馈是：前面让座能理解，但后来托行李的动作无法让人一眼读懂。本版增加包的下沉与重新托稳、掌心示意后的等待、抬头点头接受、挪近后从底部承托，以及松手后身体放松。没有加入解释性字幕或对白。</p><p>这些是实现出来的表达尝试，是否清楚仍需观看判断。合成布料与气息声只作辅助；人物与纸感仍较简化，不把技术验收当作故事通过。</p></details>
+<details><summary>关键动作对照</summary><div class="grid">
+<figure><img loading="lazy" src="/films/space-for-two-v3/out/stills/t_17.2.jpg" alt="包下沉后重新承重"><figcaption>17.2 / 重量被看见</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v3/out/stills/t_19.9.jpg" alt="空中摊掌，尚未碰包"><figcaption>19.9 / 提出帮助，保持距离</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v3/out/stills/t_20.85.jpg" alt="持包者点头回应"><figcaption>20.85 / 接受之后再行动</figcaption></figure>
+<figure><img loading="lazy" src="/films/space-for-two-v3/out/stills/t_27.5.jpg" alt="共同承托后松手休息"><figcaption>27.5 / 原持包者的手可以休息</figcaption></figure>
+</div></details>
+<details><summary>第二版 · 修改前</summary><video controls preload="none" src="/films/space-for-two-v2/out/film.mp4"></video><p>28.5秒；此次改动针对它的后半段歧义。</p></details>
+<details><summary>第一版 · 保留的起点</summary><video controls preload="none" src="/films/space-for-two-proof/out/film.mp4"></video><p>22.5秒；只有让座与共同等待。</p></details>
+<footer><a href="/films/content-style-atlas/index.html">完整99种风格适配表 →</a><p>选择形式仍以内容需要为依据。此页不代表完整个人作品系列已经完成。</p></footer></main>
+<script>const film=document.querySelector('#current');document.querySelector('#ending').addEventListener('click',async()=>{film.currentTime=16.7;try{await film.play()}catch{}});document.querySelector('#mute').addEventListener('click',async(e)=>{film.muted=!film.muted;e.currentTarget.setAttribute('aria-pressed',String(film.muted));e.currentTarget.textContent=film.muted?'恢复声音':'静音复看';film.currentTime=16.7;try{await film.play()}catch{}});</script></html>
