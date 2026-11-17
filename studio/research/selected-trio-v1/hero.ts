@@ -1,5 +1,5 @@
 import {seg} from './timeline.ts';
-import {gloveMotion} from './edit.ts';
+import {gloveMotion,sealMotion} from './edit.ts';
 import {rect,poly,line,visible} from './draw.ts';
 const P={night:'#152536',shadow:'#27384a',wood:'#715147',woodLight:'#a77c55',gold:'#e8b76b',cream:'#f5e7bd',blue:'#527b9c',blueLight:'#91b0c2',skin:'#e4ac89',skinShade:'#b77868',red:'#bd665b',dark:'#302d3b',green:'#657e72',paper:'#dec39a'};
 export function hero(main:CanvasRenderingContext2D) {
@@ -29,41 +29,110 @@ export function hero(main:CanvasRenderingContext2D) {
     if(mode==='reach'||mode==='strain'||mode==='look') {const slip=mode==='reach'?(seg(t,8.1,8.8)-seg(t,9.1,10)+seg(t,11.5,12.3)-seg(t,12.7,14))*5:0;const hx=17-slip,hy=-35-lift+slip;
       p([[6+bend,-28],[12,-29],[15,-24-lift*.4],[hx,hy],[hx+7,hy+5],[19,-17-lift*.4],[10,-20]],P.dark);p([[8+bend,-26],[12,-26],[16,-22-lift*.4],[hx+1,hy+3],[hx+4,hy+5],[17,-20-lift*.4],[10,-23]],P.blue);
       p([[hx-1,hy+1],[hx+1,hy-2],[hx+5,hy-2],[hx+8,hy+1],[hx+7,hy+5],[hx+4,hy+7],[hx,hy+5]],hands);r(hx,hy+4,5,2,P.gold);r(hx+4,hy,1,3,P.blue);r(hx+6,hy+1,1,3,P.blue);
-      p([[-6,-26],[-11,-24],[-10,-13],[5,-8],[8,-12],[-4,-17],[-4,-23]],P.dark);p([[-7,-24],[-8,-15],[4,-10],[6,-12],[-5,-17],[-4,-23]],P.blue);r(4,-13,5,5,hands);
+      p([[-6,-26],[-11,-24],[-10,-13],[5,-8],[8,-12],[-4,-17],[-4,-23]],P.dark);p([[-7,-24],[-8,-15],[4,-10],[6,-12],[-5,-17],[-4,-23]],P.blue);r(4,-13,5,5,P.skin);
       if(mode==='strain'&&t>18&&t<21){r(10,-44,2,3,P.blueLight);r(12,-40,1,2,P.blueLight);}}
     else if(mode==='sword'){const draw= t<5?1:seg(t,26,27.5),lower=t<5?0:seg(t,29.2,31.2),put=t<5?0:seg(t,31.5,34);const hx=-14+draw*32+lower*3-put*35,hy=-38-draw*4+lower*18-put*14;
       p([[7,-28],[12,-27],[hx+4,hy],[hx+4,hy+6],[12,-18],[8,-21]],P.dark);line(g,[[10,-25],[hx,hy+3]],P.blue,5);r(hx-2,hy,6,6,hands);
-      const tx=hx+1-put*12,ty=hy-26+put*58;line(g,[[hx+1,hy+1],[tx,ty]],P.blueLight,3);r(hx-4,hy,10,2,P.gold);r(hx,hy+2,2,6,P.woodLight);r(-10,-25,6,15,P.blue);r(-10,-11,5,5,hands);}
+      const tx=hx+1-put*12,ty=hy-26+put*58;line(g,[[hx+1,hy+1],[tx,ty]],P.blueLight,3);r(hx-4,hy,10,2,P.gold);r(hx,hy+2,2,6,P.woodLight);r(-10,-25,6,15,P.blue);r(-10,-11,5,5,P.skin);}
     else if(mode==='open'){const q=seg(t,60,61.2);line(g,[[7,-25],[17+q*18,-32-q*12]],P.blue,6);r(16+q*18,-33-q*12,6,5,P.skin);line(g,[[-5,-24],[5-q*6,-31-q*13]],P.blueLight,5);r(3-q*6,-33-q*13,5,5,P.skin);}
-    else {p([[-8,-28],[-12,-26],[-12,-11],[-7,-8],[-5,-12],[-7,-23]],P.dark);r(-10,-24,4,12,P.blue);r(-10,-12,5,5,hands);p([[8,-28],[13,-25],[14,-10],[10,-8],[7,-13],[9,-23]],P.dark);r(10,-24,3,12,P.blueLight);r(10,-12,5,5,hands);}
+    else {p([[-8,-28],[-12,-26],[-12,-11],[-7,-8],[-5,-12],[-7,-23]],P.dark);r(-10,-24,4,12,P.blue);r(-10,-12,5,5,P.skin);p([[8,-28],[13,-25],[14,-10],[10,-8],[7,-13],[9,-23]],P.dark);r(10,-24,3,12,P.blueLight);r(10,-12,5,5,hands);}
     g.restore();}
   function portrait(t:number,mood=0){r(18,133,33,34,P.dark);r(20,135,29,30,P.wood);g.save();g.translate(21,137);g.scale(1.7,1.7);face(0,0,mood,Math.floor(t*4)%29===0);g.restore();}
   function message(t:number,s:string,mood=0,courier=false){r(12,128,296,44,P.dark);r(14,130,292,40,P.cream);r(16,132,288,36,P.night);if(courier){r(20,135,29,30,P.wood);r(27,144,17,17,P.skinShade);r(23,138,23,8,P.green);r(22,145,27,3,P.green);r(31,151,2,2,P.dark);r(39,151,2,2,P.dark);r(33,157,6,1,P.cream);}else portrait(t,mood);txt(s,61,151,10);}
-  function closeHands(t:number){r(0,0,320,180,P.night);r(0,105,320,75,P.wood);rough(0,106,320,74,P.woodLight);p([[74,72],[113,45],[261,45],[222,72]],P.paper);r(74,72,149,70,P.woodLight);p([[223,72],[261,45],[261,117],[223,142]],'#8c624b');r(153,46,16,98,P.red);r(155,47,2,97,'#e0946b');
-    const success=t>=53, reveal=seg(t,54,59), reach=seg(t,36,38), slip=success?0:seg(t,39,40)*12;
-    if(!success){p([[153,46],[169,46],[169,69],[160,63],[153,69]],'#edba83');r(160,60,7,4,P.red);p([[53,31],[90,33],[130+reach*13,53],[152+reach*8-slip,56],[158-slip,67],[143-slip,75],[120,64],[80,52],[53,52]],P.dark);p([[53,34],[88,36],[131,57],[148-slip,60],[153-slip,66],[142-slip,70],[120,61],[80,48],[53,48]],P.blueLight);r(145-slip,60,7,4,P.cream);txt('观察',19,24,10,P.gold);}
-    else {const px=160-reveal*75,py=65-reveal*38;p([[153,46],[169,46],[169,65+reveal*79],[153,65+reveal*79]],P.paper);line(g,[[161,65+reveal*79],[px+4,py+4],[px,py]],P.red,6);line(g,[[159,65+reveal*79],[px+2,py+4]],P.gold,1);p([[45,30],[78,32],[px-16,py-8],[px+5,py-5],[px+11,py],[px+5,py+7],[px-2,py+4],[px-16,py+7],[76,49],[45,50]],P.dark);p([[45,34],[77,36],[px-15,py-4],[px+3,py-2],[px+6,py+1],[px+3,py+4],[px-3,py+1],[px-16,py+3],[76,45],[45,46]],P.skin);r(px+1,py-1,3,2,P.cream);txt('慢一点。',20,24,10,P.gold);}
+  function gloveShape(x:number,y:number){
+    // Four stepped fingertips and a separate thumb identify an empty gauntlet.
+    p([[x,y],[x+22,y],[x+24,y-3],[x+43,y-3],[x+47,y+1],[x+47,y+5],[x+50,y+7],[x+50,y+12],[x+47,y+14],[x+47,y+19],[x+42,y+23],[x+26,y+23],[x+23,y+32],[x+16,y+35],[x+9,y+31],[x+7,y+24],[x,y+24]],P.dark);
+    p([[x+3,y+3],[x+23,y+3],[x+25,y],[x+42,y],[x+44,y+3],[x+44,y+7],[x+47,y+9],[x+47,y+11],[x+44,y+12],[x+44,y+18],[x+41,y+20],[x+24,y+20],[x+20,y+29],[x+15,y+31],[x+12,y+28],[x+10,y+21],[x+3,y+21]],P.blueLight);
+    r(x+2,y+2,7,21,P.gold);r(x+3,y+4,4,16,P.dark);r(x+4,y+6,2,12,P.blue);
+    for(let i=0;i<3;i++)r(x+29,y+5+i*5,14,2,P.blue);
   }
-  function gloveClose(t:number){r(0,0,320,180,P.night);r(0,133,320,47,P.wood);rough(0,134,320,44,P.woodLight);const {x,y,withdraw}=gloveMotion(t);
-    p([[0,62],[91,62],[109,54],[142,54],[150,59],[149,66],[137,68],[137,72],[146,73],[145,81],[111,85],[91,78],[0,78]],P.dark);p([[0,65],[92,65],[110,57],[140,57],[146,61],[145,64],[133,65],[132,74],[142,76],[141,78],[112,81],[92,75],[0,75]],P.skin);r(130,59,12,2,P.cream);
-    p([[x-9,y-15],[x+23,y-15],[x+32,y-11],[x+39,y-3],[x+37,y+5],[x+26,y+7],[x+20,y+16],[x+8,y+18],[x+4,y+12],[x-9,y+12]],P.dark);p([[x-6,y-12],[x+22,y-12],[x+29,y-8],[x+35,y-2],[x+33,y+2],[x+23,y+4],[x+17,y+13],[x+10,y+14],[x+7,y+9],[x-6,y+9]],P.blueLight);r(x-3,y-10,6,19,P.gold);for(let i=0;i<3;i++)line(g,[[x+15+i*6,y-10+i*3],[x+19+i*6,y-3+i*3]],P.blue,2);
-    if(t<51.4){const exit=withdraw,handX=x+exit,handY=64-exit*30/160;p([[320+exit,36],[244+exit,36],[handX+32,handY-24],[handX+5,handY-21],[handX-1,handY-14],[handX+4,handY-6],[handX+13,handY-7],[handX+19,handY-13],[244+exit,52],[320+exit,52]],P.dark);p([[320+exit,39],[244+exit,39],[handX+31,handY-21],[handX+6,handY-18],[handX+3,handY-14],[handX+6,handY-10],[handX+11,handY-10],[handX+17,handY-16],[244+exit,48],[320+exit,48]],P.blueLight);}
-    txt('摘下手套',18,24,12,P.gold);
+  function grip(x:number,y:number,bare:boolean,side=1,pinch=true,sleeve=true){
+    g.save();g.translate(Math.round(x),Math.round(y));g.scale(side,1);
+    // A closed palm silhouette keeps the thumb opposed to four folded fingers.
+    const skin=bare?P.skin:P.blueLight,shade=bare?P.skinShade:P.blue;
+    p([[-7,0],[-2,-5],[4,-5],[8,-1],[13,1],[17,7],[21,16],[19,25],[12,30],[3,28],[-5,22],[-10,13],[-11,5]],P.dark);
+    p([[-5,2],[-1,-2],[3,-2],[6,2],[11,4],[14,9],[18,17],[16,23],[11,27],[4,25],[-2,20],[-7,12],[-8,6]],skin);
+    line(g,[[-5,3],[1,5]],shade,2);line(g,[[-7,9],[-1,11]],shade,2);line(g,[[-4,15],[2,17]],shade,2);
+    p([[9,20],[20,17],[34,34],[23,44],[12,31]],P.dark);
+    p([[12,22],[19,21],[29,34],[24,39],[15,29]],skin);
+    if(pinch){p([[-7,12],[-3,7],[3,5],[7,8],[6,12],[1,12],[-2,17]],shade);p([[-5,12],[-2,9],[3,8],[4,10],[0,10],[-2,14]],skin);r(-2,8,3,2,bare?P.cream:P.gold);}
+    if(sleeve){p([[25,32],[37,23],[185,190],[171,204],[21,42]],P.dark);p([[28,33],[37,28],[181,190],[172,199],[26,41]],P.blue);
+    line(g,[[27,35],[38,27]],P.gold,4);}
+    g.restore();
+  }
+  function tabletop(){r(0,0,320,180,P.wood);for(let y=9;y<180;y+=26){r(0,y,320,2,P.dark);rough(0,y+4,320,18,P.woodLight);}}
+  function topBox(opened=0){
+    r(98,43,150,99,P.dark);r(101,46,144,92,P.woodLight);r(107,51,132,81,P.dark);
+    // Contents remain inside the cavity; the two flaps rotate about the outer hinges.
+    if(opened>0){r(164,78,17,28,P.blueLight);r(162,89,21,21,P.blue);r(166,97,13,10,P.red);r(166,74,13,5,P.gold);r(165,90,3,14,P.cream);}
+    const left=172-102*opened,right=172+103*opened;
+    p([[101,46],[left,46-10*opened],[left,137-10*opened],[101,137]],P.paper);
+    p([[right,46-10*opened],[244,46],[244,137],[right,137-10*opened]],P.woodLight);
+    line(g,[[left,46-10*opened],[left,137-10*opened]],P.dark,2);
+    line(g,[[right,46-10*opened],[right,137-10*opened]],P.dark,2);
+  }
+  function closeHands(t:number){
+    tabletop();const s=sealMotion(t);topBox(t>=60?s.opening:0);
+    if(t<44){r(168,45,8,92,P.red);r(170,46,1,90,P.gold);const slip=(seg(t,38.4,39.2)-seg(t,40,41))*14;
+      grip(172-slip,137+slip,false,-1);grip(242,91,true,1,false);return;}
+    // The removed left glove remains on the same part of the table.
+    gloveShape(21,15);
+    if(t<60){
+      if(s.remaining>0){r(168,45,8,s.remaining,P.red);r(170,45,1,s.remaining,P.gold);}
+      if(s.peeled>0){line(g,s.points.map(p=>[p.x,p.y]),P.dark,9);line(g,s.points.map(p=>[p.x,p.y]),P.red,7);line(g,s.points.map(p=>[p.x-1,p.y]),P.gold,1);}
+      // One palm braces the side while bare thumb and forefinger follow the tape end.
+      grip(242,91,true,1,false);grip(s.tip.x,s.tip.y,true,-1);
+    }else{
+      const tape=sealMotion(59.6);line(g,tape.points.map(p=>[p.x,p.y]),P.red,7);
+      const reach=seg(t,60,60.5),q=s.opening;
+      grip(tape.tip.x+(166-tape.tip.x)*reach-102*q,tape.tip.y+(104-tape.tip.y)*reach-10*q,true,-1);
+      grip(242+(179-242)*reach+103*q,91+(104-91)*reach-10*q,true);
+    }
+  }
+  function gloveClose(t:number){
+    cabin();r(0,145,320,35,P.wood);r(0,143,320,4,P.woodLight);rough(0,150,320,30,P.woodLight);
+    // Keep shoulders, elbows and face in shot so the gauntlet belongs to a person.
+    r(72,59,12,22,P.skin);r(72,69,12,7,P.skinShade);
+    p([[45,75],[77,68],[105,79],[118,143],[31,143]],P.dark);
+    p([[49,78],[76,72],[101,83],[111,143],[38,143]],P.blue);
+    p([[49,78],[76,72],[100,83],[97,100],[47,96]],P.blueLight);
+    r(40,132,70,9,P.woodLight);r(68,132,10,9,P.gold);
+    g.save();g.translate(57,34);g.scale(2,2);face(0,0,t<49?1:2,false);g.restore();
+    parcel(265,138,1.8);
+    const motion=gloveMotion(t),relax=seg(t,50,52);
+    const cuff=motion.x,gy=motion.y;
+    r(190,144,36,1,P.dark);
+    // Forearms are connected to the torso, and the left skin is hidden until extraction.
+    p([[49,91],[40,103],[76,132],[108,109],[112,88],[100,83],[78,111],[59,91]],P.dark);
+    p([[49,96],[45,104],[77,125],[105,106],[108,91],[101,88],[79,117],[57,96]],P.blue);
+    line(g,[[101,88],[108,103]],P.gold,5);
+    g.save();g.beginPath();g.rect(0,0,cuff+2,143);g.clip();
+    p([[108,88],[125,84],[150,84],[155,87],[155,91],[159,94],[159,99],[154,102],[144,103],[140,115],[134,119],[127,116],[123,108],[107,105]],P.dark);
+    p([[110,91],[126,87],[149,87],[152,89],[150,92],[155,95],[155,98],[151,100],[141,100],[137,112],[133,115],[129,113],[126,105],[110,102]],P.skin);
+    r(140,88,11,2,P.cream);r(140,94,12,2,P.skinShade);g.restore();
+    gloveShape(cuff,gy);
+    const hx=t<49?cuff+5:189-75*relax,hy=t<49?82:82+10*relax;
+    // The right wrist stays connected to the bent elbow through release and recoil.
+    g.save();g.lineJoin='round';g.lineCap='round';
+    const elbowX=137+relax*5,elbowY=128;
+    line(g,[[102,94],[elbowX,elbowY],[hx+18,hy+27]],P.dark,18);
+    line(g,[[104,95],[elbowX,elbowY],[hx+18,hy+27]],P.blue,11);
+    line(g,[[hx+17,hy+24],[hx+24,hy+28]],P.gold,4);g.restore();
+    grip(hx,hy,true,1,t<49,false);
   }
   const quantCache=new Map<number,number[]>(), palette=Object.values(P).map(h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]);
   function quantize(){const im=g.getImageData(0,0,320,180),d=im.data;for(let i=0;i<d.length;i+=4){const k=(d[i]<<16)|(d[i+1]<<8)|d[i+2];let col=quantCache.get(k);if(!col){let dist=Infinity;col=palette[0];for(const p of palette){const dd=(p[0]-d[i])**2+(p[1]-d[i+1])**2+(p[2]-d[i+2])**2;if(dd<dist){dist=dd;col=p;}}quantCache.set(k,col);}d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=255;}g.putImageData(im,0,0);}
   return(t:number)=>{g.setTransform(1,0,0,1,0,0);g.imageSmoothingEnabled=false;
     if(t<5){r(0,0,320,180,P.night);for(let i=0;i<45;i++)r(i*73%320,i*29%110,1,1,P.blueLight);p([[0,133],[56,103],[116,128],[190,95],[256,132],[320,108],[320,180],[0,180]],P.shadow);r(0,153,320,27,P.wood);actor(109,148,t,'sword');const vanish=seg(t,1.8,2.8);g.globalAlpha=1-vanish;p([[211,147],[206,123],[195,110],[219,113],[232,99],[245,114],[265,111],[251,132],[250,148]],P.red);r(223,115,4,3,P.gold);r(238,115,4,3,P.gold);g.globalAlpha=1;txt('Lv.99',20,25,12);txt('战斗结束',222,45,12,P.gold);if(t>2){for(let i=0;i<12;i++)r(230+Math.cos(i)*vanish*40,130+Math.sin(i)*vanish*30,2,2,P.gold);}}
-    else if(t>=36&&t<44||t>=53&&t<60){closeHands(t);}
+    else if(t>=36&&t<44||t>=53&&t<64){closeHands(t);}
     else if(t>=44&&t<53){gloveClose(t);}
-    else {cabin();table();const lift=t>=15&&t<26?seg(t,16,18)*(1-seg(t,21,22.5))*9:0;const bare=t>=49.5;const mode=t<15?'reach':t<26?'strain':t<34?'sword':t<36?'look':t<49.5?'look':t<61.3?'open':t<62?'happy':'look';
+    else {cabin();table();const lift=t>=15&&t<26?seg(t,16,18)*(1-seg(t,21,22.5))*9:0;const bare=t>=49.5;const mode=t<15?'reach':t<26?'strain':t<34?'sword':t<36?'look':t<49.5?'look':t<61.3?'open':'happy';
       parcel(176,107-lift,1,t>=60?Math.max(.01,seg(t,60,61.2)):0);actor(155,124,t,mode,bare,lift);if(bare){r(149,103,9,5,P.blueLight);r(147,105,11,3,P.blue);}
-      if(t>=61){const q=seg(t,61,61.8);g.save();g.globalAlpha=q;p([[170,90],[170,81],[173,78],[173,74],[179,74],[179,78],[182,81],[182,90]],P.blueLight);r(172,83,8,6,P.red);r(173,72,7,3,P.woodLight);r(171,81,2,6,P.cream);g.restore();}
       if(t>=5&&t<15){message(t,'拆开包裹。');}
       else if(t<26){if(t>=18&&t<22)message(t,'……',1);}
       else if(t<36&&t>=28){r(12,128,296,44,P.dark);r(14,130,292,40,P.paper);txt('箱上贴着：请勿划伤内件。',24,154,12,P.dark);}
       else if(t<53){if(t<49.5){const a=seg(t,45,49);r(160-a*10,96+a*8,8,7,P.blueLight);r(151-a*7,96,9,5,P.skin);}}
-      else if(t>=62){const boxX=340-seg(t,62,63.2)*64;parcel(boxX,125,1.4);if(t<64.3){const retreat=seg(t,63.2,64.3)*70;r(boxX+20+retreat,99,48,7,P.green);r(boxX+14+retreat,98,9,9,P.skinShade);}message(t,'还有这一箱。拜托啦！',0,true);}
+      else if(t>=64){const boxX=340-seg(t,64,65.2)*64;parcel(boxX,125,1.4);if(t<66.3){const retreat=seg(t,65.2,66.3)*70;r(boxX+20+retreat,99,48,7,P.green);r(boxX+14+retreat,98,9,9,P.skinShade);}message(t,'还有这一箱。拜托啦！',0,true);}
     }
     quantize();main.imageSmoothingEnabled=false;main.drawImage(canvas,0,0,1920,1080);
   };

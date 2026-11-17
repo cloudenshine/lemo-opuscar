@@ -1,3 +1,32 @@
+# 本轮采用：摩擦后的真实热痕
+
+2026-11-17更新：用户明确允许按素材改写。已取得许可明确的真实记录，完成原片完整动态核实并制作43秒实拍改编，`films/thermal-trace-v3/out/film.mp4`。旧窗户预演保留为档案，不作为本轮实拍成片。
+
+| 材料 | 来源与许可 | 实际检查与决定 |
+|---|---|---|
+| Heat by friction | [文件页](https://commons.wikimedia.org/wiki/File:Heat_by_friction.webm)，Laserlicht，2024-03-29，作者自作，CC BY-SA 4.0 | 81.767秒原生完整动态读取；3–17秒接触摩擦，约18–22秒撤离，随后热痕保留并渐淡。选用 |
+| Heating pad thermal video | [文件页](https://commons.wikimedia.org/wiki/File:Heating_pad_thermal_video.webm)，Laserlicht，2024-03-27，作者自作，CC BY-SA 4.0 | 完整34.484秒动态读取；热区扩展/减弱可见，但启动动作不可辨。未选用 |
+
+许可原文允许改编，要求署名、链接许可、说明改动并同许可发布：[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。视频内持续署名并注明改编；网页提供作者、原片、许可链接；CREDITS记录剪辑、变速、定格、字幕与原创音乐。此改编影片按CC BY-SA 4.0发布，不代表作者背书。
+
+已采用原文件：4,511,640字节，SHA-1 `4b6141fd82e9b1dd5a748daf6a5a38bf7a14244b`（与Commons文件修订的公开校验值相符）。`build-thermal-evidence.ts`先核对字节数和SHA-1，不符则停止构建；同时记录SHA-256。原始视频放在忽略目录，不纳入源码提交。
+
+重要边界：原片只有视频流，无音轨；“完整声画核实”在此包括确认声音不存在，不能声称听到原现场声音。模型原速读取约1帧/秒，另外检查实际素材帧及剪辑时序；完整新样片另以原速画面、连续音轨和慢放复审。原片Max/Min数值全程固定，色标范围固定，但亮斑变化明显且读数与色标不一致，故不量化温度。材质引用作者描述。没有可见光对照、原始辐射测温矩阵或独立校准资料。
+
+## 可复现构建
+
+在仓库根目录，先从[原文件](https://upload.wikimedia.org/wikipedia/commons/e/ea/Heat_by_friction.webm)下载到 `films/selected-trio-assets/friction-original.webm`，然后运行：
+
+```powershell
+node studio/research/selected-trio-v1/build-thermal-evidence.ts
+```
+
+需要已部署的Node、FFmpeg及本机Microsoft YaHei，不新增依赖，不上传新旁白。接触到撤离的原片0–26秒完整保留，模型所谓“26秒靠硬切抹掉木棒”与剪辑证据不符，没有采用此项建议。加速只出现在成片30–40秒，片尾3秒标注定格。
+
+以下是此前围绕窗户题材的核实历史，不代表当前仍缺实拍。
+
+---
+
 # 热成像实拍核实 · 2026-11-17
 
 结论：找到并实际检查了一支完整厂商演示，确认其中存在连续玻璃遮挡实验；没有找到同时满足本片同窗开关、反射辨认、连续机位和明确再剪辑许可的素材。热成像仍不作为成片交付。

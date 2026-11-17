@@ -14,10 +14,10 @@ const drafts: Film[] = [
     ...[261.63,329.63,392,523.25,659.25].map((hz,i)=>({t:60+i*.22,dur:1,kind:'note' as const,hz,gain:.055})),{t:62,dur:.5,kind:'paper',gain:.05},{t:68,dur:.4,kind:'metal',gain:.06}],stills:[2,7,18,28,38,48,56,61,67]},
   {id:'thermal',slug:'window-spectrum-previs-v1-vo',title:'窗户这么透明，为什么热像看不到外面',duration:72,fps:30,status:'实验分镜 · 非实测',cues:[c('t01',.7,6,'同一扇窗，两种观察方式。'),c('t02',6.5,12,'右边的人影，可能来自窗前的反射。'),c('t03',13,20,'先让窗前的人举手，检查影子是否同步。'),c('t04',24,30,'再固定机位，只改变一件事：打开窗。'),c('t05',31,37,'实测应比较敞开区域与玻璃覆盖区域。'),c('t06',39,45,'眼睛和这类热像仪，接收的光不同。'),c('t07',46,53,'普通窗玻璃，对常见长波红外并不透明。'),c('t08',55,62,'再关上窗，检查这种差异是否重现。'),c('t09',64,71,'透明，需要再问一句：对哪一种光？')],sounds:[{t:0,dur:3,kind:'note',hz:293.66,gain:.025},{t:25,dur:.4,kind:'metal',gain:.035},{t:56,dur:.4,kind:'metal',gain:.035},{t:65,dur:4,kind:'note',hz:440,gain:.025}],stills:[3,17,29,35,42,50,58,68]}
 ];
-export const films:Film[]=drafts.map(f=>({...f,slug:f.slug.replace('-v1','-v3'),duration:pictureEdits[f.id].at(-1)![0],
+export const films:Film[]=drafts.map(f=>({...f,slug:f.slug.replace('-v1',f.id==='hero'?'-v7':'-v3'),duration:pictureEdits[f.id].at(-1)![0],
   status:f.id==='thermal'?'实验预演 · 非实测 · 不作为成片交付':'修订样片 · 待观众审看',
   cues:f.cues.map((c,i)=>({...c,start:revisedCueTimes[f.id][i][0],end:revisedCueTimes[f.id][i][1]})),
-  sounds:f.sounds.filter(s=>!(f.id==='hero'&&s.t===68)).map(s=>({...s,t:editTime(f.id,f.id==='hero'&&s.t===49.5?49.8:f.id==='hero'&&s.t===62?63.2:s.t),dur:editTime(f.id,s.t+s.dur)-editTime(f.id,s.t),
+  sounds:f.sounds.filter(s=>!(f.id==='hero'&&s.t===68)).map(s=>({...s,t:editTime(f.id,f.id==='hero'&&s.t===49.5?49.8:f.id==='hero'&&s.t===62?65.2:f.id==='hero'&&s.kind==='note'&&s.t>=60? s.t+2.5:s.t),dur:editTime(f.id,s.t+s.dur)-editTime(f.id,s.t),
     kind:f.id==='hero'&&(s.t===49.5||s.t===62)?'hit':s.kind})),
   stills:f.stills.map(t=>Math.round(editTime(f.id,t)*10)/10),
 }));

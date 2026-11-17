@@ -8,7 +8,7 @@ import {spans,wavPcm,parseResponse,validateAudio} from '../style-cases/av-review
 
 const exec=promisify(execFile);
 const [mode,slug]=process.argv.slice(2);
-if(!['prepare','run','summary'].includes(mode)||!/^((canal-water|hero-sticker|window-spectrum-previs)-v[123](-vo)?)$/.test(slug??''))throw new Error('Expected prepare|run|summary and an approved trio film slug');
+if(!['prepare','run','summary'].includes(mode)||!/^((canal-water|hero-sticker|window-spectrum-previs)-v[1234567](-vo)?|thermal-trace-v[123])$/.test(slug??''))throw new Error('Expected prepare|run|summary and an approved trio film slug');
 const dir=path.join(ROOT,'.studio/trio-av',slug),media=path.join(dir,'media');
 const ff=async(args:string[])=>exec('ffmpeg',['-v','error','-y',...args],{windowsHide:true,maxBuffer:2e6});
 await fs.mkdir(media,{recursive:true});

@@ -1,7 +1,8 @@
+import {thermalEvidence,thermalSourceTime} from '../research/selected-trio-v1/thermal-evidence.ts';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {films,lockState} from '../research/selected-trio-v1/timeline.ts';
-import {editTime,pictureTime,gloveMotion} from '../research/selected-trio-v1/edit.ts';
+import {editTime,pictureTime,gloveMotion,sealMotion} from '../research/selected-trio-v1/edit.ts';
 test('lock cannot rise or discharge a ship with the wrong gate open',()=>{
   for(let t=24;t<=50;t+=1/30){const s=lockState(t);assert.ok(s.fill>=0&&s.fill<=1);if(s.fill>0&&s.fill<1){assert.equal(s.gateLeft,1);assert.equal(s.gateRight,1);}if(s.gateRight<1)assert.equal(s.fill,1);if(s.x-105<622&&s.x+110>598)assert.equal(s.gateLeft,0);if(s.x-105<1172&&s.x+110>1148)assert.equal(s.gateRight,0);assert.ok(Math.abs(s.y-(760-s.fill*250))<1e-8);}
 });
@@ -16,8 +17,23 @@ test('revised cue intervals fit measured original speech without speeding or cli
   for(const id of ['canal','thermal'] as const){const f=films.find(f=>f.id===id)!;f.cues.forEach((c,i)=>assert.ok(c.end-c.start>=durations[id][i]+.12,`${id}/${c.id} cuts speech`));}
 });
 test('released glove accelerates to the table and the impact sound lands on contact',()=>{
-  assert.equal(gloveMotion(49).y,64);assert.equal(gloveMotion(49).withdraw,0);
+  assert.equal(gloveMotion(49).y,80);assert.equal(gloveMotion(49).withdraw,0);
   assert.ok(gloveMotion(49.6).y-gloveMotion(49.4).y>gloveMotion(49.4).y-gloveMotion(49.2).y);
-  assert.ok(Math.abs(gloveMotion(49.8).y+18-133)<1e-8);
+  assert.ok(Math.abs(gloveMotion(49.8).y+35-145)<1e-8);
   const hero=films.find(f=>f.id==='hero')!;assert.ok(hero.sounds.some(s=>s.kind==='hit'&&Math.abs(s.t-editTime('hero',49.8))<1e-8));
+});
+
+// Preserve the material length and causal order that were broken in the older performance.
+test('seal cannot stretch and lids cannot open while adhesive remains',()=>{
+  for(let t=53;t<=64;t+=1/60){const s=sealMotion(t);assert.ok(Math.abs(s.peeled+s.remaining-92)<1e-8);assert.ok(Math.abs(s.points.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-s.points[i].x,p.y-s.points[i].y),0)-s.peeled)<1e-8);if(s.opening>0)assert.equal(s.remaining,0);}
+  assert.equal(sealMotion(60.5).opening,0);assert.equal(sealMotion(62.5).opening,1);
+});
+
+test('real thermal edit retains the continuous cause and labels the only accelerated interval',()=>{
+  const edits=thermalEvidence.edits;
+  assert.equal(edits[1].sourceStart,0);assert.equal(edits[1].sourceEnd,26);assert.equal(edits[1].speed,1);
+  for(let i=0;i<edits.length;i++){const e=edits[i];assert.ok(Math.abs((e.end-e.start)*e.speed-(e.sourceEnd-e.sourceStart))<1e-6);if(i)assert.equal(e.start,edits[i-1].end);}
+  assert.equal(thermalSourceTime(4),0);assert.equal(thermalSourceTime(26),22);assert.equal(thermalSourceTime(30),26);assert.equal(thermalSourceTime(40),81.767);
+  assert.match(thermalEvidence.license,/by-sa\/4.0/);
+  for(const c of thermalEvidence.captions)assert.ok(c.lines.join('').length/(c.end-c.start)<=5.5);
 });
