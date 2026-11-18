@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>99 种风格案例</title>
+<style>
+  :root{color-scheme:dark;background:#10100f;color:#f3eee6;font:16px/1.55 system-ui,sans-serif;--line:#393733;--quiet:#bdb4a8}
+  *{box-sizing:border-box}body{margin:0}main{max-width:1480px;margin:auto;padding:clamp(18px,4vw,64px)}
+  header,.controls{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px}
+  h1{font:400 clamp(36px,7vw,72px)/1.15 SimSun,serif;margin:0 0 26px}
+  h2{font-size:28px;font-weight:550;margin:7px 0 2px}
+  p{margin:0;color:var(--quiet)}a{color:#f2c390;text-underline-offset:4px}
+  .screening{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,275px);gap:24px}
+  video{display:block;width:100%;aspect-ratio:16/9;background:#050504}video[hidden]{display:none}
+  #film-info{padding:16px 0 25px}#film-info a{display:inline-block;margin-top:8px}
+  button,input,select{font:inherit;color:inherit;background:#1c1b18;border:1px solid var(--line);border-radius:3px;padding:9px 12px}
+  button{cursor:pointer}button:hover,button:focus-visible{border-color:#d2a16f}
+  nav button{display:block;width:100%;text-align:left;margin-bottom:6px}
+  nav button[aria-pressed=true]{background:#432e1d;border-color:#d2a16f}
+  section{border-top:1px solid var(--line);padding-top:20px;margin-top:20px}
+  .controls{justify-content:flex-start;margin:10px 0 16px}
+  .muted{color:var(--quiet)}ul{margin:0;padding:0;list-style:none}
+  li{border-bottom:1px solid var(--line);padding:9px 0;display:grid;align-items:center;grid-template-columns:minmax(155px,1fr) minmax(0,1.5fr);gap:12px}
+  li button{text-align:left;justify-self:start}li[hidden]{display:none}
+  @media(max-width:780px){.screening{grid-template-columns:1fr;gap:0}nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}nav button{margin:0}input{max-width:100%}}
+</style>
+<main>
+  <header><h1>99 种风格案例</h1><p>@@STATS@@</p></header>
+  <div class="screening">
+    <div>
+      <video controls playsinline preload="metadata" aria-label="案例短片"></video>
+      <div id="film-info" aria-live="polite">
+        <p id="meta"></p><h2 id="title"></h2><p id="summary"></p>
+        <a id="download" hidden>下载 MP4</a>
+      </div>
+    </div>
+    <nav aria-label="可观看作品">@@BUTTONS@@</nav>
+  </div>
+  <section aria-labelledby="styles">
+    <h2 id="styles">风格目录</h2>
+    <div class="controls">
+      <input type="search" id="search" aria-label="搜索风格或片名" placeholder="搜索风格或片名">
+      <select id="category" aria-label="风格类别"><option value="">全部类别</option>@@GROUPS@@</select>
+      <label><input type="checkbox" id="ready"> 已有样片</label>
+    </div>
+    <p id="results" aria-live="polite"></p>
+    <ul>@@ROWS@@</ul>
+  </section>
+</main>
+<script type="application/json" id="films">@@DATA@@</script>
+<script>
+  const films=JSON.parse(document.querySelector('#films').textContent);
+  const player=document.querySelector('video');
+  const meta=document.querySelector('#meta'),title=document.querySelector('#title'),summary=document.querySelector('#summary');
+  const download=document.querySelector('#download');
+  const buttons=[...document.querySelectorAll('button[data-film]')];
+  function setFilm(f, scroll){
+    player.pause();
+    player.removeAttribute('src');
+    player.removeAttribute('poster');
+    const dir='../'+f.folder+'/out/';
+    if(f.local)player.src=dir+'film.mp4';
+    if(f.still)player.poster=dir+'stills/t_'+f.poster+'.jpg';
+    player.hidden=!f.local;
+    player.load();
+    title.textContent=f.title;
+    meta.textContent=f.styleName+' · '+f.duration+' 秒'+(f.candidate?' · '+f.candidate:'');
+    summary.textContent=f.summary+(f.local?'':' 当前机器尚未配置该 MP4。');
+    download.href=f.local?dir+'film.mp4':f.releaseFile||'';
+    download.hidden=!(f.local||f.releaseFile);
+    if(f.local)download.download=f.title+'.mp4';
+    else download.removeAttribute('download');
+    for(const b of buttons.filter(b=>b.closest('nav')))b.setAttribute('aria-pressed',String(b.dataset.film===f.folder));
+    if(scroll)document.querySelector('.screening').scrollIntoView({block:'start'});
+  }
+  for(const b of buttons)b.addEventListener('click',()=>setFilm(films.find(f=>f.folder===b.dataset.film),!b.closest('nav')));
+  const rows=[...document.querySelectorAll('li[data-category]')];
+  const search=document.querySelector('#search'),category=document.querySelector('#category'),ready=document.querySelector('#ready');
+  function filter(){
+    const q=search.value.trim().toLowerCase();
+    let count=0;
+    for(const r of rows){
+      r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!category.value||r.dataset.category===category.value)&&(!ready.checked||r.dataset.ready==='true'));
+      if(!r.hidden)count++;
+    }
+    document.querySelector('#results').textContent=count+' 项';
+  }
+  search.addEventListener('input',filter);
+  category.addEventListener('change',filter);
+  ready.addEventListener('change',filter);
+  setFilm(films.find(f=>f.local)||films[0],false);
+  filter();
+</script>
+</html>

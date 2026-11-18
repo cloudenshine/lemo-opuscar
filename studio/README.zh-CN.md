@@ -1,5 +1,7 @@
 # 云山墨序 · 本地私人制片室
 
+[99 种风格的成片合集](http://127.0.0.1:43821/films/style-collection/index.html)现有 6 种风格的样片。新增瑞士动态排版、示波器数学和一笔画三支作品，也可观看独立短片《太阳在下雨》和《空位》第四版。[影片构建与来源](research/collection/README.zh-CN.md)
+
 **最新制作进展**：勇者更新为41秒无字手部修订版，热成像按许可明确的真实素材改编成43秒《动作停了，热痕为什么还在》，运河保留74秒已审看版本。[本地播放](http://127.0.0.1:43821/films/selected-trio-v2-review/index.html) · [本轮审看与局限](research/selected-trio-v1/REVIEW.md) · [素材、许可与证据](research/selected-trio-v1/THERMAL-SOURCES.md) · [执行方案](research/selected-trio-v1/TREATMENT.md)。勇者的摘套、揭条、开箱已能在无字静音模型复述中辨认，手指精细接触和自然程度仍不足；不等于观众认可。热像为CC BY-SA 4.0实拍改编，旧窗户实验预演只作档案。
 
 **创作状态更新**：目标是建立个人作品系列，内容先于技术和风格。用户已否定前七轮质量，并明确取消“三种风格”的创作边界。用户比较后选择保留第四版，并要求停止本轮打磨：[观看保留的第四版](http://127.0.0.1:43821/films/space-for-two-v4-review/index.html) · [99种风格内容适配表](http://127.0.0.1:43821/films/content-style-atlas/index.html) · [导演方案](research/creative-reset/first-film-v4/TREATMENT.zh-CN.md) · [自审与复现](research/creative-reset/first-film-v4/REVIEW.zh-CN.md)。这是未定稿的内容试制，技术通过不代表创作达标。
